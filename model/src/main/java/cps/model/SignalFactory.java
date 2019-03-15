@@ -31,7 +31,7 @@ public class SignalFactory {
                                     args.getInitialTime());
 
             case HALF_STRAIGHT_SINUSOIDAL:
-                return getFullStraightSinusoidal(args.getAmplitude(),
+                return getHalfStraightSinusoidal(args.getAmplitude(),
                                                 args.getPeriod(),
                                                 args.getInitialTime());
 
