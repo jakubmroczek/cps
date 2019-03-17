@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -14,14 +16,26 @@
 <AnchorPane prefHeight="457.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
       <Button fx:id="displayButton" layoutX="616.0" layoutY="14.0" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" text="Wykres" />
-      <LineChart fx:id="chart" layoutX="169.0" prefHeight="457.0" prefWidth="444.0">
-        <xAxis>
-          <NumberAxis side="BOTTOM" fx:id="xAxis" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
-        </yAxis>
-      </LineChart>
+      <VBox layoutX="170.0" prefHeight="457.0" prefWidth="439.0">
+         <children>
+            <LineChart fx:id="chart" prefHeight="457.0" prefWidth="444.0">
+              <xAxis>
+                <NumberAxis side="BOTTOM" fx:id="xAxis" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
+              </yAxis>
+            </LineChart>
+            <BarChart fx:id="histogram">
+              <xAxis>
+                <CategoryAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </BarChart>
+         </children>
+      </VBox>
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefWidth="150.0" />
       <VBox layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
          <children>
