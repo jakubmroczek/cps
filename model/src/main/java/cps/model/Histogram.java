@@ -25,7 +25,24 @@ public class Histogram {
         min = Collections.min(samples);
         max = Collections.max(samples);
 
-        frequencyList = countFrequencies(samples);
+        frequencyList = new ArrayList<>();
+        final double columnLength = (max - min) / bins;
+
+        // List initialization
+        for (int i = 0; i < bins; i++) {
+            frequencyList.add(0.0);
+        }
+
+        for (double value : samples) {
+            //Shows in which percent of the histogram length the sample is
+            //TODO
+            double percentage = abs(abs(value) - abs(min)) / abs(max);
+            int index = (int) floor(percentage * bins);
+            // In case when index is equal number of bins, (it can exceed the list size)
+            index = min(index, bins - 1);
+            double freq = frequencyList.get(index);
+            frequencyList.add(index, freq + 1);
+        }
     }
 
     private List<Double> countFrequencies(List<Double> samples) {
@@ -34,6 +51,9 @@ public class Histogram {
         //Nullptr exception
         final List<Double> results = new ArrayList<>(bins);
         // List initialization
+        for (int i = 0; i < results.size(); i++) {
+            results.set(i, new Double(0));
+        }
 
         for (double value : samples) {
             //Shows in which percent of the histogram length the sample is

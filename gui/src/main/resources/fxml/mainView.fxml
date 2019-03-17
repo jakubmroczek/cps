@@ -26,12 +26,12 @@
                 <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
               </yAxis>
             </LineChart>
-            <BarChart fx:id="histogram">
+            <BarChart fx:id="histogramChart">
               <xAxis>
-                <CategoryAxis side="BOTTOM" />
+                <CategoryAxis fx:id="histogramXAxis" side="BOTTOM" />
               </xAxis>
               <yAxis>
-                <NumberAxis side="LEFT" />
+                <NumberAxis fx:id="histogramYAxis"    side="LEFT" />
               </yAxis>
             </BarChart>
          </children>

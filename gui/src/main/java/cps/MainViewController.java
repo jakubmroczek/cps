@@ -1,20 +1,17 @@
 package cps;
 
-import cps.model.Signal;
-import cps.model.SignalArgs;
-import cps.model.SignalChart;
-import cps.model.SignalFactory;
+import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
 import java.time.Duration;
+import java.util.Base64;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +29,17 @@ public class MainViewController {
 
     @FXML
     private TextField amplitude, period, initialTime, duration, kw;
+
+    @FXML
+    private BarChart<Number, Number> histogramChart;
+
+    @FXML
+    private CategoryAxis histogramXAxis;
+
+    @FXML
+    private NumberAxis histogramYAxis;
+
+    private int histogramBins = 10;
 
    @FXML
    public void display() {
@@ -55,20 +63,9 @@ public class MainViewController {
             chart.getData().clear();
 
             chart.getData().add(series);
-   }
 
-   private Signal createSignal() {
-       //TODO: Error handling
-       double _amplitude = Double.parseDouble(amplitude.getText());
-       Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
-       Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
-       //TODO: connect to fxml object
-       double kw = 0.5;
-
-       SignalArgs args = new SignalArgs(_amplitude, _period,_initialTime, kw);
-
-       String signalType = labelsToSignalsMap.get(signal);
-       return SignalFactory.createSignal(signalType, args);
+            Histogram histogram = new Histogram(sc, histogramBins);
+            drawHistogram(histogram);
    }
 
    @FXML
@@ -80,6 +77,40 @@ public class MainViewController {
    public void initialize() {
        signalList.getItems().addAll(AVALIABLE_SIGNALS);
    }
+
+    private Signal createSignal() {
+        //TODO: Error handling
+        double _amplitude = Double.parseDouble(amplitude.getText());
+        Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
+        Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
+        //TODO: connect to fxml object
+        double kw = 0.5;
+
+        SignalArgs args = new SignalArgs(_amplitude, _period,_initialTime, kw);
+
+        String signalType = labelsToSignalsMap.get(signal);
+        return SignalFactory.createSignal(signalType, args);
+    }
+
+    //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
+    private void drawHistogram(Histogram histogram) {
+        histogramChart.setCategoryGap(0);
+        histogramChart.setBarGap(0);
+
+        XYChart.Series series1 = new XYChart.Series();
+        series1.setName("Histogram");
+
+        double currentRange = histogram.getMin();
+        final double columnWidth = (histogram.getMax() - histogram.getMin()) / histogram.getBins();
+        for (int i = 0; i < histogram.getBins(); i++) {
+            //TODO: ADD HISTOGRAM COLUMN LENGTH TO THE HISTOGRAM CLASS
+            currentRange += i * columnWidth;
+            series1.getData().add(new XYChart.Data(Double.toString(currentRange), histogram.getFrequencyList().get(i)));
+        }
+
+        histogramChart.getData().clear();
+        histogramChart.getData().add(series1);
+    }
 
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
             "Szum o rozkładzie jednostajnym",
