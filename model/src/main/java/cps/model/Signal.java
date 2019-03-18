@@ -19,7 +19,7 @@ public class Signal  {
 
     //TODO: To chyba nie jed odpowidzialnosc sygnalu, przeniesc gdzies indziej
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
-        Duration time = Duration.ofNanos(0);
+        Duration time = Duration.ZERO;
         List<Double> samples = new ArrayList<>();
         while (time.compareTo(duration) <= 0) {
             double val = calculate(time);

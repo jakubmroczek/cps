@@ -41,14 +41,23 @@ public class MainViewController {
     @FXML
     private NumberAxis histogramYAxis;
 
-    private int histogramBins = 20;
+    private int histogramBins = 5;
 
    @FXML
    public void display() {
             Signal signal = createSignal();
 
             Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
-            SignalChart sc = signal.createChart(_duration, Duration.ofMillis(1));
+
+            long widthInPixels = (long) chart.getXAxis().getWidth();
+
+            final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
+       SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
+
+            System.out.println(MAX_SAMPLING_RATE);
+            System.out.println(sc.getProbes().size());
+
+
 
             chart.setAnimated(false);
             chart.setCreateSymbols(false);
@@ -56,10 +65,13 @@ public class MainViewController {
             XYChart.Series series = new XYChart.Series();
             series.setName("sinusoida1");
 
+            System.out.println("");
             for (int i =0; i < sc.getProbes().size(); i++) {
                 double y = sc.getProbes().get(i);
-                double x = i * sc.getProbingPeriod().toMillis();
-                series.getData().add(new XYChart.Data(x, y));
+//                double x = i * sc.getProbingPeriod().toMillis();
+                System.out.println(i + " " + y);
+//                double x = i / widthInPixels;
+                series.getData().add(new XYChart.Data(i, y));
             }
 
             chart.getData().clear();
@@ -68,6 +80,8 @@ public class MainViewController {
 
             Histogram histogram = new Histogram(sc, histogramBins);
             drawHistogram(histogram);
+
+            System.out.println(chart.getXAxis().getWidth());
    }
 
    @FXML
