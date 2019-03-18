@@ -34,12 +34,12 @@ public class MainViewController {
     private BarChart<Number, Number> histogramChart;
 
     @FXML
-    private CategoryAxis histogramXAxis;
+    private NumberAxis histogramXAxis;
 
     @FXML
     private NumberAxis histogramYAxis;
 
-    private int histogramBins = 10;
+    private int histogramBins = 20;
 
    @FXML
    public void display() {
@@ -94,7 +94,11 @@ public class MainViewController {
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
     private void drawHistogram(Histogram histogram) {
-        histogramChart.setCategoryGap(0);
+//       histogramChart.
+
+       histogramChart.setAnimated(false);
+
+       histogramChart.setCategoryGap(0);
         histogramChart.setBarGap(0);
 
         XYChart.Series series1 = new XYChart.Series();
@@ -104,7 +108,7 @@ public class MainViewController {
         final double columnWidth = (histogram.getMax() - histogram.getMin()) / histogram.getBins();
         for (int i = 0; i < histogram.getBins(); i++) {
             //TODO: ADD HISTOGRAM COLUMN LENGTH TO THE HISTOGRAM CLASS
-            currentRange += i * columnWidth;
+            currentRange += columnWidth;
             series1.getData().add(new XYChart.Data(Double.toString(currentRange), histogram.getFrequencyList().get(i)));
         }
 

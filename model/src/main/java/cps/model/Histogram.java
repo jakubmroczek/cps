@@ -36,12 +36,12 @@ public class Histogram {
         for (double value : samples) {
             //Shows in which percent of the histogram length the sample is
             //TODO
-            double percentage = abs(abs(value) - abs(min)) / abs(max);
+            double percentage = (value - min) / (max - min);
             int index = (int) floor(percentage * bins);
             // In case when index is equal number of bins, (it can exceed the list size)
             index = min(index, bins - 1);
             double freq = frequencyList.get(index);
-            frequencyList.add(index, freq + 1);
+            frequencyList.set(index, freq + 1);
         }
     }
 
