@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.BarChart?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -15,10 +13,9 @@
 
 <AnchorPane prefHeight="457.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
-      <Button fx:id="displayButton" layoutX="616.0" layoutY="14.0" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" text="Wykres" />
-      <VBox layoutX="170.0" prefHeight="457.0" prefWidth="439.0">
+      <VBox layoutX="170.0" prefHeight="458.0" prefWidth="526.0">
          <children>
-            <LineChart fx:id="chart" prefHeight="457.0" prefWidth="444.0">
+            <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
               <xAxis>
                 <NumberAxis side="BOTTOM" fx:id="xAxis" />
               </xAxis>
@@ -26,14 +23,14 @@
                 <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
               </yAxis>
             </LineChart>
-            <BarChart fx:id="histogramChart">
+            <LineChart fx:id="histogramChart">
               <xAxis>
-                <CategoryAxis fx:id="histogramXAxis" side="BOTTOM" />
+                <NumberAxis side="BOTTOM" />
               </xAxis>
               <yAxis>
-                <NumberAxis fx:id="histogramYAxis"    side="LEFT" />
+                <NumberAxis side="LEFT" />
               </yAxis>
-            </BarChart>
+            </LineChart>
          </children>
       </VBox>
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefWidth="150.0" />
@@ -43,25 +40,25 @@
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="80.0" text="Amplituda:" />
-                  <TextField fx:id="amplitude" prefHeight="33.0" prefWidth="89.0" />
+                  <TextField fx:id="amplitude" prefHeight="33.0" prefWidth="89.0" text="10" />
                </children>
             </HBox>
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="81.0" text="Okres:" />
-                  <TextField fx:id="period" prefHeight="33.0" prefWidth="89.0" />
+                  <TextField fx:id="period" prefHeight="33.0" prefWidth="89.0" text="100" />
                </children>
             </HBox>
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="80.0" text="Czas pocz." />
-                  <TextField fx:id="initialTime" prefHeight="33.0" prefWidth="89.0" />
+                  <TextField fx:id="initialTime" prefHeight="33.0" prefWidth="89.0" text="0" />
                </children>
             </HBox>
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="82.0" text="Czas trwania" />
-                  <TextField fx:id="duration" prefHeight="33.0" prefWidth="89.0" />
+                  <TextField fx:id="duration" prefHeight="33.0" prefWidth="89.0" text="800" />
                </children>
             </HBox>
             <HBox prefHeight="42.0" prefWidth="150.0">
@@ -70,6 +67,7 @@
                   <TextField fx:id="kw" prefHeight="33.0" prefWidth="89.0" />
                </children>
             </HBox>
+            <Button fx:id="displayButton" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="149.0" text="Wykres" />
          </children>
       </VBox>
    </children>

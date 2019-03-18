@@ -8,12 +8,14 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.style.Styler;
 
 import java.time.Duration;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.IntStream;
 
 public class MainViewController {
 
@@ -31,7 +33,7 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kw;
 
     @FXML
-    private BarChart<Number, Number> histogramChart;
+    private LineChart<Number, Number> histogramChart;
 
     @FXML
     private NumberAxis histogramXAxis;
@@ -94,12 +96,8 @@ public class MainViewController {
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
     private void drawHistogram(Histogram histogram) {
-//       histogramChart.
-
+        histogramChart.setCreateSymbols(false);
        histogramChart.setAnimated(false);
-
-       histogramChart.setCategoryGap(0);
-        histogramChart.setBarGap(0);
 
         XYChart.Series series1 = new XYChart.Series();
         series1.setName("Histogram");
@@ -109,7 +107,7 @@ public class MainViewController {
         for (int i = 0; i < histogram.getBins(); i++) {
             //TODO: ADD HISTOGRAM COLUMN LENGTH TO THE HISTOGRAM CLASS
             currentRange += columnWidth;
-            series1.getData().add(new XYChart.Data(Double.toString(currentRange), histogram.getFrequencyList().get(i)));
+            series1.getData().add(new XYChart.Data(currentRange, histogram.getFrequencyList().get(i)));
         }
 
         histogramChart.getData().clear();
