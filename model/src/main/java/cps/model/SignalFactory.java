@@ -19,6 +19,7 @@ public class SignalFactory {
     public static final String SYMETRIC_RECTANGLE = "S7";
     public static final String TRIANGLE = "S8";
 
+    //TODO: Ensure duration units!!!!!!
     public static Signal createSignal(String signal, SignalArgs args) {
         switch (signal)
         {
@@ -90,18 +91,18 @@ public class SignalFactory {
     private static Signal getSinusoidal(double amplitude, Duration period, Duration initialTime) {
         Function<Duration, Double> fun = duration -> {
             assert duration != null;
-            double angleVelocity = 2.0 * PI / period.toMillis();
+            double angleVelocity = 2.0 * PI / period.toNanos();
             Duration argument = duration.minus(initialTime);
-            return amplitude * sin(angleVelocity * argument.toMillis());
+            return amplitude * sin(angleVelocity * argument.toNanos());
         };
         return new Signal(fun);
     }
 
     private static Signal getHalfStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
         Function<Duration, Double> fun = duration -> {
-            double angleVelocity = 2.0 * PI / period.toMillis();
+            double angleVelocity = 2.0 * PI / period.toNanos();
             Duration argument = duration.minus(initialTime);
-            double left = sin(angleVelocity * argument.toMillis());
+            double left = sin(angleVelocity * argument.toNanos());
             double right = abs(left);
             return 0.5 * amplitude * (left + right);
         };
@@ -111,19 +112,19 @@ public class SignalFactory {
     private static Signal getFullStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
         Function<Duration, Double> fun = duration -> {
             assert duration != null;
-            double angleVelocity = 2.0 * PI / period.toMillis();
+            double angleVelocity = 2.0 * PI / period.toNanos();
             Duration argument = duration.minus(initialTime);
-            return amplitude * abs(sin(angleVelocity * argument.toMillis()));
+            return amplitude * abs(sin(angleVelocity * argument.toNanos()));
         };
         return new Signal(fun);
     }
 
     private static Signal getRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toMillis() != 0;
+        assert period != null && period.toNanos() != 0;
 
         Function<Duration, Double> fun = duration -> {
             //TODO: Better description
-            double coefficient = (duration.toMillis() - initialTime.toMillis()) / (double) period.toMillis();
+            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
 
             double kMax = coefficient;
             double kMin = coefficient - kw;
@@ -137,11 +138,11 @@ public class SignalFactory {
     }
 
     private static Signal getSymetricRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toMillis() != 0;
+        assert period != null && period.toNanos() != 0;
 
         Function<Duration, Double> fun = duration -> {
             //TODO: Better description
-            double coefficient = (duration.toMillis() - initialTime.toMillis()) / (double) period.toMillis();
+            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
 
             double kMax = coefficient;
             double kMin = coefficient - kw;
@@ -155,11 +156,11 @@ public class SignalFactory {
     }
 
     private static Signal getTriangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toMillis() != 0;
+        assert period != null && period.toNanos() != 0;
 
         Function<Duration, Double> fun = duration -> {
             //TODO: Better description
-            double coefficient = (duration.toMillis() - initialTime.toMillis()) / (double) period.toMillis();
+            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
 
             double kMax = coefficient;
             double kMin = coefficient - kw;
@@ -167,10 +168,10 @@ public class SignalFactory {
             double integer = ceil(kMin);
 
             if (integer >= kMin && integer < kMax) {
-                return (amplitude / (kw * period.toMillis())) * (duration.toMillis() - integer * period.toMillis() - initialTime.toMillis());
+                return (amplitude / (kw * period.toNanos())) * (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos());
             } else {
                 integer = floor(coefficient - kw);
-                return (-amplitude / (period.toMillis() * (1.0 - kw))) * (duration.toMillis() - integer * period.toMillis() - initialTime.toMillis()) + (amplitude / (1.0 - kw));
+                return (-amplitude / (period.toNanos() * (1.0 - kw))) * (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos()) + (amplitude / (1.0 - kw));
             }
         };
 

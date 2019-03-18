@@ -41,7 +41,7 @@ public class MainViewController {
     @FXML
     private NumberAxis histogramYAxis;
 
-    private int histogramBins = 5;
+    private int histogramBins = 20;
 
    @FXML
    public void display() {
