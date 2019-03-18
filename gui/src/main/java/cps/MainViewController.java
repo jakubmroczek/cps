@@ -33,7 +33,7 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kw;
 
     @FXML
-    private LineChart<Number, Number> histogramChart;
+    private BarChart<Number, Number> histogramChart;
 
     @FXML
     private NumberAxis histogramXAxis;
@@ -50,7 +50,7 @@ public class MainViewController {
             Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
             SignalChart sc = signal.createChart(_duration, Duration.ofMillis(1));
 
-            chart.setTitle("Wykres sinusoidalny");
+            chart.setAnimated(false);
             chart.setCreateSymbols(false);
             chart.getStyleClass().add("thick-chart");
             XYChart.Series series = new XYChart.Series();
@@ -96,9 +96,12 @@ public class MainViewController {
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
     private void drawHistogram(Histogram histogram) {
-        histogramChart.setCreateSymbols(false);
-       histogramChart.setAnimated(false);
+//        histogcramChart.setCreateSymbols(false);
 
+        histogramChart.setCategoryGap(0);
+        histogramChart.setBarGap(0);
+       histogramChart.setAnimated(false);
+//        histogramChart.getXAxis().
         XYChart.Series series1 = new XYChart.Series();
         series1.setName("Histogram");
 
@@ -106,8 +109,9 @@ public class MainViewController {
         final double columnWidth = (histogram.getMax() - histogram.getMin()) / histogram.getBins();
         for (int i = 0; i < histogram.getBins(); i++) {
             //TODO: ADD HISTOGRAM COLUMN LENGTH TO THE HISTOGRAM CLASS
+            String result = String.format("%.2f", currentRange);
+            series1.getData().add(new XYChart.Data(result, histogram.getFrequencyList().get(i)));
             currentRange += columnWidth;
-            series1.getData().add(new XYChart.Data(currentRange, histogram.getFrequencyList().get(i)));
         }
 
         histogramChart.getData().clear();

@@ -11,6 +11,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
 <AnchorPane prefHeight="457.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
       <VBox layoutX="170.0" prefHeight="458.0" prefWidth="526.0">
@@ -23,14 +25,14 @@
                 <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
               </yAxis>
             </LineChart>
-            <LineChart fx:id="histogramChart">
+            <BarChart fx:id="histogramChart">
               <xAxis>
-                <NumberAxis side="BOTTOM" />
+                <CategoryAxis side="BOTTOM" />
               </xAxis>
               <yAxis>
                 <NumberAxis side="LEFT" />
               </yAxis>
-            </LineChart>
+            </BarChart>
          </children>
       </VBox>
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefWidth="150.0" />
