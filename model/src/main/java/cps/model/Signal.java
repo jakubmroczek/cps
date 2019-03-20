@@ -37,6 +37,7 @@ public class Signal  {
         return new SignalChart(duration, probingPeriod, samples);
     }
 
+    @Getter
     private Function<Duration, Double> function;
 
     @Getter
