@@ -1,5 +1,7 @@
 package cps.model;
 
+import lombok.Getter;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,13 @@ import java.util.function.Function;
 //TODO: Zrobic interfejs funkcyjny
 public class Signal  {
 
-    public Signal(Function<Duration, Double> function) {
+    enum Type {
+        CONTINUOUS,
+        DISCRETE
+    }
+
+    public Signal(Type type, Function<Duration, Double> function) {
+        this.type = type;
         this.function = function;
     }
 
@@ -30,4 +38,7 @@ public class Signal  {
     }
 
     private Function<Duration, Double> function;
+
+    @Getter
+    private Type type;
 }
