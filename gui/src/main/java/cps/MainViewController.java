@@ -33,6 +33,9 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kw;
 
     @FXML
+    private TextField averageValue;
+
+    @FXML
     private BarChart<Number, Number> histogramChart;
 
     @FXML

@@ -73,5 +73,16 @@
             <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="174.0" text="Wykres" />
          </children>
       </VBox>
+      <VBox layoutX="696.0" prefHeight="458.0" prefWidth="194.0">
+         <children>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+            <HBox prefHeight="32.0" prefWidth="194.0">
+               <children>
+                  <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
+                  <TextField fx:id="averageValue" prefHeight="32.0" prefWidth="87.0" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>
