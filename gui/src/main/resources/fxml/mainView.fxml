@@ -66,7 +66,7 @@
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="82.0" text="Kw" />
-                  <TextField fx:id="kw" prefHeight="33.0" prefWidth="89.0" />
+                  <TextField fx:id="kwTextField" prefHeight="33.0" prefWidth="89.0" text="0.5" />
                </children>
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
@@ -85,8 +85,8 @@
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                <children>
-                  <Label fx:id="averageAbsoluteValue" prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
-                  <TextField fx:id="averageValueTextField1" prefHeight="32.0" prefWidth="87.0" />
+                  <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
+                  <TextField fx:id="averageAbsoluteValueTextField" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
          </children>

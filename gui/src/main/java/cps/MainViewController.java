@@ -31,7 +31,7 @@ public class MainViewController {
     @FXML ComboBox signalList;
 
     @FXML
-    private TextField amplitude, period, initialTime, duration, kw;
+    private TextField amplitude, period, initialTime, duration, kwTextField;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -107,7 +107,9 @@ public class MainViewController {
         Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
         Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
         //TODO: connect to fxml object
-        double kw = 0.5;
+
+        //Check if the value is in range
+        double kw = Double.parseDouble(kwTextField.getText());
 
         SignalArgs args = new SignalArgs(_amplitude, _period,_initialTime, kw);
 

@@ -29,7 +29,17 @@ public class Math {
 
     public static double averageAbsoluteValue(Signal signal, Duration start, Duration end) {
         validate(start, end);
-        throw new UnsupportedOperationException("not implemented yet.");
+        //Code duplication
+        long startInMs = start.toMillis();
+        long endInMs = end.toMillis();
+        long duration = endInMs - startInMs;
+        Function<Double, Double> adapter = timeInMs -> {
+            //TODO: Maybe we should take floor
+            Duration time = Duration.ofMillis(timeInMs.longValue());
+            return java.lang.Math.abs(signal.calculate(time));
+        };
+        double integral = integrate(startInMs, endInMs, INTEGRATION_STEPS, adapter);
+        return integral / duration;
     }
 
     public static double averagePower(Signal signal, Duration start, Duration end) {
