@@ -79,7 +79,14 @@
             <HBox prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
-                  <TextField fx:id="averageValue" prefHeight="32.0" prefWidth="87.0" />
+                  <TextField fx:id="averageValueTextField" prefHeight="32.0" prefWidth="87.0" />
+               </children>
+            </HBox>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+            <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
+               <children>
+                  <Label fx:id="averageAbsoluteValue" prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
+                  <TextField fx:id="averageValueTextField1" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
          </children>

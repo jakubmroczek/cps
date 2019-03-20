@@ -1,6 +1,7 @@
 package cps;
 
 import cps.model.*;
+import cps.model.Math;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -33,16 +34,10 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kw;
 
     @FXML
-    private TextField averageValue;
+    private TextField averageValueTextField, averageAbsoluteValueTextField;
 
     @FXML
     private BarChart<Number, Number> histogramChart;
-
-    @FXML
-    private NumberAxis histogramXAxis;
-
-    @FXML
-    private NumberAxis histogramYAxis;
 
     private int histogramBins = 20;
 
@@ -85,6 +80,15 @@ public class MainViewController {
             drawHistogram(histogram);
 
             System.out.println(chart.getXAxis().getWidth());
+
+            // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
+
+            double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
+            averageValueTextField.setText(String.format("%.2f", averageValue));
+
+            double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
+            averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
+
    }
 
    @FXML
