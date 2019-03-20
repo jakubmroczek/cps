@@ -13,6 +13,7 @@ import org.knowm.xchart.CategoryChart;
 import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.style.Styler;
+import org.omg.PortableServer.SERVANT_RETENTION_POLICY_ID;
 
 import java.time.Duration;
 import java.util.*;
@@ -69,7 +70,16 @@ public class MainViewController {
 //                double x = i * sc.getProbingPeriod().toMillis();
                 System.out.println(i + " " + y);
 //                double x = i / widthInPixels;
-                series.getData().add(new XYChart.Data(i, y));
+
+                //Mozliwosc przeklamania przez zmiane jednostke
+                if (MAX_SAMPLING_RATE.toMillis() != 0) {
+                    series.getData().add(new XYChart.Data(MAX_SAMPLING_RATE.multipliedBy(i).toMillis(), y));
+                } else {
+                    //HOW TO HANDLE THIS?
+                    //NANOSECONDS
+                    series.getData().add(new XYChart.Data(MAX_SAMPLING_RATE.multipliedBy(i).toNanos(), y));
+                }
+
             }
 
             chart.getData().clear();
