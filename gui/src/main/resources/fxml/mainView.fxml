@@ -56,8 +56,26 @@
                   <TextField fx:id="kw" prefHeight="33.0" prefWidth="89.0" />
                </children>
             </HBox>
-            <Button fx:id="saveButton" onAction="#saveToFile" mnemonicParsing="false" text="Save" />
-            <Button fx:id="loadButton" onAction="#loadFromFile" mnemonicParsing="false" text="Load" />
+
+            <HBox prefHeight="80.0" prefWidth="150.0">
+               <children>
+                  <Button fx:id="saveButton" onAction="#saveToFile" mnemonicParsing="false" text="Save to file" />
+                  <Button fx:id="loadButton" onAction="#loadFromFile" mnemonicParsing="false" text="Load from file" />
+               </children>
+            </HBox>
+            <HBox prefHeight="0" prefWidth="170.0">
+               <children>
+                  <Button fx:id="addButton" onAction="#addSignals" mnemonicParsing="false" text="Add signals" />
+                  <Button fx:id="subtractButton" onAction="#subtractSignals" mnemonicParsing="false" text="Subtract signals" />
+               </children>
+            </HBox>
+            <HBox prefHeight="42.0" prefWidth="170.0">
+               <children>
+                  <Button fx:id="multiplyButton" onAction="#multiplySignals" mnemonicParsing="false" text="Multiply signals" />
+                  <Button fx:id="divideButton" onAction="#divideSignals" mnemonicParsing="false" text="Divide signals" />
+               </children>
+            </HBox>
+
          </children>
       </VBox>
    </children>

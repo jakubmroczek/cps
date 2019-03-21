@@ -1,5 +1,7 @@
 package cps;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalChart;
@@ -23,10 +25,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainViewController {
@@ -49,6 +48,8 @@ public class MainViewController {
    @FXML
     public void display() {
         Signal signal = createSignal();
+        signal.setDuration(Double.valueOf(duration.getText()));
+        signal.setSignalType(signalList.getSelectionModel().getSelectedItem().toString());
         currentSignal = signal;
 
         Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
@@ -60,38 +61,33 @@ public class MainViewController {
         XYChart.Series series = new XYChart.Series();
         series.setName("sinusoida1");
 
-        for (int i =0; i < sc.getProbes().size(); i++) {
-            double y = sc.getProbes().get(i);
-            double x = i * sc.getProbingPeriod().toMillis();
-            series.getData().add(new XYChart.Data(x, y));
-        }
+//        for (int i =0; i < sc.getProbes().size(); i++) {
+//            double y = sc.getProbes().get(i);
+//            double x = i * sc.getProbingPeriod().toMillis();
+//            series.getData().add(new XYChart.Data(x, y));
+//        }
+       signal.getSignalValues().forEach(
+               (k, v) -> {
+                   series.getData().add(new XYChart.Data<>(k, v));
+               });
 
         chart.getData().clear();
 
         chart.getData().add(series);
     }
 
-    public void drawChartBasedOnFile(List<String> lines) {
-        Signal signal = createSignal();
-        currentSignal = signal;
+    public void drawChartBasedOnFile(Signal s) {
 
-        Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
-        SignalChart sc = signal.createChart(_duration, Duration.ofMillis(1));
-
-        chart.setTitle("Wykres sinusoidalny");
+        chart.setTitle(s.getSignalType());
         chart.setCreateSymbols(false);
         chart.getStyleClass().add("thick-chart");
         XYChart.Series series = new XYChart.Series();
         series.setName("sinusoida1");
-        Duration time = Duration.ofNanos(0);
-        Duration probing = Duration.ofMillis(1);
 
-        for(String s: lines){
-
-            double x = time.toMillis();
-            series.getData().add(new XYChart.Data(x,Double.parseDouble(s)));
-            time = time.plus(probing);
-        }
+        s.getSignalValues().forEach(
+                (k, v) -> {
+                    series.getData().add(new XYChart.Data<>(k, v));
+                });
 
         chart.getData().clear();
 
@@ -99,7 +95,7 @@ public class MainViewController {
     }
     @FXML
     private void saveToFile(ActionEvent e) {
-        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("Txt Files", "*.txt");
+        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Zapisz sygnał");
@@ -107,18 +103,11 @@ public class MainViewController {
         File file = fileChooser.showSaveDialog(this.stage);
         if (file == null)
             return;
-        List<String> lines = new ArrayList<>();
-        lines.add(String.valueOf(signalList.getSelectionModel().getSelectedIndex()));
-        lines.add(amplitude.getText());
-        lines.add(period.getText());
-        lines.add(initialTime.getText());
-        lines.add(duration.getText());
-        lines.add(kw.getText());
-        for (Double d: currentSignal.signalSamples) {
-            lines.add(d.toString());
-        }
+        Gson gson = new Gson();
+        String signalJson = gson.toJson(currentSignal);
+
         try {
-            Files.write(file.toPath(),lines, Charset.forName("UTF-8"));
+            Files.write(file.toPath(), signalJson.getBytes());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -126,7 +115,7 @@ public class MainViewController {
 
     @FXML
     private void loadFromFile(ActionEvent e) {
-        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("Txt Files", "*.txt");
+        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Wczytaj sygnał");
@@ -136,19 +125,89 @@ public class MainViewController {
             return;
 
         try {
-            List<String> lines = Files.readAllLines(file.toPath());
-            signalList.getSelectionModel().select(signalList.getItems().get(Integer.parseInt(lines.get(0))));
-            amplitude.setText(lines.get(1));
-            period.setText(lines.get(2));
-            initialTime.setText(lines.get(3));
-            duration.setText(lines.get(4));
-            kw.setText(lines.get(5));
-            drawChartBasedOnFile(lines.subList(6,lines.size()));
+            Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new FileReader(file));
+            Signal loadedSignal = gson.fromJson(reader, Signal.class);
+            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
+            amplitude.setText(String.valueOf((int)loadedSignal.getAmplitude()));
+            period.setText(String.valueOf((int)loadedSignal.getPeriod()));
+            initialTime.setText(String.valueOf((int)loadedSignal.getInitialTime()));
+            duration.setText(String.valueOf((int)loadedSignal.getDuration()));
+            drawChartBasedOnFile(loadedSignal);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
+    @FXML
+    private void addSignals(ActionEvent e) {
+
+        Signal s1 = loadSignal("1");
+        Signal s2 = loadSignal("2");
+        Signal newSignal = addSignals(s1,s2);
+        currentSignal = newSignal;
+        saveToFile(null);
+        drawChartBasedOnFile(newSignal);
+    }
+    @FXML
+    private void subtractSignals(ActionEvent e) {
+
+        Signal s1 = loadSignal("1");
+        Signal s2 = loadSignal("2");
+        Signal newSignal = subtractSignals(s1,s2);
+        currentSignal = newSignal;
+        saveToFile(null);
+        drawChartBasedOnFile(newSignal);
+    }
+    @FXML
+    private void multiplySignals(ActionEvent e) {
+
+        Signal s1 = loadSignal("1");
+        Signal s2 = loadSignal("2");
+        Signal newSignal = multiplySignals(s1,s2);
+        currentSignal = newSignal;
+        saveToFile(null);
+        drawChartBasedOnFile(newSignal);
+    }
+    @FXML
+    private void divideSignals(ActionEvent e) {
+
+        Signal s1 = loadSignal("1");
+        Signal s2 = loadSignal("2");
+        Signal newSignal = divideSignals(s1,s2);
+        currentSignal = newSignal;
+        saveToFile(null);
+        drawChartBasedOnFile(newSignal);
+    }
+    private Signal loadSignal(String sygnal){
+        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Wczytaj sygnał "+ sygnal);
+        fileChooser.getExtensionFilters().add(fcExtension);
+        File file = fileChooser.showOpenDialog(this.stage);
+        if (file == null)
+            return null;
+
+        try {
+            Gson gson = new Gson();
+            JsonReader reader = new JsonReader(new FileReader(file));
+            Signal s1 = gson.fromJson(reader, Signal.class);
+            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(s1.getSignalType()));
+
+            amplitude.setText(String.valueOf((int)s1.getAmplitude()));
+            period.setText(String.valueOf((int)s1.getPeriod()));
+            initialTime.setText(String.valueOf((int)s1.getInitialTime()));
+            duration.setText(String.valueOf((int)s1.getDuration()));
+            drawChartBasedOnFile(s1);
+            return s1;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
    private Signal createSignal() {
        //TODO: Error handling
        double _amplitude = Double.parseDouble(amplitude.getText());
@@ -200,4 +259,105 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
     }
    private String signal;
+
+    private Signal addSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getSignalValues().forEach(
+                (k, v) -> {
+                    map.put(k, v);
+                }
+        );
+        s2.getSignalValues().forEach(
+                (k, v) -> {
+                    if (map.get(k) != null) {
+                        map.put(k, v + map.get(k));
+                    }
+                    else map.put(k, v);
+                }
+        );
+
+        String name = s1.getSignalType() + " + " + s2.getSignalType();
+        Signal newSignal = new Signal(null);
+        newSignal.setSignalType(name);
+        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
+        newSignal.setDuration(s1.getDuration());
+        newSignal.setSignalValues(map);
+        return newSignal;
+    }
+    private Signal subtractSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getSignalValues().forEach(
+                (k, v) -> {
+                    map.put(k, v);
+                }
+        );
+        s2.getSignalValues().forEach(
+                (k, v) -> {
+                    if (map.get(k) != null) {
+                        map.put(k, v - map.get(k));
+                    }
+                    else map.put(k, v);
+                }
+        );
+
+        String name = s1.getSignalType() + " - " + s2.getSignalType();
+        Signal newSignal = new Signal(null);
+        newSignal.setSignalType(name);
+        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
+        newSignal.setDuration(s1.getDuration());
+        newSignal.setSignalValues(map);
+        return newSignal;
+    }
+    private Signal multiplySignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getSignalValues().forEach(
+                (k, v) -> {
+                    map.put(k, v);
+                }
+        );
+        s2.getSignalValues().forEach(
+                (k, v) -> {
+                    if (map.get(k) != null) {
+                        map.put(k, v * map.get(k));
+                    }
+                    else map.put(k, v);
+                }
+        );
+
+        String name = s1.getSignalType() + " * " + s2.getSignalType();
+        Signal newSignal = new Signal(null);
+        newSignal.setSignalType(name);
+        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
+        newSignal.setDuration(s1.getDuration());
+        newSignal.setSignalValues(map);
+        return newSignal;
+    }
+    private Signal divideSignals(Signal s1, Signal s2) {
+        TreeMap<Double, Double> map = new TreeMap<>();
+
+        s1.getSignalValues().forEach(
+                (k, v) -> {
+                    map.put(k, v);
+                }
+        );
+        s2.getSignalValues().forEach(
+                (k, v) -> {
+                    if (map.get(k) != null) {
+                        map.put(k, v / map.get(k));
+                    }
+                    else map.put(k, v);
+                }
+        );
+
+        String name = s1.getSignalType() + " / " + s2.getSignalType();
+        Signal newSignal = new Signal(null);
+        newSignal.setSignalType(name);
+        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
+        newSignal.setDuration(s1.getDuration());
+        newSignal.setSignalValues(map);
+        return newSignal;
+    }
 }

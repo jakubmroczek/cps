@@ -94,7 +94,9 @@ public class SignalFactory {
             Duration argument = duration.minus(initialTime);
             return amplitude * sin(angleVelocity * argument.toMillis());
         };
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private static Signal getHalfStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
@@ -105,7 +107,9 @@ public class SignalFactory {
             double right = abs(left);
             return 0.5 * amplitude * (left + right);
         };
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private static Signal getFullStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
@@ -115,7 +119,9 @@ public class SignalFactory {
             Duration argument = duration.minus(initialTime);
             return amplitude * abs(sin(angleVelocity * argument.toMillis()));
         };
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private static Signal getRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
@@ -133,7 +139,9 @@ public class SignalFactory {
             return integer >= kMin && integer < kMax ? amplitude : 0;
         };
 
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private static Signal getSymetricRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
@@ -151,7 +159,9 @@ public class SignalFactory {
             return integer >= kMin && integer < kMax ? amplitude : -amplitude;
         };
 
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private static Signal getTriangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
@@ -174,7 +184,9 @@ public class SignalFactory {
             }
         };
 
-        return new Signal(fun);
+        Signal signal = new Signal(fun);
+        signal.setArgs(amplitude,period.toMillis(),initialTime.toMillis());
+        return signal;
     }
 
     private SignalFactory() {
