@@ -8,6 +8,9 @@ import java.util.function.Function;
 //TODO: Zrobic interfejs funkcyjny
 public class Signal  {
 
+    public List<Double> signalSamples = new ArrayList<>();
+
+
     public Signal(Function<Duration, Double> function) {
         this.function = function;
     }
@@ -21,9 +24,11 @@ public class Signal  {
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
         Duration time = Duration.ofNanos(0);
         List<Double> samples = new ArrayList<>();
+
         while (time.compareTo(duration) <= 0) {
             double val = calculate(time);
             samples.add(val);
+            signalSamples.add(val);
             time = time.plus(probingPeriod);
         }
         return new SignalChart(duration, probingPeriod, samples);

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane prefHeight="457.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
+<AnchorPane prefHeight="457.0" prefWidth="694.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
       <Button fx:id="displayButton" layoutX="616.0" layoutY="14.0" maxWidth="1.7976931348623157E308" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" text="Wykres" />
       <LineChart fx:id="chart" layoutX="169.0" prefHeight="457.0" prefWidth="444.0">
@@ -56,6 +56,8 @@
                   <TextField fx:id="kw" prefHeight="33.0" prefWidth="89.0" />
                </children>
             </HBox>
+            <Button fx:id="saveButton" onAction="#saveToFile" mnemonicParsing="false" text="Save" />
+            <Button fx:id="loadButton" onAction="#loadFromFile" mnemonicParsing="false" text="Load" />
          </children>
       </VBox>
    </children>
