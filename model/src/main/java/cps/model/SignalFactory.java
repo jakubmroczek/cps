@@ -11,6 +11,7 @@ import static java.lang.Math.floor;
 
 public class SignalFactory {
 
+    public static final String LINEARLY_DISTRIBUTED_NOISE = "S1";
     public static final String GAUSSIAN_NOISE = "S2";
     public static final String SINUSOIDAL = "S3";
     public static final String HALF_STRAIGHT_SINUSOIDAL = "S4";
@@ -23,6 +24,9 @@ public class SignalFactory {
     public static Signal createSignal(String signal, SignalArgs args) {
         switch (signal)
         {
+            case LINEARLY_DISTRIBUTED_NOISE:
+                return getLinearlyDistibutedNoise(args.getAmplitude(), args.getInitialTime());
+
             case GAUSSIAN_NOISE:
                 return getGaussianNoise(args.getAmplitude());
 
@@ -62,6 +66,14 @@ public class SignalFactory {
             default:
                 throw new UnsupportedOperationException(signal + " unknown signal type");
         }
+    }
+
+    private static Signal getLinearlyDistibutedNoise(double amplitude, Duration initialTime) {
+        Function<Duration, Double> function = duration -> {
+            Random random = new Random();
+            return sqrt(12.0) * (((random.nextInt() % 101) - 50.0) / 100.0);
+        };
+        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
     private static Signal getGaussianNoise(double amplitude) {
