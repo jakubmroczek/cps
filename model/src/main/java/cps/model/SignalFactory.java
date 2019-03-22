@@ -68,14 +68,16 @@ public class SignalFactory {
         }
     }
 
+    //TODO: Add inititialTime
     private static Signal getLinearlyDistibutedNoise(double amplitude, Duration initialTime) {
         Function<Duration, Double> function = duration -> {
             Random random = new Random();
-            return sqrt(12.0) * (((random.nextInt() % 101) - 50.0) / 100.0);
+            return sqrt(12.0) * (((random.nextInt() % 101) - 50.0) / 100.0) + amplitude;
         };
         return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
+    //TODO: Add inititialTime
     private static Signal getGaussianNoise(double amplitude) {
         //generator ze strony przedmotu z wikampa
 
