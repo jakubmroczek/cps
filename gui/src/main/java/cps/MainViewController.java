@@ -143,7 +143,7 @@ public class MainViewController {
     }
 
     @FXML
-    private void loadFromFile(ActionEvent e) {
+    private void loadFromFile() {
         FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
         FileChooser fileChooser = new FileChooser();
@@ -160,22 +160,24 @@ public class MainViewController {
 
             signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
-            amplitude.setText(String.valueOf((int) loadedSignal.getArgs().getAmplitude()));
-            //TODO: Units
-            period.setText(loadedSignal.getProbingPeriod().toString());
-            initialTime.setText(loadedSignal.getArgs().getInitialTime().toString());
-            duration.setText(loadedSignal.getDuration().toString());
+                //TODO: Change info of the labes
+//            amplitude.setText(String.valueOf((int) loadedSignal.getArgs().getAmplitude()));
+//            period.setText(loadedSignal.getProbingPeriod().toString());
+//            initialTime.setText(loadedSignal.getArgs().getInitialTime().toString());
+//            duration.setText(loadedSignal.getDuration().toString());
 
             long widthInPixels = (long) chart.getXAxis().getWidth();
             final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
             drawChart(loadedSignal, MAX_SAMPLING_RATE);
+            Histogram histogram = new Histogram(loadedSignal, histogramBins);
+            drawHistogram(histogram);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     @FXML
-    private void addSignals(ActionEvent e) {
+    private void addSignals() {
         SignalChart lhs = loadSignal("1");
         SignalChart rhs = loadSignal("2");
         SignalChart result = SignalOperations.add(lhs, rhs);
@@ -191,7 +193,7 @@ public class MainViewController {
     }
 
     @FXML
-    private void subtractSignals(ActionEvent e) {
+    private void subtractSignals() {
         SignalChart lhs = loadSignal("1");
         SignalChart rhs = loadSignal("2");
 
@@ -207,7 +209,7 @@ public class MainViewController {
     }
 
     @FXML
-    private void multiplySignals(ActionEvent e) {
+    private void multiplySignals() {
         SignalChart lhs = loadSignal("1");
         SignalChart rhs = loadSignal("2");
 
@@ -223,7 +225,7 @@ public class MainViewController {
     }
 
     @FXML
-    private void divideSignals(ActionEvent e) {
+    private void divideSignals() {
         SignalChart lhs = loadSignal("1");
         SignalChart rhs = loadSignal("2");
 
@@ -253,11 +255,6 @@ public class MainViewController {
             JsonReader reader = new JsonReader(new FileReader(file));
             SignalChart s1 = gson.fromJson(reader, SignalChart.class);
 //            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(s1.getSignalType()));
-
-            amplitude.setText(String.valueOf((int) s1.getArgs().getAmplitude()));
-            period.setText(s1.getProbingPeriod().toString());
-            initialTime.setText(s1.getArgs().getInitialTime().toString());
-            duration.setText(s1.getDuration().toString());
 
             long widthInPixels = (long) chart.getXAxis().getWidth();
             final Duration MAX_SAMPLING_RATE = s1.getDuration().dividedBy(widthInPixels);
@@ -317,10 +314,6 @@ public class MainViewController {
 
         histogramChart.getData().clear();
         histogramChart.getData().add(series1);
-    }
-
-    private void displaySignalParams(SignalChart sc) {
-
     }
 
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
