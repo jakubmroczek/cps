@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
 import javafx.stage.FileChooser;
@@ -33,8 +34,11 @@ public class MainViewController {
 
     private Stage stage;
     private Signal currentSignal;
+
     //TODO: Nullable?
     private SignalChart generatedSignalChart;
+    private Histogram histogram;
+
     @FXML
     private LineChart<Number, Number> chart;
 
@@ -56,7 +60,10 @@ public class MainViewController {
     @FXML
     private BarChart<Number, Number> histogramChart;
 
-    private int histogramBins = 20;
+    @FXML
+    private Slider histogramBinsSlider;
+
+    private int histogramBins = 10;
 
     @FXML
     public void display() {
@@ -76,7 +83,7 @@ public class MainViewController {
 
         drawChart(sc, MAX_SAMPLING_RATE);
 
-        Histogram histogram = new Histogram(sc, histogramBins);
+        histogram = new Histogram(sc, histogramBins);
         drawHistogram(histogram);
 
         System.out.println(chart.getXAxis().getWidth());
@@ -314,6 +321,19 @@ public class MainViewController {
 
         histogramChart.getData().clear();
         histogramChart.getData().add(series1);
+    }
+
+    @FXML
+    public void onHistogramBinsChanged() {
+        int newHistogramBins = (int) histogramBinsSlider.getValue();
+        if (newHistogramBins != histogramBins) {
+            histogramBins = newHistogramBins;
+            //TODO: Can we be sure that is not null?
+            if (generatedSignalChart != null) {
+                histogram = new Histogram(generatedSignalChart, histogramBins);
+                drawHistogram(histogram);
+            }
+        }
     }
 
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
