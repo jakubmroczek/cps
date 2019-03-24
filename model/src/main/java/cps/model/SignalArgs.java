@@ -17,6 +17,13 @@ public class SignalArgs {
         this.initialTime = initialTime;
     }
 
+    public SignalArgs(double amplitude, Duration period, Duration initialTime, double kw) {
+        this.amplitude = amplitude;
+        this.period = period;
+        this.initialTime = initialTime;
+        this.kw = kw;
+    }
+
     private double amplitude;
     private Duration period;
     private Duration initialTime;

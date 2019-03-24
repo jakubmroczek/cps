@@ -3,7 +3,6 @@ package cps.model;
 import lombok.Getter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.w3c.dom.css.DOMImplementationCSS;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -13,11 +12,21 @@ import java.util.function.Function;
 
 class DiscreteSignal extends Signal {
 
-    public DiscreteSignal(Function<Duration, Double> function) {
+    public DiscreteSignal(Function<Integer, Double> function) {
         super(Type.DISCRETE, null);
     }
 
+    @Override
+    public double calculate(Duration duration) {
+        throw new UnsupportedOperationException("Discrete signal does not support this method.");
+    }
 
+//    @Override
+//    //TODO: Abbandon millis
+//    public SignalChart createChart(Duration duration, Duration probingPeriod) {
+//        //Floor the probing period
+////        int n = duration.
+//    }
 }
 
 //TODO: Zrobic interfejs funkcyjny

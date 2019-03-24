@@ -1,7 +1,5 @@
 package cps.model;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.time.Duration;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -222,10 +220,11 @@ public class SignalFactory {
     // Ns przesunieci numeru probki dla skoku jednostkowego
     //TODO: ?
     private static final Signal createKroneckerDelta(double amplitude, int Ns, Duration samplingFrequency) {
-        Function<Integer, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
-        Function<Duration, Double> function = duration -> {
-                        
-        };
+//        Function<Integer, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
+//        Function<Duration, Double> function = duration -> {
+//
+//        };
+        return null;
     }
 
     private SignalFactory() {
