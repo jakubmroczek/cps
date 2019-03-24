@@ -3,12 +3,22 @@ package cps.model;
 import lombok.Getter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.w3c.dom.css.DOMImplementationCSS;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
+
+class DiscreteSignal extends Signal {
+
+    public DiscreteSignal(Function<Duration, Double> function) {
+        super(Type.DISCRETE, null);
+    }
+
+
+}
 
 //TODO: Zrobic interfejs funkcyjny
 public class Signal  {

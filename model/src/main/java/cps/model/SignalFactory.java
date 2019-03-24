@@ -22,6 +22,7 @@ public class SignalFactory {
     public static final String SYMETRIC_RECTANGLE = "S7";
     public static final String TRIANGLE = "S8";
     public static final String UNIT_STEP = "S9";
+    public static final String KRONECKER_DELTA = "S10";
 
     //TODO: Ensure duration units!!!!!!
     public static Signal createSignal(String signal, SignalArgs args) {
@@ -68,6 +69,9 @@ public class SignalFactory {
 
             case UNIT_STEP:
                 return createUnitStep(args.getAmplitude(), args.getInitialTime());
+
+            case KRONECKER_DELTA:
+                return createKroneckerDelta(args.getAmplitude(), args.getNs(), args.getSamplingFrequency());
 
             default:
                 throw new UnsupportedOperationException(signal + " unknown signal type");
@@ -213,6 +217,15 @@ public class SignalFactory {
         };
 
         return new Signal(Signal.Type.CONTINUOUS, function);
+    }
+
+    // Ns przesunieci numeru probki dla skoku jednostkowego
+    //TODO: ?
+    private static final Signal createKroneckerDelta(double amplitude, int Ns, Duration samplingFrequency) {
+        Function<Integer, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
+        Function<Duration, Double> function = duration -> {
+                        
+        };
     }
 
     private SignalFactory() {

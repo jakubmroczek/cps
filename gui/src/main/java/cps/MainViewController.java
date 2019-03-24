@@ -22,6 +22,7 @@ import javafx.scene.control.TextField;
 
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import sun.security.x509.AVA;
 
 import java.io.File;
 import java.io.FileReader;
@@ -362,6 +363,7 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(5), SignalFactory.RECTANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
     }
 
     private String signal;

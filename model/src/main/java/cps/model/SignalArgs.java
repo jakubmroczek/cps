@@ -21,4 +21,9 @@ public class SignalArgs {
     private Duration period;
     private Duration initialTime;
     private double kw;
+
+    //Przesuniecie probki dla skoku jednostokowego
+    private int Ns;
+    //TODO: Moze zunifikowac z period?
+    private Duration samplingFrequency;
 }
