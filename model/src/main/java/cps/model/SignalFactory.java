@@ -1,5 +1,7 @@
 package cps.model;
 
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.time.Duration;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -19,6 +21,7 @@ public class SignalFactory {
     public static final String RECTANGLE = "S6";
     public static final String SYMETRIC_RECTANGLE = "S7";
     public static final String TRIANGLE = "S8";
+    public static final String UNIT_STEP = "S9";
 
     //TODO: Ensure duration units!!!!!!
     public static Signal createSignal(String signal, SignalArgs args) {
@@ -62,6 +65,9 @@ public class SignalFactory {
                         args.getPeriod(),
                         args.getInitialTime(),
                         args.getKw());
+
+            case UNIT_STEP:
+                return createUnitStep(args.getAmplitude(), args.getInitialTime());
 
             default:
                 throw new UnsupportedOperationException(signal + " unknown signal type");
@@ -192,6 +198,21 @@ public class SignalFactory {
         };
 
         return new Signal(Signal.Type.CONTINUOUS, fun);
+    }
+
+    private static Signal createUnitStep(double amplitude, Duration initialTime) {
+        Function<Duration, Double> function = duration -> {
+            int compareToResult = duration.compareTo(initialTime);
+            if (compareToResult > 0) {
+                return amplitude;
+            } else if(compareToResult < 0) {
+                return 0.0;
+            } else {
+                return 0.5 * amplitude;
+            }
+        };
+
+        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
     private SignalFactory() {
