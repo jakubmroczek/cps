@@ -33,6 +33,8 @@ public class MainViewController {
 
     private Stage stage;
     private Signal currentSignal;
+    //TODO: Nullable?
+    private SignalChart generatedSignalChart;
     @FXML
     private LineChart<Number, Number> chart;
 
@@ -67,6 +69,7 @@ public class MainViewController {
         final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
 
         SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
+        generatedSignalChart = sc;
 
         System.out.println(MAX_SAMPLING_RATE);
         System.out.println(sc.getProbes().size());
@@ -115,7 +118,7 @@ public class MainViewController {
     }
 
     @FXML
-    private void saveToFile(ActionEvent e) {
+    private void saveToFile() {
         FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
         FileChooser fileChooser = new FileChooser();
@@ -125,12 +128,17 @@ public class MainViewController {
         if (file == null)
             return;
         Gson gson = new Gson();
-        String signalJson = gson.toJson(currentSignal);
 
-        try {
-            Files.write(file.toPath(), signalJson.getBytes());
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        //TODO: Other sceneario
+        if (generatedSignalChart != null) {
+            String signalJson = gson.toJson(generatedSignalChart);
+            try {
+                Files.write(file.toPath(), signalJson.getBytes());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }  else {
+            System.out.println("generatedSignal is null");
         }
     }
 
