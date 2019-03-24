@@ -9,11 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 class DiscreteSignal extends Signal {
 
-    public DiscreteSignal(Function<Integer, Double> function) {
+    public DiscreteSignal(Function<Long, Double> function) {
         super(Type.DISCRETE, null);
+        this.function = function;
     }
 
     @Override
@@ -21,12 +25,15 @@ class DiscreteSignal extends Signal {
         throw new UnsupportedOperationException("Discrete signal does not support this method.");
     }
 
-//    @Override
-//    //TODO: Abbandon millis
-//    public SignalChart createChart(Duration duration, Duration probingPeriod) {
-//        //Floor the probing period
-////        int n = duration.
-//    }
+    @Override
+    public SignalChart createChart(Duration duration, Duration probingPeriod) {
+        //Floor the probing period
+        long size = duration.dividedBy(probingPeriod);
+        var samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
+        return new SignalChart(duration, probingPeriod, samples);
+    }
+
+    private Function<Long, Double> function;
 }
 
 //TODO: Zrobic interfejs funkcyjny

@@ -219,12 +219,9 @@ public class SignalFactory {
 
     // Ns przesunieci numeru probki dla skoku jednostkowego
     //TODO: ?
-    private static final Signal createKroneckerDelta(double amplitude, int Ns, Duration samplingFrequency) {
-//        Function<Integer, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
-//        Function<Duration, Double> function = duration -> {
-//
-//        };
-        return null;
+    private static Signal createKroneckerDelta(double amplitude, int Ns, Duration samplingFrequency) {
+        Function<Long, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
+        return new DiscreteSignal(kroneckerDelta);
     }
 
     private SignalFactory() {
