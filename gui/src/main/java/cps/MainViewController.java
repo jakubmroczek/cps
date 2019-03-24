@@ -33,7 +33,8 @@ public class MainViewController {
 
     private Stage stage;
     private Signal currentSignal;
-    @FXML private LineChart<Number, Number> chart;
+    @FXML
+    private LineChart<Number, Number> chart;
 
     @FXML
     NumberAxis xAxis;
@@ -41,7 +42,8 @@ public class MainViewController {
     @FXML
     NumberAxis yAxis;
 
-    @FXML ComboBox signalList;
+    @FXML
+    ComboBox signalList;
 
     @FXML
     private TextField amplitude, period, initialTime, duration, kwTextField;
@@ -54,21 +56,35 @@ public class MainViewController {
 
     private int histogramBins = 20;
 
-   @FXML
+    @FXML
     public void display() {
         Signal signal = createSignal();
         currentSignal = signal;
 
-            Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
-            long widthInPixels = (long) chart.getXAxis().getWidth();
+        Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
 
-            final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
-            SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
 
-            System.out.println(MAX_SAMPLING_RATE);
-            System.out.println(sc.getProbes().size());
+        SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
 
-            drawChart(sc);
+        System.out.println(MAX_SAMPLING_RATE);
+        System.out.println(sc.getProbes().size());
+
+        drawChart(sc, MAX_SAMPLING_RATE);
+
+        Histogram histogram = new Histogram(sc, histogramBins);
+        drawHistogram(histogram);
+
+        System.out.println(chart.getXAxis().getWidth());
+
+        // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
+
+        double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
+        averageValueTextField.setText(String.format("%.2f", averageValue));
+
+        double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
+        averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
     }
 
     private void drawChart(SignalChart signalChart, Duration samplingRate) {
@@ -79,7 +95,7 @@ public class MainViewController {
         series.setName("sinusoida1");
 
         System.out.println("");
-        for (int i =0; i < signalChart.getProbes().size(); i++) {
+        for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
             System.out.println(i + " " + y);
 
@@ -96,25 +112,8 @@ public class MainViewController {
 
         chart.getData().clear();
         chart.getData().add(series);
-   }
-
-    public void drawChartBasedOnFile(SignalChart s) {
-
-        chart.setTitle(s.getSignalType());
-        chart.setCreateSymbols(false);
-        chart.getStyleClass().add("thick-chart");
-        XYChart.Series series = new XYChart.Series();
-        series.setName("sinusoida1");
-
-        s.getSignalValues().forEach(
-                (k, v) -> {
-                    series.getData().add(new XYChart.Data<>(k, v));
-                });
-
-        chart.getData().clear();
-
-        chart.getData().add(series);
     }
+
     @FXML
     private void saveToFile(ActionEvent e) {
         FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
@@ -149,63 +148,93 @@ public class MainViewController {
         try {
             Gson gson = new Gson();
             JsonReader reader = new JsonReader(new FileReader(file));
-            Signal loadedSignal = gson.fromJson(reader, Signal.class);
+            SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
+
             signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
-            amplitude.setText(String.valueOf((int)loadedSignal.getAmplitude()));
-            period.setText(String.valueOf((int)loadedSignal.getPeriod()));
-            initialTime.setText(String.valueOf((int)loadedSignal.getInitialTime()));
-            duration.setText(String.valueOf((int)loadedSignal.getDuration()));
-            drawChartBasedOnFile(loadedSignal);
+            amplitude.setText(String.valueOf((int) loadedSignal.getArgs().getAmplitude()));
+            //TODO: Units
+            period.setText(loadedSignal.getProbingPeriod().toString());
+            initialTime.setText(loadedSignal.getArgs().getInitialTime().toString());
+            duration.setText(loadedSignal.getDuration().toString());
+
+            long widthInPixels = (long) chart.getXAxis().getWidth();
+            final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
+            drawChart(loadedSignal, MAX_SAMPLING_RATE);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
+
     @FXML
     private void addSignals(ActionEvent e) {
+        SignalChart lhs = loadSignal("1");
+        SignalChart rhs = loadSignal("2");
+        SignalChart result = SignalOperations.add(lhs, rhs);
 
-        Signal s1 = loadSignal("1");
-        Signal s2 = loadSignal("2");
-        Signal newSignal = addSignals(s1,s2);
-        currentSignal = newSignal;
-        saveToFile(null);
-        drawChartBasedOnFile(newSignal);
+        //TODO: Informacja o nazwie wczytanego sygnali xd
+
+//        saveToFile(null);
+
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
+
+        drawChart(result, MAX_SAMPLING_RATE);
     }
+
     @FXML
     private void subtractSignals(ActionEvent e) {
+        SignalChart lhs = loadSignal("1");
+        SignalChart rhs = loadSignal("2");
 
-        Signal s1 = loadSignal("1");
-        Signal s2 = loadSignal("2");
-        Signal newSignal = subtractSignals(s1,s2);
-        currentSignal = newSignal;
-        saveToFile(null);
-        drawChartBasedOnFile(newSignal);
+        SignalChart result = SignalOperations.subtract(lhs, rhs);
+
+//        saveToFile(null);
+
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
+
+
+        drawChart(result, MAX_SAMPLING_RATE);
     }
+
     @FXML
     private void multiplySignals(ActionEvent e) {
+        SignalChart lhs = loadSignal("1");
+        SignalChart rhs = loadSignal("2");
 
-        Signal s1 = loadSignal("1");
-        Signal s2 = loadSignal("2");
-        Signal newSignal = multiplySignals(s1,s2);
-        currentSignal = newSignal;
-        saveToFile(null);
-        drawChartBasedOnFile(newSignal);
+        SignalChart result = SignalOperations.multiply(lhs, rhs);
+
+//        saveToFile(null);
+
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
+
+
+        drawChart(result, MAX_SAMPLING_RATE);
     }
+
     @FXML
     private void divideSignals(ActionEvent e) {
+        SignalChart lhs = loadSignal("1");
+        SignalChart rhs = loadSignal("2");
 
-        Signal s1 = loadSignal("1");
-        Signal s2 = loadSignal("2");
-        Signal newSignal = divideSignals(s1,s2);
-        currentSignal = newSignal;
-        saveToFile(null);
-        drawChartBasedOnFile(newSignal);
+        SignalChart result = SignalOperations.divide(lhs, rhs);
+
+//        saveToFile(null);
+
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
+
+
+        drawChart(result, MAX_SAMPLING_RATE);
     }
-    private Signal loadSignal(String sygnal){
+
+    private SignalChart loadSignal(String sygnal) {
         FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał "+ sygnal);
+        fileChooser.setTitle("Wczytaj sygnał " + sygnal);
         fileChooser.getExtensionFilters().add(fcExtension);
         File file = fileChooser.showOpenDialog(this.stage);
         if (file == null)
@@ -214,14 +243,18 @@ public class MainViewController {
         try {
             Gson gson = new Gson();
             JsonReader reader = new JsonReader(new FileReader(file));
-            Signal s1 = gson.fromJson(reader, Signal.class);
-            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(s1.getSignalType()));
+            SignalChart s1 = gson.fromJson(reader, SignalChart.class);
+//            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(s1.getSignalType()));
 
-            amplitude.setText(String.valueOf((int)s1.getAmplitude()));
-            period.setText(String.valueOf((int)s1.getPeriod()));
-            initialTime.setText(String.valueOf((int)s1.getInitialTime()));
-            duration.setText(String.valueOf((int)s1.getDuration()));
-            drawChartBasedOnFile(s1);
+            amplitude.setText(String.valueOf((int) s1.getArgs().getAmplitude()));
+            period.setText(s1.getProbingPeriod().toString());
+            initialTime.setText(s1.getArgs().getInitialTime().toString());
+            duration.setText(s1.getDuration().toString());
+
+            long widthInPixels = (long) chart.getXAxis().getWidth();
+            final Duration MAX_SAMPLING_RATE = s1.getDuration().dividedBy(widthInPixels);
+
+            drawChart(s1, MAX_SAMPLING_RATE);
             return s1;
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -229,32 +262,16 @@ public class MainViewController {
 
         return null;
     }
->>>>>>> origin/fileSaving
 
-            Histogram histogram = new Histogram(sc, histogramBins);
-            drawHistogram(histogram);
+    @FXML
+    public void onSignalChoice() {
+        signal = (String) signalList.getSelectionModel().getSelectedItem();
+    }
 
-            System.out.println(chart.getXAxis().getWidth());
-
-            // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
-
-            double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
-            averageValueTextField.setText(String.format("%.2f", averageValue));
-
-            double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
-            averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
-
-   }
-
-   @FXML
-   public void onSignalChoice() {
-       signal = (String)signalList.getSelectionModel().getSelectedItem();
-   }
-
-   @FXML
-   public void initialize() {
-       signalList.getItems().addAll(AVALIABLE_SIGNALS);
-   }
+    @FXML
+    public void initialize() {
+        signalList.getItems().addAll(AVALIABLE_SIGNALS);
+    }
 
     private Signal createSignal() {
         //TODO: Error handling
@@ -266,7 +283,7 @@ public class MainViewController {
         //Check if the value is in range
         double kw = Double.parseDouble(kwTextField.getText());
 
-        SignalArgs args = new SignalArgs(_amplitude, _period,_initialTime, kw);
+        SignalArgs args = new SignalArgs(_amplitude, _period, _initialTime, kw);
 
         String signalType = labelsToSignalsMap.get(signal);
         return SignalFactory.createSignal(signalType, args);
@@ -274,12 +291,10 @@ public class MainViewController {
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
     private void drawHistogram(Histogram histogram) {
-//        histogcramChart.setCreateSymbols(false);
 
         histogramChart.setCategoryGap(0);
         histogramChart.setBarGap(0);
-       histogramChart.setAnimated(false);
-//        histogramChart.getXAxis().
+        histogramChart.setAnimated(false);
         XYChart.Series series1 = new XYChart.Series();
         series1.setName("Histogram");
 
@@ -296,19 +311,23 @@ public class MainViewController {
         histogramChart.getData().add(series1);
     }
 
+    private void displaySignalParams(SignalChart sc) {
+
+    }
+
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
             "Szum o rozkładzie jednostajnym",
-                    "Szum gaussowski",
-                    "Sygnał sinusoidalny",
-                    "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-                    "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
-                    "Sygnał prostokątny",
-                    "Sygnał prostokątny symetryczny",
-                    "Sygnał trójkątny",
-                    "Skok jednostkowy",
-                    "Impuls jednostkowy",
-                    "Szum impulsowy"
-   );
+            "Szum gaussowski",
+            "Sygnał sinusoidalny",
+            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
+            "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
+            "Sygnał prostokątny",
+            "Sygnał prostokątny symetryczny",
+            "Sygnał trójkątny",
+            "Skok jednostkowy",
+            "Impuls jednostkowy",
+            "Szum impulsowy"
+    );
 
     private final Map<String, String> labelsToSignalsMap = new HashMap<>();
 
@@ -323,106 +342,6 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
     }
-   private String signal;
 
-    private Signal addSignals(Signal s1, Signal s2) {
-        TreeMap<Double, Double> map = new TreeMap<>();
-
-        s1.getSignalValues().forEach(
-                (k, v) -> {
-                    map.put(k, v);
-                }
-        );
-        s2.getSignalValues().forEach(
-                (k, v) -> {
-                    if (map.get(k) != null) {
-                        map.put(k, v + map.get(k));
-                    }
-                    else map.put(k, v);
-                }
-        );
-
-        String name = s1.getSignalType() + " + " + s2.getSignalType();
-        Signal newSignal = new Signal(null);
-        newSignal.setSignalType(name);
-        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
-        newSignal.setDuration(s1.getDuration());
-        newSignal.setSignalValues(map);
-        return newSignal;
-    }
-    private Signal subtractSignals(Signal s1, Signal s2) {
-        TreeMap<Double, Double> map = new TreeMap<>();
-
-        s1.getSignalValues().forEach(
-                (k, v) -> {
-                    map.put(k, v);
-                }
-        );
-        s2.getSignalValues().forEach(
-                (k, v) -> {
-                    if (map.get(k) != null) {
-                        map.put(k, v - map.get(k));
-                    }
-                    else map.put(k, v);
-                }
-        );
-
-        String name = s1.getSignalType() + " - " + s2.getSignalType();
-        Signal newSignal = new Signal(null);
-        newSignal.setSignalType(name);
-        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
-        newSignal.setDuration(s1.getDuration());
-        newSignal.setSignalValues(map);
-        return newSignal;
-    }
-    private Signal multiplySignals(Signal s1, Signal s2) {
-        TreeMap<Double, Double> map = new TreeMap<>();
-
-        s1.getSignalValues().forEach(
-                (k, v) -> {
-                    map.put(k, v);
-                }
-        );
-        s2.getSignalValues().forEach(
-                (k, v) -> {
-                    if (map.get(k) != null) {
-                        map.put(k, v * map.get(k));
-                    }
-                    else map.put(k, v);
-                }
-        );
-
-        String name = s1.getSignalType() + " * " + s2.getSignalType();
-        Signal newSignal = new Signal(null);
-        newSignal.setSignalType(name);
-        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
-        newSignal.setDuration(s1.getDuration());
-        newSignal.setSignalValues(map);
-        return newSignal;
-    }
-    private Signal divideSignals(Signal s1, Signal s2) {
-        TreeMap<Double, Double> map = new TreeMap<>();
-
-        s1.getSignalValues().forEach(
-                (k, v) -> {
-                    map.put(k, v);
-                }
-        );
-        s2.getSignalValues().forEach(
-                (k, v) -> {
-                    if (map.get(k) != null) {
-                        map.put(k, v / map.get(k));
-                    }
-                    else map.put(k, v);
-                }
-        );
-
-        String name = s1.getSignalType() + " / " + s2.getSignalType();
-        Signal newSignal = new Signal(null);
-        newSignal.setSignalType(name);
-        newSignal.setArgs(s1.getAmplitude(),s1.getPeriod(),s1.getInitialTime());
-        newSignal.setDuration(s1.getDuration());
-        newSignal.setSignalValues(map);
-        return newSignal;
-    }
+    private String signal;
 }
