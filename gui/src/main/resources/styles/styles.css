@@ -32,10 +32,14 @@
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
-.thick-chart .chart-series-line {
+.continuous-signal .chart-series-line {
     -fx-stroke-width: 2px;
+    -fx-stroke: red;
+}
+.discrete-signal .chart-series-line {
+    -fx-stroke: transparent;
 }
 
-.points-only .chart-series-line {
-    -fx-stroke: green;
+.discrete-signal .chart-line-symbol {
+    -fx-background-color: red, red;
 }

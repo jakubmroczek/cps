@@ -77,7 +77,7 @@ public class MainViewController {
         Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
 
         long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
+        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels / 50);
 
         SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
         generatedSignalChart = sc;
@@ -107,11 +107,10 @@ public class MainViewController {
 
     private void plotDiscreteSignal(SignalChart signalChart) {
         //Miej na uwadze czestotliwosc probkowania sygnalu tak zeby byl w miare czytelny na wykresie
-
         chart.setAnimated(false);
-        chart.setCreateSymbols(false);
-//        chart.getStyleClass().add("thick-chart");
-        chart.getStyleClass().add("points-only");
+        chart.setCreateSymbols(true);
+        chart.getStyleClass().remove("continuous-signal");
+        chart.getStyleClass().add("discrete-signal");
         XYChart.Series series = new XYChart.Series();
 
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
@@ -136,7 +135,8 @@ public class MainViewController {
     private void drawChart(SignalChart signalChart, Duration samplingRate) {
         chart.setAnimated(false);
         chart.setCreateSymbols(false);
-        chart.getStyleClass().add("thick-chart");
+        chart.getStyleClass().remove("discrete-signal");
+        chart.getStyleClass().add("continuous-signal");
         XYChart.Series series = new XYChart.Series();
         series.setName("sinusoida1");
 
