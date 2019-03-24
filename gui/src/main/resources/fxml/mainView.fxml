@@ -70,6 +70,18 @@
                   <TextField fx:id="kwTextField" prefHeight="33.0" prefWidth="89.0" text="0.5" />
                </children>
             </HBox>
+            <HBox layoutX="10.0" layoutY="207.0" prefHeight="42.0" prefWidth="150.0">
+               <children>
+                  <Label prefHeight="42.0" prefWidth="82.0" text="Ns" />
+                  <TextField fx:id="nsTextField" prefHeight="33.0" prefWidth="89.0" text="5" />
+               </children>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="249.0" prefHeight="42.0" prefWidth="150.0">
+               <children>
+                  <Label prefHeight="42.0" prefWidth="82.0" text="Czest. prob." />
+                  <TextField fx:id="samplingFrequencyTextField" prefHeight="33.0" prefWidth="89.0" />
+               </children>
+            </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="174.0" text="Wykres" />
          </children>

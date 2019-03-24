@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
@@ -55,6 +56,9 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kwTextField;
 
     @FXML
+    private TextField nsTextField, samplingFrequencyTextField;
+
+    @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
 
     @FXML
@@ -81,7 +85,11 @@ public class MainViewController {
         System.out.println(MAX_SAMPLING_RATE);
         System.out.println(sc.getProbes().size());
 
-        drawChart(sc, MAX_SAMPLING_RATE);
+        if (signal.getType() == Signal.Type.CONTINUOUS) {
+            drawChart(sc, MAX_SAMPLING_RATE);
+        } else {
+            plotDiscreteSignal(sc);
+        }
 
         histogram = new Histogram(sc, histogramBins);
         drawHistogram(histogram);
@@ -90,13 +98,41 @@ public class MainViewController {
 
         // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
 
-        double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
-        averageValueTextField.setText(String.format("%.2f", averageValue));
-
-        double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
-        averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
+//        double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
+//        averageValueTextField.setText(String.format("%.2f", averageValue));
+//
+//        double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
+//        averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
     }
 
+    private void plotDiscreteSignal(SignalChart signalChart) {
+        //Miej na uwadze czestotliwosc probkowania sygnalu tak zeby byl w miare czytelny na wykresie
+
+        chart.setAnimated(false);
+        chart.setCreateSymbols(false);
+//        chart.getStyleClass().add("thick-chart");
+        chart.getStyleClass().add("points-only");
+        XYChart.Series series = new XYChart.Series();
+
+        for (int i = 0; i < signalChart.getProbes().size(); i++) {
+            double y = signalChart.getProbes().get(i);
+
+            //Mozliwosc przeklamania przez zmiane jednostke
+            if (signalChart.getProbingPeriod().toMillis() != 0) {
+                series.getData().add(new XYChart.Data(signalChart.getProbingPeriod().multipliedBy(i).toMillis(), y));
+            } else {
+                //HOW TO HANDLE THIS?
+                //NANOSECONDS
+                series.getData().add(new XYChart.Data(signalChart.getProbingPeriod().multipliedBy(i).toNanos(), y));
+            }
+
+        }
+
+        chart.getData().clear();
+        chart.getData().add(series);
+    }
+
+    //TODO: Differ between discrete and continuous functions
     private void drawChart(SignalChart signalChart, Duration samplingRate) {
         chart.setAnimated(false);
         chart.setCreateSymbols(false);
@@ -206,8 +242,6 @@ public class MainViewController {
 
         SignalChart result = SignalOperations.subtract(lhs, rhs);
 
-//        saveToFile(null);
-
         long widthInPixels = (long) chart.getXAxis().getWidth();
         final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
 
@@ -222,11 +256,8 @@ public class MainViewController {
 
         SignalChart result = SignalOperations.multiply(lhs, rhs);
 
-//        saveToFile(null);
-
         long widthInPixels = (long) chart.getXAxis().getWidth();
         final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
-
 
         drawChart(result, MAX_SAMPLING_RATE);
     }
@@ -261,7 +292,6 @@ public class MainViewController {
             Gson gson = new Gson();
             JsonReader reader = new JsonReader(new FileReader(file));
             SignalChart s1 = gson.fromJson(reader, SignalChart.class);
-//            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(s1.getSignalType()));
 
             long widthInPixels = (long) chart.getXAxis().getWidth();
             final Duration MAX_SAMPLING_RATE = s1.getDuration().dividedBy(widthInPixels);
@@ -290,12 +320,14 @@ public class MainViewController {
         double _amplitude = Double.parseDouble(amplitude.getText());
         Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
         Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
+        int ns = Integer.parseInt(nsTextField.getText());
+
         //TODO: connect to fxml object
 
         //Check if the value is in range
         double kw = Double.parseDouble(kwTextField.getText());
 
-        SignalArgs args = new SignalArgs(_amplitude, _period, _initialTime, kw);
+        SignalArgs args = SignalArgs.builder().amplitude(_amplitude).period(_period).initialTime(_initialTime).kw(kw).Ns(ns).build();
 
         String signalType = labelsToSignalsMap.get(signal);
         return SignalFactory.createSignal(signalType, args);
@@ -363,6 +395,7 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
     }
 
     private String signal;

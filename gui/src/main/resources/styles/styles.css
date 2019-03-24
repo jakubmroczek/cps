@@ -35,3 +35,7 @@
 .thick-chart .chart-series-line {
     -fx-stroke-width: 2px;
 }
+
+.points-only .chart-series-line {
+    -fx-stroke: green;
+}

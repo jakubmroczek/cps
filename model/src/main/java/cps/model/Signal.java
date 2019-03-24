@@ -45,7 +45,7 @@ public class Signal  {
     @Getter
     private Type type;
 
-    enum Type {
+    public enum Type {
         CONTINUOUS,
         DISCRETE
     }
