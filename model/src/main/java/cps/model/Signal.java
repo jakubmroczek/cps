@@ -2,13 +2,22 @@ package cps.model;
 
 import lombok.Getter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.function.Function;
 
 //TODO: Zrobic interfejs funkcyjny
 public class Signal  {
+
+    @Getter
+    private Function<Duration, Double> function;
+
+    @Getter
+    private Type type;
 
     enum Type {
         CONTINUOUS,
@@ -29,17 +38,17 @@ public class Signal  {
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
         Duration time = Duration.ZERO;
         List<Double> samples = new ArrayList<>();
+
+        int i=0;
         while (time.compareTo(duration) <= 0) {
             double val = calculate(time);
             samples.add(val);
             time = time.plus(probingPeriod);
+
+            double x = i++ * probingPeriod.toMillis();
+            double y = val;
         }
         return new SignalChart(duration, probingPeriod, samples);
     }
 
-    @Getter
-    private Function<Duration, Double> function;
-
-    @Getter
-    private Type type;
 }

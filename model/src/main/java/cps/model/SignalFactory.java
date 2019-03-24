@@ -120,6 +120,7 @@ public class SignalFactory {
             double right = abs(left);
             return 0.5 * amplitude * (left + right);
         };
+
         return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
@@ -130,6 +131,7 @@ public class SignalFactory {
             Duration argument = duration.minus(initialTime);
             return amplitude * abs(sin(angleVelocity * argument.toNanos()));
         };
+
         return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
