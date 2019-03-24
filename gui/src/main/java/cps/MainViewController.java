@@ -36,6 +36,10 @@ public class MainViewController {
     private Stage stage;
     private Signal currentSignal;
 
+    private final Map<String, String> labelsToSignalsMap = new HashMap<>();
+
+    private String signal;
+
     //TODO: Nullable?
     private SignalChart generatedSignalChart;
     private Histogram histogram;
@@ -69,29 +73,43 @@ public class MainViewController {
 
     private int histogramBins = 10;
 
+    private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
+            "Szum o rozkładzie jednostajnym",
+            "Szum gaussowski",
+            "Sygnał sinusoidalny",
+            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
+            "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
+            "Sygnał prostokątny",
+            "Sygnał prostokątny symetryczny",
+            "Sygnał trójkątny",
+            "Skok jednostkowy",
+            "Impuls jednostkowy",
+            "Szum impulsowy"
+    );
+
     @FXML
     public void display() {
         Signal signal = createSignal();
         currentSignal = signal;
 
         Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
+        long samplingFrequencyInHz = Long.parseLong(samplingFrequencyTextField.getText());
+        //TODO: Rewrite
 
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels / 50);
+//        long widthInPixels = (long) chart.getXAxis().getWidth();
+//        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
 
-        SignalChart sc = signal.createChart(_duration, MAX_SAMPLING_RATE);
-        generatedSignalChart = sc;
+        final Duration MAX_SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
-        System.out.println(MAX_SAMPLING_RATE);
-        System.out.println(sc.getProbes().size());
+        generatedSignalChart = signal.createChart(_duration, MAX_SAMPLING_RATE);
 
         if (signal.getType() == Signal.Type.CONTINUOUS) {
-            drawChart(sc, MAX_SAMPLING_RATE);
+            plotContinuousSignal(generatedSignalChart);
         } else {
-            plotDiscreteSignal(sc);
+            plotDiscreteSignal(generatedSignalChart);
         }
 
-        histogram = new Histogram(sc, histogramBins);
+        histogram = new Histogram(generatedSignalChart, histogramBins);
         drawHistogram(histogram);
 
         System.out.println(chart.getXAxis().getWidth());
@@ -107,7 +125,6 @@ public class MainViewController {
 
     private void plotDiscreteSignal(SignalChart signalChart) {
         //Miej na uwadze czestotliwosc probkowania sygnalu tak zeby byl w miare czytelny na wykresie
-        chart.setAnimated(false);
         chart.setCreateSymbols(true);
         chart.getStyleClass().remove("continuous-signal");
         chart.getStyleClass().add("discrete-signal");
@@ -131,16 +148,41 @@ public class MainViewController {
         chart.getData().add(series);
     }
 
-    //TODO: Differ between discrete and continuous functions
-    private void drawChart(SignalChart signalChart, Duration samplingRate) {
-        chart.setAnimated(false);
+    private void plotContinuousSignal(SignalChart signalChart) {
+        //One point in one sample point
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration SAMPLING_RATE = signalChart.getDuration().dividedBy(widthInPixels);
+
         chart.setCreateSymbols(false);
         chart.getStyleClass().remove("discrete-signal");
         chart.getStyleClass().add("continuous-signal");
         XYChart.Series series = new XYChart.Series();
-        series.setName("sinusoida1");
 
-        System.out.println("");
+        for (int i = 0; i < signalChart.getProbes().size(); i++) {
+            double y = signalChart.getProbes().get(i);
+
+            //Mozliwosc przeklamania przez zmiane jednostke
+            if (SAMPLING_RATE.toMillis() != 0) {
+                series.getData().add(new XYChart.Data(SAMPLING_RATE.multipliedBy(i).toMillis(), y));
+            } else {
+                //HOW TO HANDLE THIS?
+                //NANOSECONDS
+                series.getData().add(new XYChart.Data(SAMPLING_RATE.multipliedBy(i).toNanos(), y));
+            }
+
+        }
+
+        chart.getData().clear();
+        chart.getData().add(series);
+    }
+
+    //TODO: Differ between discrete and continuous functions
+    private void drawChart(SignalChart signalChart, Duration samplingRate) {
+        chart.setCreateSymbols(false);
+        chart.getStyleClass().remove("discrete-signal");
+        chart.getStyleClass().add("continuous-signal");
+        XYChart.Series series = new XYChart.Series();
+
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
             System.out.println(i + " " + y);
@@ -312,7 +354,22 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
+        //Combo box
         signalList.getItems().addAll(AVALIABLE_SIGNALS);
+
+        //Mapper gui name to factory name
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(1), SignalFactory.GAUSSIAN_NOISE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(2), SignalFactory.SINUSOIDAL);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(3), SignalFactory.HALF_STRAIGHT_SINUSOIDAL);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(4), SignalFactory.FULL_STRAIGHT_SINUSOIDAL);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(5), SignalFactory.RECTANGLE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
+
+        chart.setAnimated(false);
     }
 
     private Signal createSignal() {
@@ -368,35 +425,4 @@ public class MainViewController {
         }
     }
 
-    private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
-            "Szum o rozkładzie jednostajnym",
-            "Szum gaussowski",
-            "Sygnał sinusoidalny",
-            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-            "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
-            "Sygnał prostokątny",
-            "Sygnał prostokątny symetryczny",
-            "Sygnał trójkątny",
-            "Skok jednostkowy",
-            "Impuls jednostkowy",
-            "Szum impulsowy"
-    );
-
-    private final Map<String, String> labelsToSignalsMap = new HashMap<>();
-
-    //Static initializer block
-    {
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(1), SignalFactory.GAUSSIAN_NOISE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(2), SignalFactory.SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(3), SignalFactory.HALF_STRAIGHT_SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(4), SignalFactory.FULL_STRAIGHT_SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(5), SignalFactory.RECTANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
-    }
-
-    private String signal;
 }
