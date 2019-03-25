@@ -1,5 +1,6 @@
 package cps;
 
+import com.sun.security.auth.UnixNumericUserPrincipal;
 import cps.model.*;
 import cps.model.Math;
 
@@ -199,26 +200,24 @@ public class MainViewController {
 
     @FXML
     private void saveToFile() {
-        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON File", "*.json");
+        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Zapisz sygnał");
-        fileChooser.getExtensionFilters().add(fcExtension);
+        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
         File file = fileChooser.showSaveDialog(this.stage);
         if (file == null)
             return;
-        Gson gson = new Gson();
 
-        //TODO: Other sceneario
-        if (generatedSignalChart != null) {
-            String signalJson = gson.toJson(generatedSignalChart);
-            try {
-                Files.write(file.toPath(), signalJson.getBytes());
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }  else {
-            System.out.println("generatedSignal is null");
+        var resultExtension = fileChooser.getSelectedExtensionFilter();
+
+        if (resultExtension.equals(jsonExtension)) {
+            SignalWriter.writeJSON(file, generatedSignalChart);
+        } else if (resultExtension.equals(binaryExtension)) {
+            SignalWriter.writeBinary(file, generatedSignalChart);
+        } else {
+            throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
         }
     }
 

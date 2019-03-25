@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.stream.LongStream;
 import static java.lang.Math.*;
 
 @Getter
-public class SignalChart {
+public class SignalChart implements Serializable {
     //Parameters describing signal
     //TODO:
     @Setter
