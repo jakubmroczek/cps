@@ -60,7 +60,7 @@ public class MainViewController {
     private TextField amplitude, period, initialTime, duration, kwTextField;
 
     @FXML
-    private TextField nsTextField, samplingFrequencyTextField;
+    private TextField nsTextField, samplingFrequencyTextField, probabilityTextField;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -106,8 +106,6 @@ public class MainViewController {
 
         histogram = new Histogram(generatedSignalChart, histogramBins);
         drawHistogram(histogram);
-
-        System.out.println(chart.getXAxis().getWidth());
 
         // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
 
@@ -361,6 +359,7 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
+        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
 
         chart.setAnimated(false);
     }
@@ -371,13 +370,13 @@ public class MainViewController {
         Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
         Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
         int ns = Integer.parseInt(nsTextField.getText());
+        double probability = Double.parseDouble(probabilityTextField.getText());
 
         //TODO: connect to fxml object
-
         //Check if the value is in range
         double kw = Double.parseDouble(kwTextField.getText());
 
-        SignalArgs args = SignalArgs.builder().amplitude(_amplitude).period(_period).initialTime(_initialTime).kw(kw).Ns(ns).build();
+        SignalArgs args = SignalArgs.builder().amplitude(_amplitude).period(_period).initialTime(_initialTime).kw(kw).Ns(ns).probability(probability).build();
 
         String signalType = labelsToSignalsMap.get(signal);
         return SignalFactory.createSignal(signalType, args);
