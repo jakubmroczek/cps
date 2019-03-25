@@ -94,17 +94,12 @@ public class MainViewController {
 
         Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
         long samplingFrequencyInHz = Long.parseLong(samplingFrequencyTextField.getText());
-        //TODO: Rewrite
 
-//        long widthInPixels = (long) chart.getXAxis().getWidth();
-//        final Duration MAX_SAMPLING_RATE = _duration.dividedBy(widthInPixels);
-
-        final Duration MAX_SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-
-        generatedSignalChart = signal.createChart(_duration, MAX_SAMPLING_RATE);
+        final Duration SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+        generatedSignalChart = signal.createChart(_duration, SAMPLING_RATE);
 
         if (signal.getType() == Signal.Type.CONTINUOUS) {
-            plotContinuousSignal(generatedSignalChart);
+            plotContinuousSignal(signal, _duration);
         } else {
             plotDiscreteSignal(generatedSignalChart);
         }
@@ -148,10 +143,12 @@ public class MainViewController {
         chart.getData().add(series);
     }
 
-    private void plotContinuousSignal(SignalChart signalChart) {
+    private void plotContinuousSignal(Signal signal, Duration duration) {
         //One point in one sample point
         long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration SAMPLING_RATE = signalChart.getDuration().dividedBy(widthInPixels);
+        final Duration SAMPLING_RATE = duration.dividedBy(widthInPixels);
+
+        SignalChart signalChart = signal.createChart(duration, SAMPLING_RATE);
 
         chart.setCreateSymbols(false);
         chart.getStyleClass().remove("discrete-signal");
@@ -245,15 +242,11 @@ public class MainViewController {
 
             signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
-                //TODO: Change info of the labes
-//            amplitude.setText(String.valueOf((int) loadedSignal.getArgs().getAmplitude()));
-//            period.setText(loadedSignal.getProbingPeriod().toString());
-//            initialTime.setText(loadedSignal.getArgs().getInitialTime().toString());
-//            duration.setText(loadedSignal.getDuration().toString());
-
             long widthInPixels = (long) chart.getXAxis().getWidth();
             final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
+
             drawChart(loadedSignal, MAX_SAMPLING_RATE);
+
             Histogram histogram = new Histogram(loadedSignal, histogramBins);
             drawHistogram(histogram);
         } catch (IOException ex) {
