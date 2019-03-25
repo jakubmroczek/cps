@@ -19,4 +19,5 @@ public class SignalArgs {
     private int Ns;
     //TODO: Moze zunifikowac z period?
     private Duration samplingFrequency;
+    private double probability;
 }

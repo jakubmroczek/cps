@@ -21,6 +21,7 @@ public class SignalFactory {
     public static final String TRIANGLE = "S8";
     public static final String UNIT_STEP = "S9";
     public static final String KRONECKER_DELTA = "S10";
+    public static final String IMPULSE_NOISE = "S11";
 
     //TODO: Ensure duration units!!!!!!
     public static Signal createSignal(String signal, SignalArgs args) {
@@ -69,8 +70,10 @@ public class SignalFactory {
                 return createUnitStep(args.getAmplitude(), args.getInitialTime());
 
             case KRONECKER_DELTA:
-                return createKroneckerDelta(args.getAmplitude(), args.getNs(), args.getSamplingFrequency());
+                return createKroneckerDelta(args.getAmplitude(), args.getNs());
 
+            case IMPULSE_NOISE:
+                return createImpulseNoise(args.getAmplitude(), args.getProbability());
             default:
                 throw new UnsupportedOperationException(signal + " unknown signal type");
         }
@@ -219,9 +222,24 @@ public class SignalFactory {
 
     // Ns przesunieci numeru probki dla skoku jednostkowego
     //TODO: ?
-    private static Signal createKroneckerDelta(double amplitude, int Ns, Duration samplingFrequency) {
+    private static Signal createKroneckerDelta(double amplitude, int Ns) {
         Function<Long, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
         return new DiscreteSignal(kroneckerDelta);
+    }
+
+    private static Signal createImpulseNoise(double amplitude, double probability) {
+        //TODO: Probability <0, 1>
+        Function<Long, Double> impulseNoise = n -> {
+            Random random = new Random();
+            double threshold = random.nextDouble();
+            if (threshold >=0 && threshold <= probability) {
+                return amplitude;
+            } else {
+                return  0.0;
+            }
+        };
+
+        return new DiscreteSignal(impulseNoise);
     }
 
     private SignalFactory() {
