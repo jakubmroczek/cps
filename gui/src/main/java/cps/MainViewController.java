@@ -19,6 +19,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -35,6 +36,9 @@ public class MainViewController {
     private Stage stage;
 
     private final Map<String, String> labelsToSignalsMap = new HashMap<>();
+
+    // Changes SignalParameters layout
+    private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
 
     private String signal;
 
@@ -56,6 +60,9 @@ public class MainViewController {
 
     @FXML
     private Slider histogramBinsSlider;
+
+    @FXML
+    private VBox signalParameterVBox;
 
     @FXML
     private SignalParameter amplitudeSignalParameter,
@@ -334,6 +341,11 @@ public class MainViewController {
     @FXML
     public void onSignalChoice() {
         signal = (String) signalList.getSelectionModel().getSelectedItem();
+        String str = labelsToSignalsMap.get(signal);
+        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(str);
+        if (layoutRearrangement != null) {
+            layoutRearrangement.run();
+        }
     }
 
     @FXML
@@ -353,6 +365,109 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL,() -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+            signalParameterVBox.getChildren().add(kwSignalParameter);
+        });
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+            signalParameterVBox.getChildren().add(kwSignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+            signalParameterVBox.getChildren().add(kwSignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA,
+                () -> {
+                    signalParameterVBox.getChildren().clear();
+                    signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+                    signalParameterVBox.getChildren().add(periodSignalParameter);
+                    signalParameterVBox.getChildren().add(t1SignalParameter);
+                    signalParameterVBox.getChildren().add(durationSignalParameter);
+                    signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+                    signalParameterVBox.getChildren().add(nsSignalParameter);
+                });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(periodSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+            signalParameterVBox.getChildren().add(probabilitySignalParameter);
+        });
 
         amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
         amplitudeSignalParameter.getParameterValue().setText("10.0");
@@ -377,6 +492,7 @@ public class MainViewController {
 
         probabilitySignalParameter.getParameterName().setText("Prawd.");
         probabilitySignalParameter.getParameterValue().setText("0.5");
+
         chart.setAnimated(false);
     }
 

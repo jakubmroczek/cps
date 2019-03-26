@@ -38,7 +38,7 @@
          </children>
       </VBox>
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefHeight="26.0" prefWidth="168.0" />
-      <VBox layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
+      <VBox fx:id="signalParameterVBox" layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
          <children>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="10.0" layoutY="290.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <SignalParameter fx:id="amplitudeSignalParameter" />
