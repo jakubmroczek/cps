@@ -39,13 +39,14 @@
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefHeight="26.0" prefWidth="168.0" />
       <VBox layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="27.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-            <HBox prefHeight="42.0" prefWidth="150.0">
-               <children>
-                  <Label prefHeight="42.0" prefWidth="80.0" text="Amplituda:" />
-                  <TextField fx:id="amplitude" prefHeight="33.0" prefWidth="89.0" text="10" />
-               </children>
-            </HBox>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+            <javafx.scene.layout.HBox>
+                <children>
+                    <Label fx:id="amplitudeSignalParameter" prefHeight="42.0" prefWidth="80.0" text="Amplituda" />
+                    <TextField fx:id="paramterValue" prefHeight="33.0" prefWidth="89.0" text="10" />
+                </children>
+            </javafx.scene.layout.HBox>
+            <HBox prefHeight="9.0" prefWidth="200.0" />
             <HBox prefHeight="42.0" prefWidth="150.0">
                <children>
                   <Label prefHeight="42.0" prefWidth="81.0" text="Okres:" />

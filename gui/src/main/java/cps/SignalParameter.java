@@ -16,7 +16,7 @@ public class SignalParameter extends HBox {
     private TextField parameterValue;
 
     public SignalParameter() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("signal_parameter.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SSignalParameter.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 
