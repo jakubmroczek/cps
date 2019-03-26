@@ -4,14 +4,22 @@ import java.io.IOException;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import lombok.Getter;
 
 
 public class SignalParameter extends HBox {
 
     @FXML
-    private AnchorPane myTestButton;
+    @Getter
+    private Label parameterName;
+
+    @FXML
+    @Getter
+    private TextField parameterValue;
 
     public SignalParameter() {
         FXMLLoader fxmlLoader = new FXMLLoader(

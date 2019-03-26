@@ -70,6 +70,16 @@ public class MainViewController {
     @FXML
     private Slider histogramBinsSlider;
 
+    @FXML
+    private SignalParameter amplitudeSignalParameter,
+                            periodSignalParameter,
+                            t1SignalParameter,
+                            durationSignalParameter,
+                            kwSignalParameter,
+                            nsSignalParameter,
+                            samplingFrequencySignalParameter,
+                            probabilitySignalParameter;
+
     private int histogramBins = 10;
 
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
@@ -357,6 +367,9 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
+
+        amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
+        amplitudeSignalParameter.getParameterValue().setText("10.0");
 
         chart.setAnimated(false);
     }
