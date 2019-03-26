@@ -33,7 +33,6 @@ import java.util.*;
 public class MainViewController {
 
     private Stage stage;
-    private Signal currentSignal;
 
     private final Map<String, String> labelsToSignalsMap = new HashMap<>();
 
@@ -47,19 +46,7 @@ public class MainViewController {
     private LineChart<Number, Number> chart;
 
     @FXML
-    NumberAxis xAxis;
-
-    @FXML
-    NumberAxis yAxis;
-
-    @FXML
     ComboBox signalList;
-
-    @FXML
-    private TextField amplitude, period, initialTime, duration, kwTextField;
-
-    @FXML
-    private TextField nsTextField, samplingFrequencyTextField, probabilityTextField;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -99,16 +86,15 @@ public class MainViewController {
     @FXML
     public void display() {
         Signal signal = createSignal();
-        currentSignal = signal;
 
-        Duration _duration = Duration.ofMillis(Integer.parseInt(duration.getText()));
-        long samplingFrequencyInHz = Long.parseLong(samplingFrequencyTextField.getText());
+        Duration duration = Duration.ofMillis(Integer.parseInt(durationSignalParameter.getParameterValue().getText()));
+        long samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
 
         final Duration SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-        generatedSignalChart = signal.createChart(_duration, SAMPLING_RATE);
+        generatedSignalChart = signal.createChart(duration, SAMPLING_RATE);
 
         if (signal.getType() == Signal.Type.CONTINUOUS) {
-            plotContinuousSignal(signal, _duration);
+            plotContinuousSignal(signal, duration);
         } else {
             plotDiscreteSignal(generatedSignalChart);
         }
@@ -375,7 +361,7 @@ public class MainViewController {
         periodSignalParameter.getParameterValue().setText("100");
 
         t1SignalParameter.getParameterName().setText("t1: ");
-        t1SignalParameter.getParameterValue().setText("0.0");
+        t1SignalParameter.getParameterValue().setText("0");
 
         durationSignalParameter.getParameterName().setText("Czas: ");
         durationSignalParameter.getParameterValue().setText("800");
@@ -396,17 +382,17 @@ public class MainViewController {
 
     private Signal createSignal() {
         //TODO: Error handling
-        double _amplitude = Double.parseDouble(amplitude.getText());
-        Duration _period = Duration.ofMillis(Integer.parseInt(period.getText()));
-        Duration _initialTime = Duration.ofMillis(Integer.parseInt(initialTime.getText()));
-        int ns = Integer.parseInt(nsTextField.getText());
-        double probability = Double.parseDouble(probabilityTextField.getText());
+        double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
+        Duration period = Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText()));
+        Duration initialTime = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
+        int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
+        double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
 
         //TODO: connect to fxml object
         //Check if the value is in range
-        double kw = Double.parseDouble(kwTextField.getText());
+        double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
 
-        SignalArgs args = SignalArgs.builder().amplitude(_amplitude).period(_period).initialTime(_initialTime).kw(kw).Ns(ns).probability(probability).build();
+        SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(period).initialTime(initialTime).kw(kw).Ns(ns).probability(probability).build();
 
         String signalType = labelsToSignalsMap.get(signal);
         return SignalFactory.createSignal(signalType, args);
