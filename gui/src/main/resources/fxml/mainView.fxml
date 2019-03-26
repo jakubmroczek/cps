@@ -40,14 +40,15 @@
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefHeight="26.0" prefWidth="168.0" />
       <VBox layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
          <children>
-            <SignalParameter fx:id="amplitudeSignalParameter"/>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="10.0" layoutY="290.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+            <SignalParameter fx:id="amplitudeSignalParameter" />
             <SignalParameter fx:id="periodSignalParameter" />
-            <SignalParameter fx:id="t1SignalParameter"/>
-            <SignalParameter fx:id="durationSignalParameter"/>
-            <SignalParameter fx:id="kwSignalParameter"/>
-            <SignalParameter fx:id="nsSignalParameter"/>
-            <SignalParameter fx:id="samplingFrequencySignalParameter"/>
-            <SignalParameter fx:id="probabilitySignalParameter"/>
+            <SignalParameter fx:id="t1SignalParameter" />
+            <SignalParameter fx:id="durationSignalParameter" />
+            <SignalParameter fx:id="kwSignalParameter" />
+            <SignalParameter fx:id="nsSignalParameter" />
+            <SignalParameter fx:id="samplingFrequencySignalParameter" />
+            <SignalParameter fx:id="probabilitySignalParameter" />
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="174.0" text="Wykres" />
          </children>

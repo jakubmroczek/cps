@@ -8,10 +8,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import lombok.Getter;
 
 
-public class SignalParameter extends HBox {
+public class SignalParameter extends VBox {
 
     @FXML
     @Getter
