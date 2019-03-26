@@ -1,8 +1,6 @@
 package cps;
 
-import com.sun.security.auth.UnixNumericUserPrincipal;
 import cps.model.*;
-import cps.model.Math;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -210,7 +208,7 @@ public class MainViewController {
         if (file == null)
             return;
 
-        var resultExtension = fileChooser.getSelectedExtensionFilter();
+        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
 
         if (resultExtension.equals(jsonExtension)) {
             SignalWriter.writeJSON(file, generatedSignalChart);

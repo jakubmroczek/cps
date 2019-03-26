@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import cps.SignalParameter?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
@@ -14,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane prefHeight="502.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
+<AnchorPane prefHeight="502.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
       <VBox layoutX="170.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="526.0">
          <children>
@@ -88,6 +89,8 @@
                   <TextField fx:id="probabilityTextField" prefHeight="33.0" prefWidth="89.0" text="0.5" />
                </children>
             </HBox>
+            <SignalParameter fx:id="amplitudeSignalParameter" prefHeight="31.0" prefWidth="119.0" />
+            <SignalParameter fx:id="periodSignalParameter" />
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="174.0" text="Wykres" />
          </children>
@@ -127,7 +130,6 @@
                   <Button fx:id="divideButton" mnemonicParsing="false" onAction="#divideSignals" text="Divide signals" />
                </children>
             </HBox>
-
          </children>
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />

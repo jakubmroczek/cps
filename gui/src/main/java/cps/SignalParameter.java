@@ -16,7 +16,7 @@ public class SignalParameter extends HBox {
     public SignalParameter() {
         FXMLLoader fxmlLoader = new FXMLLoader(
 
-                getClass().getResource("SignalParameter.fxml"));
+                getClass().getResource("/fxml/SignalParameter.fxml"));
 
 
         fxmlLoader.setRoot(this);

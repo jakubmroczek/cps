@@ -28,9 +28,11 @@ class DiscreteSignal extends Signal {
     @Override
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
         //Floor the probing period
-        long size = duration.dividedBy(probingPeriod);
-        var samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
-        return new SignalChart(duration, probingPeriod, samples);
+//        long size = duration.dividedBy(probingPeriod);
+        throw new UnsupportedOperationException("zaimplementuj size w CreateChart");
+//        long size = 0;
+//        List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
+//        return new SignalChart(duration, probingPeriod, samples);
     }
 
     private Function<Long, Double> function;
