@@ -371,6 +371,26 @@ public class MainViewController {
         amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
         amplitudeSignalParameter.getParameterValue().setText("10.0");
 
+        periodSignalParameter.getParameterName().setText("Okres: ");
+        periodSignalParameter.getParameterValue().setText("100");
+
+        t1SignalParameter.getParameterName().setText("t1: ");
+        t1SignalParameter.getParameterValue().setText("0.0");
+
+        durationSignalParameter.getParameterName().setText("Czas: ");
+        durationSignalParameter.getParameterValue().setText("800");
+
+        kwSignalParameter.getParameterName().setText("kw: ");
+        kwSignalParameter.getParameterValue().setText("0.5");
+
+        nsSignalParameter.getParameterName().setText("ns");
+        nsSignalParameter.getParameterValue().setText("5");
+
+        samplingFrequencySignalParameter.getParameterName().setText("Czs. prb [Hz]");
+        samplingFrequencySignalParameter.getParameterValue().setText("1000");
+
+        probabilitySignalParameter.getParameterName().setText("Prawd.");
+        probabilitySignalParameter.getParameterValue().setText("0.5");
         chart.setAnimated(false);
     }
 
