@@ -16,6 +16,7 @@ public class Histogram {
     private final double min, max;
     private final List<Double> frequencyList;
 
+    //TODO: Where trimming extra probes should be taken into account
     public Histogram(SignalChart chart, int bins) {
         this.bins = bins;
 
@@ -26,7 +27,6 @@ public class Histogram {
         max = Collections.max(samples);
 
         frequencyList = new ArrayList<>();
-        final double columnLength = (max - min) / bins;
 
         // List initialization
         for (int i = 0; i < bins; i++) {

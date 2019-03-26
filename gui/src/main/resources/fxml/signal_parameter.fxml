@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root type="javafx.scene.layout.HBox" xmlns:fx="http://javafx.com/fxml">
+    <children>
+        <Label fx:id="parameterName" prefHeight="42.0" prefWidth="80.0" text="Czas pocz." />
+        <TextField fx:id="paramterValue" prefHeight="33.0" prefWidth="89.0" text="0" />
+    </children>
+</fx:root>
