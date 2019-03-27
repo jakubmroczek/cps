@@ -22,6 +22,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import sun.security.x509.AVA;
 
 import java.io.File;
 import java.io.FileReader;
@@ -52,10 +53,9 @@ public class MainViewController {
     private LineChart<Number, Number> chart;
 
     @FXML
-    private ComboBox signalList;
-
-    @FXML
-    private ComboBox signalOperationList;
+    private ComboBox signalList,
+                    signalOperationList,
+                    extraSignalList;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -369,6 +369,8 @@ public class MainViewController {
     public void initialize() {
         //Combo box
         signalList.getItems().addAll(AVALIABLE_SIGNALS);
+        extraSignalList.getItems().addAll(AVALIABLE_SIGNALS);
+
 
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
