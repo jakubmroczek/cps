@@ -1,9 +1,9 @@
 package cps;
 
-import cps.model.*;
-
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import cps.model.*;
+
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalChart;
