@@ -15,12 +15,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.scene.chart.*;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -52,7 +51,7 @@ public class MainViewController {
     private LineChart<Number, Number> chart;
 
     @FXML
-    ComboBox signalList;
+    private ComboBox signalList;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -65,6 +64,14 @@ public class MainViewController {
 
     @FXML
     private VBox signalParameterVBox;
+
+    //TODO: Should be moved to fxml
+    @FXML
+    private Rectangle emptyRectangle;
+
+    //TODO: Should be moved to fxml
+    @FXML
+    private HBox displayButtonContainer;
 
     @FXML
     private SignalParameter amplitudeSignalParameter,
@@ -358,6 +365,7 @@ public class MainViewController {
         if (layoutRearrangement != null) {
             layoutRearrangement.run();
         }
+        signalParameterVBox.getChildren().addAll(emptyRectangle, displayButtonContainer);
     }
 
     @FXML
@@ -400,12 +408,12 @@ public class MainViewController {
         };
 
         Runnable layoutRearrangement3 = () -> {
-            layoutRearrangement1.run();
+            layoutRearrangement0.run();
             signalParameterVBox.getChildren().add(nsSignalParameter);
         };
 
         Runnable layoutRearrangement4 = () -> {
-            layoutRearrangement1.run();
+            layoutRearrangement0.run();
             signalParameterVBox.getChildren().add(probabilitySignalParameter);
         };
 
@@ -449,6 +457,8 @@ public class MainViewController {
         probabilitySignalParameter.getParameterValue().setText("0.5");
 
         chart.setAnimated(false);
+        chart.setLegendVisible(false);
+        histogramChart.setLegendVisible(false);
     }
 
     private Signal createSignal() throws NumberFormatException {
