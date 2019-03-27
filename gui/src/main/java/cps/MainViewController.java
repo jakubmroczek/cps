@@ -378,6 +378,13 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
 
+        Runnable layoutRearrangement0 = () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        };
+
         Runnable layoutRearrangement1 = () -> {
             signalParameterVBox.getChildren().clear();
             signalParameterVBox.getChildren().add(amplitudeSignalParameter);
@@ -402,8 +409,8 @@ public class MainViewController {
             signalParameterVBox.getChildren().add(probabilitySignalParameter);
         };
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement0);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement0);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);

@@ -28,7 +28,7 @@ public class SignalFactory {
         switch (signal)
         {
             case LINEARLY_DISTRIBUTED_NOISE:
-                return getLinearlyDistibutedNoise(args.getAmplitude(), args.getInitialTime());
+                return getLinearlyDistibutedNoise(args.getAmplitude());
 
             case GAUSSIAN_NOISE:
                 return getGaussianNoise(args.getAmplitude());
@@ -80,10 +80,10 @@ public class SignalFactory {
     }
 
     //TODO: Add inititialTime
-    private static Signal getLinearlyDistibutedNoise(double amplitude, Duration initialTime) {
+    private static Signal getLinearlyDistibutedNoise(double amplitude) {
         Function<Duration, Double> function = duration -> {
             Random random = new Random();
-            return sqrt(12.0) * (((random.nextInt() % 101) - 50.0) / 100.0) + amplitude;
+            return amplitude * (random.nextDouble() * 2.0 - 1.0);
         };
         return new Signal(Signal.Type.CONTINUOUS, function);
     }
