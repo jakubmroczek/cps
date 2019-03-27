@@ -366,108 +366,44 @@ public class MainViewController {
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, () -> {
+        Runnable layoutRearrangement1 = () -> {
             signalParameterVBox.getChildren().clear();
             signalParameterVBox.getChildren().add(amplitudeSignalParameter);
             signalParameterVBox.getChildren().add(periodSignalParameter);
             signalParameterVBox.getChildren().add(t1SignalParameter);
             signalParameterVBox.getChildren().add(durationSignalParameter);
             signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
+        };
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL,() -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        Runnable layoutRearrangement2 = () -> {
+            layoutRearrangement1.run();
             signalParameterVBox.getChildren().add(kwSignalParameter);
-        });
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-            signalParameterVBox.getChildren().add(kwSignalParameter);
-        });
+        };
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-            signalParameterVBox.getChildren().add(kwSignalParameter);
-        });
+        Runnable layoutRearrangement3 = () -> {
+            layoutRearrangement1.run();
+            signalParameterVBox.getChildren().add(nsSignalParameter);
+        };
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA,
-                () -> {
-                    signalParameterVBox.getChildren().clear();
-                    signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-                    signalParameterVBox.getChildren().add(periodSignalParameter);
-                    signalParameterVBox.getChildren().add(t1SignalParameter);
-                    signalParameterVBox.getChildren().add(durationSignalParameter);
-                    signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-                    signalParameterVBox.getChildren().add(nsSignalParameter);
-                });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+        Runnable layoutRearrangement4 = () -> {
+            layoutRearrangement1.run();
             signalParameterVBox.getChildren().add(probabilitySignalParameter);
-        });
+        };
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, layoutRearrangement1);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, layoutRearrangement2);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA, layoutRearrangement3);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, layoutRearrangement4);
 
         amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
         amplitudeSignalParameter.getParameterValue().setText("10.0");
