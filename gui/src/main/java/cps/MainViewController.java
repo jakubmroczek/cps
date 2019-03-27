@@ -87,6 +87,15 @@ public class MainViewController {
                             samplingFrequencySignalParameter,
                             probabilitySignalParameter;
 
+    @FXML
+    private SignalParameter extraAmplitudeSignalParameter,
+            extraPeriodSignalParameter,
+            extraT1SignalParameter,
+            extraDurationSignalParameter,
+            extraKwSignalParameter,
+            extraNsSignalParameter,
+            extraProbabilitySignalParameter;
+
     private int histogramBins = 10;
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList(
@@ -465,6 +474,25 @@ public class MainViewController {
 
         probabilitySignalParameter.getParameterName().setText("Prawd.");
         probabilitySignalParameter.getParameterValue().setText("0.5");
+
+        //Jakis wzorzec albo zakapsulkowanie tego zachowania, code duplication
+        extraAmplitudeSignalParameter.getParameterName().setText("Amplituda: ");
+        extraAmplitudeSignalParameter.getParameterValue().setText("10.0");
+
+        extraPeriodSignalParameter.getParameterName().setText("Okres: ");
+        extraPeriodSignalParameter.getParameterValue().setText("100");
+
+        extraT1SignalParameter.getParameterName().setText("t1: ");
+        extraT1SignalParameter.getParameterValue().setText("0");
+
+        extraKwSignalParameter.getParameterName().setText("kw: ");
+        extraKwSignalParameter.getParameterValue().setText("0.5");
+
+        extraNsSignalParameter.getParameterName().setText("ns");
+        extraNsSignalParameter.getParameterValue().setText("5");
+
+        extraProbabilitySignalParameter.getParameterName().setText("Prawd.");
+        extraProbabilitySignalParameter.getParameterValue().setText("0.5");
 
         chart.setAnimated(false);
         chart.setLegendVisible(false);

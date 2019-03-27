@@ -103,11 +103,11 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="-16.0" layoutY="426.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
       <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="26.0" prefWidth="168.0" />
       <ComboBox fx:id="extraSignalList" layoutY="373.0" prefHeight="26.0" prefWidth="168.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter1" layoutY="420.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter11" layoutY="451.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter11" layoutY="480.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter111" layoutY="511.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter1111" layoutY="542.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="amplitudeSignalParameter11" layoutY="573.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraAmplitudeSignalParameter" layoutY="420.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraPeriodSignalParameter" layoutY="451.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraT1SignalParameter" layoutY="480.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraKwSignalParameter" layoutY="511.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraNsSignalParameter" layoutY="542.0" prefHeight="31.0" prefWidth="207.0" />
+      <SignalParameter fx:id="extraProbabilitySignalParameter" layoutY="573.0" prefHeight="31.0" prefWidth="207.0" />
    </children>
 </AnchorPane>
