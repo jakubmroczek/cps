@@ -5,6 +5,7 @@ import lombok.Getter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -12,6 +13,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+
+import static java.time.temporal.ChronoUnit.NANOS;
 
 class DiscreteSignal extends Signal {
 
@@ -27,12 +30,11 @@ class DiscreteSignal extends Signal {
 
     @Override
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
-        //Floor the probing period
-//        long size = duration.dividedBy(probingPeriod);
-        throw new UnsupportedOperationException("zaimplementuj size w CreateChart");
-//        long size = 0;
-//        List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
-//        return new SignalChart(duration, probingPeriod, samples);
+        //Floor -> takes only the full multiple of duration
+        //TODO: Exception handling
+        long size = duration.get(NANOS) / probingPeriod.get(NANOS);
+        List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
+        return new SignalChart(duration, probingPeriod, samples);
     }
 
     private Function<Long, Double> function;

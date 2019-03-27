@@ -22,6 +22,8 @@ public class Histogram {
         //TODO: Efficiency lost, two loops, maybe chart should know it min and max value?
         //TODO: Change name from probes to samples
         List<Double> samples = chart.getProbes();
+
+        //  TODO: NO SUCH ELEMENT EXCEPTION (WHEN SAMPLES IS EMPTY)
         min = Collections.min(samples);
         max = Collections.max(samples);
 
