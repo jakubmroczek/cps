@@ -15,6 +15,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.scene.chart.*;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -92,10 +93,22 @@ public class MainViewController {
 
     @FXML
     public void display() {
-        Signal signal = createSignal();
+        Signal signal = null;
+        Duration duration = null;
+        long samplingFrequencyInHz = 0;
+        try {
+            signal = createSignal();
+            duration = Duration.ofMillis(Integer.parseInt(durationSignalParameter.getParameterValue().getText()));
+            samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
 
-        Duration duration = Duration.ofMillis(Integer.parseInt(durationSignalParameter.getParameterValue().getText()));
-        long samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
+        } catch (NumberFormatException exception) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setHeaderText("Input not valid");
+            errorAlert.setContentText(exception.getMessage());
+            errorAlert.showAndWait();
+            //TODO: Restore default state of the contolls after the crush
+            return;
+        }
 
         final Duration SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
         generatedSignalChart = signal.createChart(duration, SAMPLING_RATE);
@@ -428,22 +441,26 @@ public class MainViewController {
         chart.setAnimated(false);
     }
 
-    private Signal createSignal() {
-        //TODO: Error handling
-        double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
-        Duration period = Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText()));
-        Duration initialTime = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
-        int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
-        double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
+    private Signal createSignal() throws NumberFormatException {
+       try {
+           //TODO: Error handling
+           double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
+           Duration period = Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText()));
+           Duration initialTime = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
+           int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
+           double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
 
-        //TODO: connect to fxml object
-        //Check if the value is in range
-        double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
+           //TODO: connect to fxml object
+           //Check if the value is in range
+           double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
 
-        SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(period).initialTime(initialTime).kw(kw).Ns(ns).probability(probability).build();
+           SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(period).initialTime(initialTime).kw(kw).Ns(ns).probability(probability).build();
 
-        String signalType = labelsToSignalsMap.get(signal);
-        return SignalFactory.createSignal(signalType, args);
+           String signalType = labelsToSignalsMap.get(signal);
+           return SignalFactory.createSignal(signalType, args);
+       } catch (NumberFormatException exception) {
+            throw exception;
+       }
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
