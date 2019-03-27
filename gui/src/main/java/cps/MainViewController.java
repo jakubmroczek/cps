@@ -412,7 +412,15 @@ public class MainViewController {
         signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, layoutRearrangement1);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
+            signalParameterVBox.getChildren().clear();
+            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
+            signalParameterVBox.getChildren().add(t1SignalParameter);
+            signalParameterVBox.getChildren().add(durationSignalParameter);
+            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
+
+        });
 
         signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, layoutRearrangement2);
         signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
