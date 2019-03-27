@@ -30,7 +30,7 @@ class DiscreteSignal extends Signal {
     public SignalChart createChart(Duration duration, Duration probingPeriod) {
         //Floor -> takes only the full multiple of duration
         //TODO: Exception handling
-        long size = duration.get(NANOS) / probingPeriod.get(NANOS);
+        long size = duration.toNanos() / probingPeriod.toNanos();
         List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
         return new SignalChart(duration, probingPeriod, samples);
     }
