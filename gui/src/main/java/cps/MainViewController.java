@@ -31,6 +31,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.util.*;
+import java.util.stream.DoubleStream;
 
 public class MainViewController {
 
@@ -94,27 +95,29 @@ public class MainViewController {
     @FXML
     public void display() {
         Signal signal = null;
-        Duration duration = null;
+        Duration durationInNs = null;
         long samplingFrequencyInHz = 0;
         try {
             signal = createSignal();
-            duration = Duration.ofMillis(Integer.parseInt(durationSignalParameter.getParameterValue().getText()));
+            double durationdInSeconds = Double.valueOf(durationSignalParameter.getParameterValue().getText());
+            durationInNs = Duration.ofNanos((long)(durationdInSeconds * 1_000_000_000L));
             samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
 
         } catch (NumberFormatException exception) {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText(exception.getMessage());
+            errorAlert.setContentText(exception.getMessage() + "\n" + exception.getCause());
             errorAlert.showAndWait();
             //TODO: Restore default state of the contolls after the crush
             return;
         }
 
+        //?
         final Duration SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-        generatedSignalChart = signal.createChart(duration, SAMPLING_RATE);
+        generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
 
         if (signal.getType() == Signal.Type.CONTINUOUS) {
-            plotContinuousSignal(signal, duration);
+            plotContinuousSignal(signal, durationInNs);
         } else {
             plotDiscreteSignal(generatedSignalChart);
         }
@@ -445,8 +448,11 @@ public class MainViewController {
        try {
            //TODO: Error handling
            double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
-           Duration period = Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText()));
-           Duration initialTime = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
+           //TODO: Assert that unit is not smaller than 1 nanoseconds and that input is seconds
+           double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
+           Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
+           double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
+           Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
            int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
            double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
 
@@ -454,7 +460,7 @@ public class MainViewController {
            //Check if the value is in range
            double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
 
-           SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(period).initialTime(initialTime).kw(kw).Ns(ns).probability(probability).build();
+           SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
 
            String signalType = labelsToSignalsMap.get(signal);
            return SignalFactory.createSignal(signalType, args);
