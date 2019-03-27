@@ -4,6 +4,7 @@ import cps.model.*;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import cps.model.Math;
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalChart;
@@ -53,7 +54,8 @@ public class MainViewController {
     ComboBox signalList;
 
     @FXML
-    private TextField averageValueTextField, averageAbsoluteValueTextField;
+    private TextField averageValueTextField, averageAbsoluteValueTextField,
+                        averagePowerValueTextField, varianceValueTextField, effectivePowerValueTextField;
 
     @FXML
     private BarChart<Number, Number> histogramChart;
@@ -110,12 +112,24 @@ public class MainViewController {
         drawHistogram(histogram);
 
         // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
+        Duration t1 = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
 
-//        double averageValue = Math.averageValue(signal, Duration.ZERO, _duration);
-//        averageValueTextField.setText(String.format("%.2f", averageValue));
-//
-//        double averageAbsoulteValue = Math.averageAbsoluteValue(signal, Duration.ZERO, _duration);
-//        averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
+        double averageValue = Math.averageValue(signal, t1, duration);
+        averageValueTextField.setText(String.format("%.2f", averageValue));
+
+        double averageAbsoulteValue = Math.averageAbsoluteValue(signal, t1, duration);
+        averageAbsoluteValueTextField.setText(String.format("%.2f", averageAbsoulteValue));
+
+        double averagePowerValue = Math.averagePower(signal, t1, duration);
+        averagePowerValueTextField.setText(String.format("%.2f", averagePowerValue));
+
+        double varianceValue = Math.variance(signal, t1, duration);
+        varianceValueTextField.setText(String.format("%.2f", varianceValue));
+
+        double effectivePowerValue = Math.effectivePower(signal, t1, duration);
+        effectivePowerValueTextField.setText(String.format("%.2f", effectivePowerValue));
+
+
     }
 
     private void plotDiscreteSignal(SignalChart signalChart) {
