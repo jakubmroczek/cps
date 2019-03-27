@@ -2,8 +2,6 @@ package cps.model;
 
 import lombok.Getter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
