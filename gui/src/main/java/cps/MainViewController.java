@@ -260,8 +260,6 @@ public class MainViewController {
 
         //TODO: Informacja o nazwie wczytanego sygnali xd
 
-//        saveToFile(null);
-
         long widthInPixels = (long) chart.getXAxis().getWidth();
         final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
 
@@ -301,8 +299,6 @@ public class MainViewController {
         SignalChart rhs = loadSignal("2");
 
         SignalChart result = SignalOperations.divide(lhs, rhs);
-
-//        saveToFile(null);
 
         long widthInPixels = (long) chart.getXAxis().getWidth();
         final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
