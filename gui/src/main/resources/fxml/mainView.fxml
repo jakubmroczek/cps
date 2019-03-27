@@ -17,7 +17,7 @@
 
 <AnchorPane prefHeight="502.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
-      <VBox layoutX="170.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="526.0">
+      <VBox layoutX="195.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="501.0">
          <children>
             <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
               <xAxis>
@@ -38,17 +38,21 @@
          </children>
       </VBox>
       <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefHeight="26.0" prefWidth="168.0" />
-      <VBox fx:id="signalParameterVBox" layoutY="27.0" prefHeight="430.0" prefWidth="185.0">
+      <VBox layoutY="31.0" prefHeight="200.0" prefWidth="100.0">
          <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="10.0" layoutY="290.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-            <SignalParameter fx:id="amplitudeSignalParameter" />
-            <SignalParameter fx:id="periodSignalParameter" />
-            <SignalParameter fx:id="t1SignalParameter" />
-            <SignalParameter fx:id="durationSignalParameter" />
-            <SignalParameter fx:id="kwSignalParameter" />
-            <SignalParameter fx:id="nsSignalParameter" />
-            <SignalParameter fx:id="samplingFrequencySignalParameter" />
-            <SignalParameter fx:id="probabilitySignalParameter" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="290.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+            <VBox fx:id="signalParameterVBox" prefHeight="430.0" prefWidth="185.0">
+               <children>
+                  <SignalParameter fx:id="amplitudeSignalParameter" />
+                  <SignalParameter fx:id="periodSignalParameter" />
+                  <SignalParameter fx:id="t1SignalParameter" />
+                  <SignalParameter fx:id="durationSignalParameter" />
+                  <SignalParameter fx:id="kwSignalParameter" />
+                  <SignalParameter fx:id="nsSignalParameter" />
+                  <SignalParameter fx:id="samplingFrequencySignalParameter" />
+                  <SignalParameter fx:id="probabilitySignalParameter" />
+               </children>
+            </VBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="26.0" prefWidth="174.0" text="Wykres" />
          </children>
@@ -91,5 +95,6 @@
          </children>
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="-16.0" layoutY="426.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
    </children>
 </AnchorPane>
