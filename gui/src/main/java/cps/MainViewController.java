@@ -55,6 +55,9 @@ public class MainViewController {
     private ComboBox signalList;
 
     @FXML
+    private ComboBox signalOperationList;
+
+    @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
 
     @FXML
@@ -85,6 +88,10 @@ public class MainViewController {
                             probabilitySignalParameter;
 
     private int histogramBins = 10;
+
+    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList(
+      "+", "-", "*", "/"
+    );
 
     private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
             "Szum o rozkładzie jednostajnym",
@@ -362,6 +369,9 @@ public class MainViewController {
     public void initialize() {
         //Combo box
         signalList.getItems().addAll(AVALIABLE_SIGNALS);
+
+        //Combo box
+        signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
 
         //Mapper gui name to factory name
         labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);

@@ -101,5 +101,7 @@
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="-16.0" layoutY="426.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
+      <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="26.0" prefWidth="168.0" />
+      <ComboBox fx:id="extraSignalList" layoutY="373.0" prefHeight="26.0" prefWidth="168.0" />
    </children>
 </AnchorPane>
