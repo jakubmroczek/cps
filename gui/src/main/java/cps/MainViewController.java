@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.Math;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -148,18 +149,14 @@ public class MainViewController {
         chart.getStyleClass().add("discrete-signal");
         XYChart.Series series = new XYChart.Series();
 
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        double stepInSeconds = signalChart.getDuration().toNanos() / 1_000_000_000D;
+        //TODO: Dzielenie przez zero!!
+        stepInSeconds /= Math.min(widthInPixels, signalChart.getProbes().size() - 1);
+
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-
-            //Mozliwosc przeklamania przez zmiane jednostke
-            if (signalChart.getProbingPeriod().toMillis() != 0) {
-                series.getData().add(new XYChart.Data(signalChart.getProbingPeriod().multipliedBy(i).toMillis(), y));
-            } else {
-                //HOW TO HANDLE THIS?
-                //NANOSECONDS
-                series.getData().add(new XYChart.Data(signalChart.getProbingPeriod().multipliedBy(i).toNanos(), y));
-            }
-
+            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
         }
 
         chart.getData().clear();
@@ -169,8 +166,10 @@ public class MainViewController {
     private void plotContinuousSignal(Signal signal, Duration duration) {
         //One point in one sample point
         long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration SAMPLING_RATE = duration.dividedBy(widthInPixels);
+        double stepInSeconds = duration.toNanos() / 1_000_000_000D;
+        stepInSeconds /=widthInPixels;
 
+        final Duration SAMPLING_RATE = duration.dividedBy(widthInPixels);
         SignalChart signalChart = signal.createChart(duration, SAMPLING_RATE);
 
         chart.setCreateSymbols(false);
@@ -180,16 +179,7 @@ public class MainViewController {
 
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-
-            //Mozliwosc przeklamania przez zmiane jednostke
-            if (SAMPLING_RATE.toMillis() != 0) {
-                series.getData().add(new XYChart.Data(SAMPLING_RATE.multipliedBy(i).toMillis(), y));
-            } else {
-                //HOW TO HANDLE THIS?
-                //NANOSECONDS
-                series.getData().add(new XYChart.Data(SAMPLING_RATE.multipliedBy(i).toNanos(), y));
-            }
-
+            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
         }
 
         chart.getData().clear();
@@ -205,7 +195,7 @@ public class MainViewController {
 
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-            System.out.println(i + " " + y);
+
 
             //Mozliwosc przeklamania przez zmiane jednostke
             if (samplingRate.toMillis() != 0) {
