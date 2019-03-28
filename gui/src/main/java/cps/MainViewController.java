@@ -54,9 +54,8 @@ public class MainViewController {
     private LineChart<Number, Number> chart;
 
     @FXML
-    private ComboBox signalList,
-                    signalOperationList,
-                    extraSignalList;
+    private ComboBox signalOperationList,
+                     extraSignalList;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -68,25 +67,7 @@ public class MainViewController {
     private Slider histogramBinsSlider;
 
     @FXML
-    private VBox signalParameterVBox;
-
-    //TODO: Should be moved to fxml
-    @FXML
-    private Rectangle emptyRectangle;
-
-    //TODO: Should be moved to fxml
-    @FXML
-    private HBox displayButtonContainer;
-
-    @FXML
-    private SignalParameter amplitudeSignalParameter,
-                            periodSignalParameter,
-                            t1SignalParameter,
-                            durationSignalParameter,
-                            kwSignalParameter,
-                            nsSignalParameter,
-                            samplingFrequencySignalParameter,
-                            probabilitySignalParameter;
+    private SignalChooser basicSignalChooser;
 
     @FXML
     private SignalParameter extraAmplitudeSignalParameter,
@@ -118,16 +99,18 @@ public class MainViewController {
 
     @FXML
     public void display() {
-        Signal signal = null;
-        Duration durationInNs = null;
-        long samplingFrequencyInHz = 0;
-        try {
-            signal = createSignal();
-            double durationdInSeconds = Double.valueOf(durationSignalParameter.getParameterValue().getText());
-            durationInNs = Duration.ofNanos((long)(durationdInSeconds * 1_000_000_000L));
-            samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
+        Signal signal;
+        Duration durationInNs;
+        long samplingFrequencyInHz;
 
-        } catch (NumberFormatException exception) {
+        try {
+            signal = basicSignalChooser.getSignal();
+
+            double durationInSeconds = basicSignalChooser.getDurationInSeconds();
+            durationInNs = Duration.ofNanos((long)(durationInSeconds * 1_000_000_000L));
+            samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
+
+        } catch (IllegalArgumentException exception) {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText(exception.getMessage() + "\n" + exception.getCause());
@@ -266,8 +249,6 @@ public class MainViewController {
             JsonReader reader = new JsonReader(new FileReader(file));
             SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
 
-            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
-
             long widthInPixels = (long) chart.getXAxis().getWidth();
             final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
 
@@ -278,17 +259,6 @@ public class MainViewController {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    @FXML
-    public void onSignalChoice() {
-        signal = (String) signalList.getSelectionModel().getSelectedItem();
-        String str = labelsToSignalsMap.get(signal);
-        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(str);
-        if (layoutRearrangement != null) {
-            layoutRearrangement.run();
-        }
-        signalParameterVBox.getChildren().addAll(emptyRectangle, displayButtonContainer);
     }
 
     @FXML
@@ -323,12 +293,13 @@ public class MainViewController {
         Duration durationInNs = null;
         long samplingFrequencyInHz = 0;
         try {
-            lhs = createSignal();
+            lhs = basicSignalChooser.getSignal();
             rhs = createExtraSignal();
 
-            double durationdInSeconds = Double.valueOf(durationSignalParameter.getParameterValue().getText());
-            durationInNs = Duration.ofNanos((long)(durationdInSeconds * 1_000_000_000L));
-            samplingFrequencyInHz = Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
+            double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
+            durationInNs = Duration.ofNanos((long)(durationInSeconds * 1_000_000_000L));
+
+            samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
 
         } catch (NumberFormatException exception) {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -378,103 +349,11 @@ public class MainViewController {
     @FXML
     public void initialize() {
         //Combo box
-        signalList.getItems().addAll(AVALIABLE_SIGNALS);
         extraSignalList.getItems().addAll(AVALIABLE_SIGNALS);
 
 
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
-
-        //Mapper gui name to factory name
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(1), SignalFactory.GAUSSIAN_NOISE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(2), SignalFactory.SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(3), SignalFactory.HALF_STRAIGHT_SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(4), SignalFactory.FULL_STRAIGHT_SINUSOIDAL);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(5), SignalFactory.RECTANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
-        labelsToSignalsMap.put(AVALIABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
-
-        Runnable layoutRearrangement0 = () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        };
-
-        Runnable layoutRearrangement1 = () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(periodSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-        };
-
-        Runnable layoutRearrangement2 = () -> {
-            layoutRearrangement1.run();
-            signalParameterVBox.getChildren().add(kwSignalParameter);
-        };
-
-        Runnable layoutRearrangement3 = () -> {
-            layoutRearrangement0.run();
-            signalParameterVBox.getChildren().add(nsSignalParameter);
-        };
-
-        Runnable layoutRearrangement4 = () -> {
-            layoutRearrangement0.run();
-            signalParameterVBox.getChildren().add(probabilitySignalParameter);
-        };
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement0);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement0);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
-            signalParameterVBox.getChildren().clear();
-            signalParameterVBox.getChildren().add(amplitudeSignalParameter);
-            signalParameterVBox.getChildren().add(t1SignalParameter);
-            signalParameterVBox.getChildren().add(durationSignalParameter);
-            signalParameterVBox.getChildren().add(samplingFrequencySignalParameter);
-
-        });
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, layoutRearrangement2);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, layoutRearrangement2);
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA, layoutRearrangement3);
-
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, layoutRearrangement4);
-
-        amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
-        amplitudeSignalParameter.getParameterValue().setText("10.0");
-
-        periodSignalParameter.getParameterName().setText("Okres: ");
-        periodSignalParameter.getParameterValue().setText("100");
-
-        t1SignalParameter.getParameterName().setText("t1: ");
-        t1SignalParameter.getParameterValue().setText("0");
-
-        durationSignalParameter.getParameterName().setText("Czas: ");
-        durationSignalParameter.getParameterValue().setText("800");
-
-        kwSignalParameter.getParameterName().setText("kw: ");
-        kwSignalParameter.getParameterValue().setText("0.5");
-
-        nsSignalParameter.getParameterName().setText("ns");
-        nsSignalParameter.getParameterValue().setText("5");
-
-        samplingFrequencySignalParameter.getParameterName().setText("Czs. prb [Hz]");
-        samplingFrequencySignalParameter.getParameterValue().setText("1000");
-
-        probabilitySignalParameter.getParameterName().setText("Prawd.");
-        probabilitySignalParameter.getParameterValue().setText("0.5");
 
         //Jakis wzorzec albo zakapsulkowanie tego zachowania, code duplication
         extraAmplitudeSignalParameter.getParameterName().setText("Amplituda: ");
@@ -498,31 +377,6 @@ public class MainViewController {
         chart.setAnimated(false);
         chart.setLegendVisible(false);
         histogramChart.setLegendVisible(false);
-    }
-
-    private Signal createSignal() throws NumberFormatException {
-       try {
-           //TODO: Error handling
-           double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
-           //TODO: Assert that unit is not smaller than 1 nanoseconds and that input is seconds
-           double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
-           Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
-           double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
-           Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
-           int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
-           double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
-
-           //TODO: connect to fxml object
-           //Check if the value is in range
-           double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
-
-           SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
-
-           String signalType = labelsToSignalsMap.get(signal);
-           return SignalFactory.createSignal(signalType, args);
-       } catch (NumberFormatException exception) {
-            throw exception;
-       }
     }
 
     private Signal createExtraSignal() throws NumberFormatException {

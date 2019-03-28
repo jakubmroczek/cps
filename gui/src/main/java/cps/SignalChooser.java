@@ -129,7 +129,7 @@ public class SignalChooser extends VBox {
         }
     }
 
-    public double getSamplingFrequencyInHz() throws IllegalArgumentException {
+    public long getSamplingFrequencyInHz() throws IllegalArgumentException {
         try {
             return Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
         } catch (NumberFormatException e) {
