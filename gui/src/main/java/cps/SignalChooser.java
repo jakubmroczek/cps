@@ -13,8 +13,10 @@ import javafx.util.Pair;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.RunnableFuture;
 
 public class SignalChooser extends VBox {
 
@@ -48,11 +50,20 @@ public class SignalChooser extends VBox {
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
     }
 
+    private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
+
     @FXML
     private ComboBox<String> signalList;
 
     @FXML
-    private SignalParameter amplitudeSignalParameter;
+    private SignalParameter amplitudeSignalParameter,
+            periodSignalParameter,
+            t1SignalParameter,
+            durationSignalParameter,
+            kwSignalParameter,
+            nsSignalParameter,
+            samplingFrequencySignalParameter,
+            probabilitySignalParameter;
 
     public SignalChooser() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SignalChooser.fxml"));
@@ -65,8 +76,20 @@ public class SignalChooser extends VBox {
             throw new RuntimeException(exception);
         }
         signalList.getItems().addAll(AVAILABLE_SIGNALS);
+
+        initializeSignalParameters();
+        initializeLayout();
     }
 
+    @FXML
+    public void onSignalChosen() {
+        String selection = signalList.getSelectionModel().getSelectedItem();
+        String selectedSignal = LABEL_TO_SIGNAL_MAP.get(selection);
+        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(selectedSignal);
+        if (layoutRearrangement != null) {
+            layoutRearrangement.run();
+        }
+    }
     /**
      * Creates Signal assembled from user parameters.
      */
@@ -102,5 +125,98 @@ public class SignalChooser extends VBox {
         return 0.0;
     }
 
+    private void initializeSignalParameters() {
+        amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
+        amplitudeSignalParameter.getParameterValue().setText("10.0");
+
+        periodSignalParameter.getParameterName().setText("Okres: ");
+        periodSignalParameter.getParameterValue().setText("100");
+
+        t1SignalParameter.getParameterName().setText("t1: ");
+        t1SignalParameter.getParameterValue().setText("0");
+
+        durationSignalParameter.getParameterName().setText("Czas: ");
+        durationSignalParameter.getParameterValue().setText("800");
+
+        kwSignalParameter.getParameterName().setText("kw: ");
+        kwSignalParameter.getParameterValue().setText("0.5");
+
+        nsSignalParameter.getParameterName().setText("ns");
+        nsSignalParameter.getParameterValue().setText("5");
+
+        samplingFrequencySignalParameter.getParameterName().setText("Czs. prb [Hz]");
+        samplingFrequencySignalParameter.getParameterValue().setText("1000");
+
+        probabilitySignalParameter.getParameterName().setText("Prawd.");
+        probabilitySignalParameter.getParameterValue().setText("0.5");
+    }
+
+    private void initializeLayout() {
+        Runnable layoutRearrangement0 = () -> {
+            removeAllSignalParameters();
+            getChildren().add(amplitudeSignalParameter);
+            getChildren().add(durationSignalParameter);
+            getChildren().add(samplingFrequencySignalParameter);
+        };
+
+        Runnable layoutRearrangement1 = () -> {
+            removeAllSignalParameters();
+            getChildren().add(amplitudeSignalParameter);
+            getChildren().add(periodSignalParameter);
+            getChildren().add(t1SignalParameter);
+            getChildren().add(durationSignalParameter);
+            getChildren().add(samplingFrequencySignalParameter);
+        };
+
+        Runnable layoutRearrangement2 = () -> {
+            layoutRearrangement1.run();
+            getChildren().add(kwSignalParameter);
+        };
+
+        Runnable layoutRearrangement3 = () -> {
+            layoutRearrangement0.run();
+            getChildren().add(nsSignalParameter);
+        };
+
+        Runnable layoutRearrangement4 = () -> {
+            layoutRearrangement0.run();
+            getChildren().add(probabilitySignalParameter);
+        };
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement0);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement0);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
+            removeAllSignalParameters();
+            getChildren().add(amplitudeSignalParameter);
+            getChildren().add(t1SignalParameter);
+            getChildren().add(durationSignalParameter);
+            getChildren().add(samplingFrequencySignalParameter);
+
+        });
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, layoutRearrangement2);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA, layoutRearrangement3);
+
+        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, layoutRearrangement4);
+    }
+
+    //TODO: Group it somehow usign java fx method and delete this workaround
+    private void removeAllSignalParameters() {
+        getChildren().removeAll(amplitudeSignalParameter,
+                periodSignalParameter,
+                t1SignalParameter,
+                durationSignalParameter,
+                kwSignalParameter,
+                nsSignalParameter,
+                samplingFrequencySignalParameter,
+                probabilitySignalParameter);
+    }
 
 }

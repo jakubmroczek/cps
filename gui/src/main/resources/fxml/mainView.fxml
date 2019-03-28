@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import cps.SignalChooser?>
 <?import cps.SignalParameter?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -15,7 +16,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<?import cps.SignalChooser?>
 <AnchorPane prefHeight="651.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
    <children>
       <VBox layoutX="195.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="501.0">
@@ -87,7 +87,10 @@
                </children>
             </HBox>
             <HBox prefHeight="0" prefWidth="170.0" />
-            <HBox prefHeight="42.0" prefWidth="170.0" />
+            <HBox prefHeight="42.0" prefWidth="170.0">
+               <children>
+                   <SignalChooser fx:id="basicSignalChooser" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="204.0" />
+               </children></HBox>
          </children>
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
@@ -101,6 +104,5 @@
       <SignalParameter fx:id="extraNsSignalParameter" layoutY="542.0" prefHeight="31.0" prefWidth="207.0" />
       <SignalParameter fx:id="extraProbabilitySignalParameter" layoutY="573.0" prefHeight="31.0" prefWidth="207.0" />
       <Button fx:id="executeButton" layoutX="24.0" layoutY="613.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
-   </children>
-    <SignalChooser fx:id="basicSignalChooser"/>
+    </children>
 </AnchorPane>
