@@ -1,5 +1,6 @@
 package cps;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalFactory;
@@ -10,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -35,8 +37,8 @@ public class SignalChooser extends VBox {
     );
 
     private static final Map<String, String> LABEL_TO_SIGNAL_MAP = new HashMap<>();
-    static
-    {
+
+    static {
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(1), SignalFactory.GAUSSIAN_NOISE);
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(2), SignalFactory.SINUSOIDAL);
@@ -55,6 +57,7 @@ public class SignalChooser extends VBox {
     @FXML
     private ComboBox<String> signalList;
 
+    //TODO: Getter is vary bad, cause shows implementation details -> provide custom mechanism allowing ordering this fileds in a custom way.
     @FXML
     private SignalParameter amplitudeSignalParameter,
             periodSignalParameter,
@@ -64,6 +67,17 @@ public class SignalChooser extends VBox {
             nsSignalParameter,
             samplingFrequencySignalParameter,
             probabilitySignalParameter;
+
+    public enum Field {
+        AMPLITUDE,
+        PERIOD,
+        T1,
+        DURATION,
+        KW,
+        NS,
+        SAMPLING_FREQUENCY,
+        PROBABILITY
+    }
 
     public SignalChooser() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SignalChooser.fxml"));
@@ -134,6 +148,20 @@ public class SignalChooser extends VBox {
             return Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Use signal constants from SignalFactory.
+     */
+    public void setArrangement(String signal, Field... field) {
+        if (signalNameToSignalParametersLayoutMap.containsKey(signal)) {
+            signalNameToSignalParametersLayoutMap.remove(signal);
+            Runnable layoutRearrangement = () -> {
+                removeAllSignalParameters();
+                Arrays.stream(field).forEach(x -> getChildren().add(map(x)));
+            };
+            signalNameToSignalParametersLayoutMap.put(signal, layoutRearrangement);
         }
     }
 
@@ -231,4 +259,27 @@ public class SignalChooser extends VBox {
                 probabilitySignalParameter);
     }
 
+    private SignalParameter map(Field field) {
+        switch (field){
+            case AMPLITUDE:
+                return amplitudeSignalParameter;
+            case PERIOD:
+                return periodSignalParameter;
+            case T1:
+                return t1SignalParameter;
+            case DURATION:
+                return durationSignalParameter;
+            case KW:
+                return kwSignalParameter;
+            case NS:
+                return nsSignalParameter;
+            case SAMPLING_FREQUENCY:
+                return samplingFrequencySignalParameter;
+            case PROBABILITY:
+                return probabilitySignalParameter;
+
+            default:
+                throw new IllegalArgumentException("Unknwon field " + field);
+        }
+    }
 }

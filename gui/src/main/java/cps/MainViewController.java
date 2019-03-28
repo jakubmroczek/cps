@@ -321,6 +321,10 @@ public class MainViewController {
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
 
+        // We need to hide duration and sampling frequency fields in extraSignalChooser from the client,
+        // because those values will be provided by querying basicSignalChooser.
+        removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser();
+
         chart.setAnimated(false);
         chart.setLegendVisible(false);
         histogramChart.setLegendVisible(false);
@@ -361,4 +365,17 @@ public class MainViewController {
         }
     }
 
+    private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
+        extraSignalChooser.setArrangement(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(SignalFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(SignalFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.SYMETRIC_RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.TRIANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.KRONECKER_DELTA, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.NS);
+        extraSignalChooser.setArrangement(SignalFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
+    }
 }
