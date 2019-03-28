@@ -21,10 +21,10 @@
          <children>
             <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
               <xAxis>
-                <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                <NumberAxis side="BOTTOM" fx:id="xAxis" label="t[s]"/>
               </xAxis>
               <yAxis>
-                <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" />
+                <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" label="A"/>
               </yAxis>
             </LineChart>
             <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="526.0">

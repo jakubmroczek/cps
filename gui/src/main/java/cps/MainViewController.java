@@ -2,7 +2,6 @@ package cps;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.sun.tools.javac.util.Pair;
 import cps.model.*;
 
 import cps.model.Signal;
@@ -12,14 +11,12 @@ import cps.model.SignalFactory;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.HBox;
@@ -27,19 +24,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sun.security.x509.AVA;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.Math;
 import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.DoubleStream;
 
 public class MainViewController {
 
@@ -160,22 +154,25 @@ public class MainViewController {
         histogram = new Histogram(generatedSignalChart, histogramBins);
         drawHistogram(histogram);
 
-        // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
         Duration t1 = Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText()));
 
-        double averageValue = cps.model.Math.averageValue(signal, t1, duration);
+        Duration period = Duration.ofSeconds(Integer.parseInt(periodSignalParameter.getParameterValue().getText()));
+        long numberOfPeriods = durationInNs.toNanos() / period.toNanos();
+        Duration properDuration = period.multipliedBy(numberOfPeriods);
+
+        double averageValue = cps.model.Math.averageValue(signal, t1, properDuration);
         averageValueLabel.setText(String.format("%.2f", averageValue));
 
-        double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, t1, duration);
+        double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, t1, properDuration);
         averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
 
-        double averagePowerValue = cps.model.Math.averagePower(signal, t1, duration);
+        double averagePowerValue = cps.model.Math.averagePower(signal, t1, properDuration);
         averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
 
-        double varianceValue = cps.model.Math.variance(signal, t1, duration);
+        double varianceValue = cps.model.Math.variance(signal, t1, properDuration);
         varianceValueLabel.setText(String.format("%.2f", varianceValue));
 
-        double effectivePowerValue = cps.model.Math.effectivePower(signal, t1, duration);
+        double effectivePowerValue = cps.model.Math.effectivePower(signal, t1, properDuration);
         effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
 
         SignalArgs signalArgs = SignalArgs.builder()
@@ -186,11 +183,11 @@ public class MainViewController {
                                             .kw(Double.parseDouble(kwSignalParameter.getParameterValue().getText()))
                                             .Ns(Integer.parseInt(nsSignalParameter.getParameterValue().getText()))
                                             .probability(Double.parseDouble(probabilitySignalParameter.getParameterValue().getText()))
-                                            .averageValue(Math.round(averageValue,2))
-                                            .averageAbsoulteValue(Math.round(averageAbsoulteValue,2))
-                                            .averagePowerValue(Math.round(averagePowerValue,2))
-                                            .varianceValue(Math.round(varianceValue,2))
-                                            .effectivePowerValue(Math.round(effectivePowerValue,2))
+                                            .averageValue(cps.model.Math.round(averageValue,2))
+                                            .averageAbsoulteValue(cps.model.Math.round(averageAbsoulteValue,2))
+                                            .averagePowerValue(cps.model.Math.round(averagePowerValue,2))
+                                            .varianceValue(cps.model.Math.round(varianceValue,2))
+                                            .effectivePowerValue(cps.model.Math.round(effectivePowerValue,2))
                                             .samplingFrequency(SAMPLING_RATE)
                                             .build();
 
@@ -714,11 +711,19 @@ public class MainViewController {
     }
     private void drawChartAndHistogram(SignalChart loadedSignal){
         setTextFields(loadedSignal);
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
+        chart.setCreateSymbols(false);
+        chart.getStyleClass().remove("discrete-signal");
+        chart.getStyleClass().add("continuous-signal");
+        XYChart.Series series = new XYChart.Series();
 
-        drawChart(loadedSignal, MAX_SAMPLING_RATE);
+        double step = loadedSignal.getArgs().getSamplingFrequency().toMillis()/1000;
+        for (int i = 0; i < loadedSignal.getProbes().size(); i++) {
+            double y = loadedSignal.getProbes().get(i);
+            series.getData().add(new XYChart.Data(step*i, y));
+        }
 
+        chart.getData().clear();
+        chart.getData().add(series);
         Histogram histogram = new Histogram(loadedSignal, histogramBins);
         drawHistogram(histogram);
     }
@@ -733,10 +738,10 @@ public class MainViewController {
         amplitudeSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getAmplitude()));
         periodSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getPeriod().toMillis()));
         t1SignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getInitialTime().toMillis()));
-        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()));
+        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()/1000));
         kwSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getKw()));
         nsSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getNs()));
-        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis() * 1000));
+        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis()/10));
         probabilitySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getProbability()));
 
         averageValueLabel.setText(String.valueOf(sc.getArgs().getAverageValue()));
