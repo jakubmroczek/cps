@@ -79,10 +79,6 @@ public class MainViewController {
     @FXML
     private HBox displayButtonContainer;
 
-
-    @FXML
-    private Button executeButton;
-
     @FXML
     private SignalParameter amplitudeSignalParameter,
                             periodSignalParameter,
