@@ -67,35 +67,35 @@
             <HBox prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
-                  <TextField fx:id="averageValueTextField" prefHeight="32.0" prefWidth="87.0" />
+                  <Label fx:id="averageValueLabel" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
-                  <TextField fx:id="averageAbsoluteValueTextField" prefHeight="32.0" prefWidth="87.0" />
+                  <Label fx:id="averageAbsoluteValueLabel" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Moc sr.:" />
-                  <TextField fx:id="averagePowerValueTextField" prefHeight="32.0" prefWidth="87.0" />
+                  <Label fx:id="averagePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Wariancja:" />
-                  <TextField fx:id="varianceValueTextField" prefHeight="32.0" prefWidth="87.0" />
+                  <Label fx:id="varianceValueLabel" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
             <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                <children>
                   <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc skuteczna:" />
-                  <TextField fx:id="effectivePowerValueTextField" prefHeight="32.0" prefWidth="87.0" />
+                  <Label fx:id="effectivePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                </children>
             </HBox>
             <HBox prefHeight="80.0" prefWidth="150.0">
