@@ -28,7 +28,7 @@ public class SignalFactory {
         switch (signal)
         {
             case LINEARLY_DISTRIBUTED_NOISE:
-                return getLinearlyDistibutedNoise(args.getAmplitude(), args.getInitialTime());
+                return getLinearlyDistibutedNoise(args.getAmplitude());
 
             case GAUSSIAN_NOISE:
                 return getGaussianNoise(args.getAmplitude());
@@ -79,38 +79,20 @@ public class SignalFactory {
         }
     }
 
-    //TODO: Add inititialTime
-    private static Signal getLinearlyDistibutedNoise(double amplitude, Duration initialTime) {
+    private static Signal getLinearlyDistibutedNoise(double amplitude) {
         Function<Duration, Double> function = duration -> {
             Random random = new Random();
-            return sqrt(12.0) * (((random.nextInt() % 101) - 50.0) / 100.0) + amplitude;
+            return amplitude * (random.nextDouble() * 2.0 - 1.0);
         };
         return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
-    //TODO: Add inititialTime
     private static Signal getGaussianNoise(double amplitude) {
-        //generator ze strony przedmotu z wikampa
-
-        /**
-         * \param e expected value
-         * \param v variance
-         */
-        BiFunction<Double, Double, Double> linearGenerator = (e, v) -> {
+        Function<Duration, Double> function = duration -> {
             Random random = new Random();
-            return sqrt(12.0 * v) * (((random.nextInt() % 101) - 50.0) / 100.0) + e;
+            return amplitude * random.nextGaussian();
         };
-
-        Function<Duration, Double> fun = duration -> {
-            int n = 10;
-            double x = 0.0;
-            for (int i = 0; i < n; i++) {
-                x += linearGenerator.apply(0.0, 1.0);
-            }
-            return x * sqrt(1.0 / (double) n) + amplitude;
-        };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
+        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
     private static Signal getSinusoidal(double amplitude, Duration period, Duration initialTime) {
