@@ -59,15 +59,7 @@ public class MainViewController {
     private Slider histogramBinsSlider;
 
     @FXML
-    private SignalChooser basicSignalChooser;
-
-    @FXML
-    private SignalParameter extraAmplitudeSignalParameter,
-            extraPeriodSignalParameter,
-            extraT1SignalParameter,
-            extraKwSignalParameter,
-            extraNsSignalParameter,
-            extraProbabilitySignalParameter;
+    private SignalChooser basicSignalChooser, extraSignalChooser;
 
     private int histogramBins = 10;
 
@@ -272,7 +264,7 @@ public class MainViewController {
         long samplingFrequencyInHz = 0;
         try {
             lhs = basicSignalChooser.getSignal();
-            rhs = createExtraSignal();
+            rhs = extraSignalChooser.getSignal();
 
             double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
             durationInNs = Duration.ofNanos((long)(durationInSeconds * 1_000_000_000L));
@@ -329,54 +321,9 @@ public class MainViewController {
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
 
-        //Jakis wzorzec albo zakapsulkowanie tego zachowania, code duplication
-        extraAmplitudeSignalParameter.getParameterName().setText("Amplituda: ");
-        extraAmplitudeSignalParameter.getParameterValue().setText("10.0");
-
-        extraPeriodSignalParameter.getParameterName().setText("Okres: ");
-        extraPeriodSignalParameter.getParameterValue().setText("100");
-
-        extraT1SignalParameter.getParameterName().setText("t1: ");
-        extraT1SignalParameter.getParameterValue().setText("0");
-
-        extraKwSignalParameter.getParameterName().setText("kw: ");
-        extraKwSignalParameter.getParameterValue().setText("0.5");
-
-        extraNsSignalParameter.getParameterName().setText("ns");
-        extraNsSignalParameter.getParameterValue().setText("5");
-
-        extraProbabilitySignalParameter.getParameterName().setText("Prawd.");
-        extraProbabilitySignalParameter.getParameterValue().setText("0.5");
-
         chart.setAnimated(false);
         chart.setLegendVisible(false);
         histogramChart.setLegendVisible(false);
-    }
-
-    private Signal createExtraSignal() throws NumberFormatException {
-        try {
-            //TODO: Error handling
-            double amplitude = Double.parseDouble(extraAmplitudeSignalParameter.getParameterValue().getText());
-            //TODO: Assert that unit is not smaller than 1 nanoseconds and that input is seconds
-            double periodInSeconds = Double.valueOf(extraPeriodSignalParameter.getParameterValue().getText());
-            Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
-            double initialTimeInSeconds = Double.valueOf(extraT1SignalParameter.getParameterValue().getText());
-            Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
-            int ns = Integer.parseInt(extraNsSignalParameter.getParameterValue().getText());
-            double probability = Double.parseDouble(extraProbabilitySignalParameter.getParameterValue().getText());
-
-            //TODO: connect to fxml object
-            //Check if the value is in range
-            double kw = Double.parseDouble(extraKwSignalParameter.getParameterValue().getText());
-
-            SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
-
-            String key = (String) extraSignalList.getSelectionModel().getSelectedItem();
-            String extraSignalType = labelsToSignalsMap.get(key);
-            return SignalFactory.createSignal(extraSignalType, args);
-        } catch (NumberFormatException exception) {
-            throw exception;
-        }
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
