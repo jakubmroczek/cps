@@ -25,9 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -239,31 +237,41 @@ public class MainViewController {
 
     @FXML
     private void loadFromFile() {
-        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().add(fcExtension);
+        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
         File file = fileChooser.showOpenDialog(this.stage);
         if (file == null)
             return;
 
+        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
         try {
-            Gson gson = new Gson();
-            JsonReader reader = new JsonReader(new FileReader(file));
-            SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
+            if (resultExtension.equals(jsonExtension)) {
+                Gson gson = new Gson();
+                JsonReader reader = new JsonReader(new FileReader(file));
+                SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
 
-            signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
+                signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
-            long widthInPixels = (long) chart.getXAxis().getWidth();
-            final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
+                drawChartAndHistogram(loadedSignal);
+            } else if (resultExtension.equals(binaryExtension)) {
+                FileInputStream fis = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                SignalChart loadedSignal = (SignalChart) ois.readObject();
 
-            drawChart(loadedSignal, MAX_SAMPLING_RATE);
+                signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(loadedSignal.getSignalType()));
 
-            Histogram histogram = new Histogram(loadedSignal, histogramBins);
-            drawHistogram(histogram);
+                drawChartAndHistogram(loadedSignal);
+            } else {
+                throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -499,5 +507,13 @@ public class MainViewController {
             }
         }
     }
+    private void drawChartAndHistogram(SignalChart loadedSignal){
+        long widthInPixels = (long) chart.getXAxis().getWidth();
+        final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
 
+        drawChart(loadedSignal, MAX_SAMPLING_RATE);
+
+        Histogram histogram = new Histogram(loadedSignal, histogramBins);
+        drawHistogram(histogram);
+    }
 }
