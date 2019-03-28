@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import cps.SignalParameter?>
+<?import cps.SignalChooser?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
@@ -35,31 +35,6 @@
                 <NumberAxis side="LEFT" />
               </yAxis>
             </BarChart>
-         </children>
-      </VBox>
-      <ComboBox fx:id="signalList" onAction="#onSignalChoice" prefHeight="26.0" prefWidth="168.0" />
-      <VBox layoutY="31.0" prefHeight="301.0" prefWidth="200.0">
-         <children>
-            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="290.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-            <VBox fx:id="signalParameterVBox" prefHeight="300.0" prefWidth="200.0">
-               <children>
-                  <SignalParameter fx:id="amplitudeSignalParameter" />
-                  <SignalParameter fx:id="periodSignalParameter" />
-                  <SignalParameter fx:id="t1SignalParameter" />
-                  <SignalParameter fx:id="durationSignalParameter" />
-                  <SignalParameter fx:id="kwSignalParameter" />
-                  <SignalParameter fx:id="nsSignalParameter" />
-                  <SignalParameter fx:id="samplingFrequencySignalParameter" />
-                  <SignalParameter fx:id="probabilitySignalParameter" />
-                  <Rectangle fx:id="emptyRectangle" arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-                  <HBox fx:id="displayButtonContainer" prefHeight="28.0" prefWidth="200.0">
-                     <children>
-                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="17.0" stroke="TRANSPARENT" strokeType="INSIDE" width="22.0" />
-                        <Button fx:id="displayButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
          </children>
       </VBox>
       <VBox layoutX="696.0" prefHeight="458.0" prefWidth="194.0">
@@ -105,30 +80,15 @@
                   <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadFromFile" text="Load from file" />
                </children>
             </HBox>
-            <HBox prefHeight="0" prefWidth="170.0">
-               <children>
-                  <Button fx:id="addButton" mnemonicParsing="false" onAction="#addSignals" text="Add signals" />
-                  <Button fx:id="subtractButton" mnemonicParsing="false" onAction="#subtractSignals" text="Subtract signals" />
-               </children>
-            </HBox>
-            <HBox prefHeight="42.0" prefWidth="170.0">
-               <children>
-                  <Button fx:id="multiplyButton" mnemonicParsing="false" onAction="#multiplySignals" text="Multiply signals" />
-                  <Button fx:id="divideButton" mnemonicParsing="false" onAction="#divideSignals" text="Divide signals" />
-               </children>
-            </HBox>
+            <HBox prefHeight="0" prefWidth="170.0" />
+            <HBox prefHeight="42.0" prefWidth="170.0" />
          </children>
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="-16.0" layoutY="426.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-      <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="26.0" prefWidth="168.0" />
-      <ComboBox fx:id="extraSignalList" layoutY="373.0" prefHeight="26.0" prefWidth="168.0" />
-      <SignalParameter fx:id="extraAmplitudeSignalParameter" layoutY="420.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraPeriodSignalParameter" layoutY="451.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraT1SignalParameter" layoutY="480.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraKwSignalParameter" layoutY="511.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraNsSignalParameter" layoutY="542.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraProbabilitySignalParameter" layoutY="573.0" prefHeight="31.0" prefWidth="207.0" />
-      <Button fx:id="executeButton" layoutX="24.0" layoutY="613.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
-   </children>
+      <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
+      <Button fx:id="displayButton" layoutX="356.0" layoutY="522.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres" />
+       <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+      <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+      <Button fx:id="executeButton" layoutX="356.0" layoutY="573.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
+    </children>
 </AnchorPane>
