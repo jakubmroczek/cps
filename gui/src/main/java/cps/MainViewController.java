@@ -285,61 +285,6 @@ public class MainViewController {
         }
     }
 
-    @FXML
-    private void addSignals() {
-        SignalChart lhs = loadSignal("1");
-        SignalChart rhs = loadSignal("2");
-        SignalChart result = SignalOperations.add(lhs, rhs);
-
-        //TODO: Informacja o nazwie wczytanego sygnali xd
-
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
-
-        drawChart(result, MAX_SAMPLING_RATE);
-    }
-
-    @FXML
-    private void subtractSignals() {
-        SignalChart lhs = loadSignal("1");
-        SignalChart rhs = loadSignal("2");
-
-        SignalChart result = SignalOperations.subtract(lhs, rhs);
-
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
-
-
-        drawChart(result, MAX_SAMPLING_RATE);
-    }
-
-    @FXML
-    private void multiplySignals() {
-        SignalChart lhs = loadSignal("1");
-        SignalChart rhs = loadSignal("2");
-
-        SignalChart result = SignalOperations.multiply(lhs, rhs);
-
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
-
-        drawChart(result, MAX_SAMPLING_RATE);
-    }
-
-    @FXML
-    private void divideSignals() {
-        SignalChart lhs = loadSignal("1");
-        SignalChart rhs = loadSignal("2");
-
-        SignalChart result = SignalOperations.divide(lhs, rhs);
-
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = result.getDuration().dividedBy(widthInPixels);
-
-
-        drawChart(result, MAX_SAMPLING_RATE);
-    }
-
     private SignalChart loadSignal(String sygnal) {
         FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
 
