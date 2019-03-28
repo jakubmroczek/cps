@@ -1,6 +1,7 @@
 package cps;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cps.model.Math;
 import cps.model.SignalChart;
 
@@ -15,7 +16,7 @@ import java.util.List;
 public class SignalWriter {
 
     public static void writeJSON(File file, SignalChart signalChart) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         //TODO: Other sceneario
         if (signalChart != null) {
