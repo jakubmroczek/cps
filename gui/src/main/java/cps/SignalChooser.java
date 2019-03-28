@@ -6,10 +6,12 @@ import cps.model.SignalFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Pair;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,10 +49,22 @@ public class SignalChooser extends VBox {
     }
 
     @FXML
-    private ComboBox<String> signalLists;
+    private ComboBox<String> signalList;
+
+    @FXML
+    private SignalParameter amplitudeSignalParameter;
 
     public SignalChooser() {
-        signalLists.getItems().addAll(AVAILABLE_SIGNALS);
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SignalChooser.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+
+        try {
+            fxmlLoader.load();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+        signalList.getItems().addAll(AVAILABLE_SIGNALS);
     }
 
     /**

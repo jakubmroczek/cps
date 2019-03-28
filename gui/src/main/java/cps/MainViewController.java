@@ -2,7 +2,6 @@ package cps;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
-import com.sun.tools.javac.util.Pair;
 import cps.model.*;
 
 import cps.model.Signal;
