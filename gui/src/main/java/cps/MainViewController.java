@@ -39,13 +39,6 @@ public class MainViewController {
 
     private Stage stage;
 
-    private final Map<String, String> labelsToSignalsMap = new HashMap<>();
-
-    // Changes SignalParameters layout
-    private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
-
-    private String signal;
-
     //TODO: Nullable?
     private SignalChart generatedSignalChart;
     private Histogram histogram;
@@ -54,8 +47,7 @@ public class MainViewController {
     private LineChart<Number, Number> chart;
 
     @FXML
-    private ComboBox signalOperationList,
-                     extraSignalList;
+    private ComboBox signalOperationList;
 
     @FXML
     private TextField averageValueTextField, averageAbsoluteValueTextField;
@@ -81,20 +73,6 @@ public class MainViewController {
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList(
       "+", "-", "*", "/"
-    );
-
-    private static final ObservableList<String> AVALIABLE_SIGNALS = FXCollections.observableArrayList(
-            "Szum o rozkładzie jednostajnym",
-            "Szum gaussowski",
-            "Sygnał sinusoidalny",
-            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-            "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
-            "Sygnał prostokątny",
-            "Sygnał prostokątny symetryczny",
-            "Sygnał trójkątny",
-            "Skok jednostkowy",
-            "Impuls jednostkowy",
-            "Szum impulsowy"
     );
 
     @FXML
@@ -348,10 +326,6 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        //Combo box
-        extraSignalList.getItems().addAll(AVALIABLE_SIGNALS);
-
-
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
 

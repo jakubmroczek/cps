@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import cps.SignalChooser?>
-<?import cps.SignalParameter?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
@@ -66,17 +65,10 @@
          </children>
       </VBox>
       <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="9.0" layoutX="-16.0" layoutY="426.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
-      <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="26.0" prefWidth="168.0" />
-      <ComboBox fx:id="extraSignalList" layoutY="373.0" prefHeight="26.0" prefWidth="168.0" />
-      <SignalParameter fx:id="extraAmplitudeSignalParameter" layoutY="420.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraPeriodSignalParameter" layoutY="451.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraT1SignalParameter" layoutY="480.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraKwSignalParameter" layoutY="511.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraNsSignalParameter" layoutY="542.0" prefHeight="31.0" prefWidth="207.0" />
-      <SignalParameter fx:id="extraProbabilitySignalParameter" layoutY="573.0" prefHeight="31.0" prefWidth="207.0" />
-      <Button fx:id="executeButton" layoutX="24.0" layoutY="613.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
+      <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
       <Button fx:id="displayButton" layoutX="356.0" layoutY="522.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres" />
-       <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="204.0" />
+       <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+      <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+      <Button fx:id="executeButton" layoutX="356.0" layoutY="573.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
     </children>
 </AnchorPane>
