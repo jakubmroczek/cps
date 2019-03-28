@@ -90,39 +90,51 @@ public class SignalChooser extends VBox {
             layoutRearrangement.run();
         }
     }
+
     /**
      * Creates Signal assembled from user parameters.
      */
     public Signal getSignal() throws IllegalArgumentException {
-//        try {
-//            double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
-//            double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
-//            Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
-//            double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
-//            Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
-//            int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
-//            double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
-//
-//            //TODO: connect to fxml object
-//            //Check if the value is in range
-//            double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
-//
-//            SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
-//
-//            String signalType = labelsToSignalsMap.get(signal);
-//            return SignalFactory.createSignal(signalType, args);
-//        } catch (NumberFormatException exception) {
-//            throw exception;
-//        }
-        return null;
+        try {
+            double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
+
+            double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
+            Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
+
+            double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
+            Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
+
+            int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
+
+            double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
+
+            //Check if the value is in range
+            double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
+
+            SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
+
+            String selection = signalList.getSelectionModel().getSelectedItem();
+            String signalType = LABEL_TO_SIGNAL_MAP.get(selection);
+            return SignalFactory.createSignal(signalType, args);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(exception);
+        }
     }
 
     public double getDurationInSeconds() throws IllegalArgumentException {
-        return 0.0;
+        try {
+            return Double.valueOf(durationSignalParameter.getParameterValue().getText());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public double getSamplingFrequencyInHz() throws IllegalArgumentException {
-        return 0.0;
+        try {
+            return Long.parseLong(samplingFrequencySignalParameter.getParameterValue().getText());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     private void initializeSignalParameters() {
