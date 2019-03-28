@@ -285,33 +285,6 @@ public class MainViewController {
         }
     }
 
-    private SignalChart loadSignal(String sygnal) {
-        FileChooser.ExtensionFilter fcExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał " + sygnal);
-        fileChooser.getExtensionFilters().add(fcExtension);
-        File file = fileChooser.showOpenDialog(this.stage);
-        if (file == null)
-            return null;
-
-        try {
-            Gson gson = new Gson();
-            JsonReader reader = new JsonReader(new FileReader(file));
-            SignalChart s1 = gson.fromJson(reader, SignalChart.class);
-
-            long widthInPixels = (long) chart.getXAxis().getWidth();
-            final Duration MAX_SAMPLING_RATE = s1.getDuration().dividedBy(widthInPixels);
-
-            drawChart(s1, MAX_SAMPLING_RATE);
-            return s1;
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return null;
-    }
-
     @FXML
     public void onSignalChoice() {
         signal = (String) signalList.getSelectionModel().getSelectedItem();
