@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class SignalChart implements Serializable {
 
     private Duration duration;
     private Duration probingPeriod;
+    @Setter
     private List<Double> probes;
 
     public SignalChart(Duration duration, Duration probingPeriod, List<Double> probes) {

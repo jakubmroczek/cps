@@ -1,5 +1,7 @@
 package cps.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.function.Function;
 
@@ -83,5 +85,13 @@ public class Math {
             sum += function.apply(x);
         }
         return sum * h;
+    }
+
+    public static Double round(Double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 }
