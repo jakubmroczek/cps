@@ -18,7 +18,6 @@ import javafx.scene.chart.*;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 
 import javafx.scene.layout.HBox;
@@ -28,11 +27,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sun.security.x509.AVA;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.Math;
 import java.io.*;
+import java.lang.Math;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -105,10 +101,12 @@ public class MainViewController {
             plotDiscreteSignal(generatedSignalChart);
             generatedSignalChart.setSignalType(Signal.Type.DISCRETE);
         }
+
+        //TODO: Usun nadmiarowy czas
         histogram = new Histogram(generatedSignalChart, histogramBins);
         drawHistogram(histogram);
-
-        // TODO: !!!!Pamietaj zeby odciac nadmiarowy czas
+        
+        //TODO: Usun nadmiarowy czas
         double averageValue = cps.model.Math.averageValue(signal, Duration.ZERO, durationInNs);
         averageValueLabel.setText(String.format("%.2f", averageValue));
 
@@ -132,11 +130,11 @@ public class MainViewController {
 //                                            .kw(Double.parseDouble(kwSignalParameter.getParameterValue().getText()))
 //                                            .Ns(Integer.parseInt(nsSignalParameter.getParameterValue().getText()))
 //                                            .probability(Double.parseDouble(probabilitySignalParameter.getParameterValue().getText()))
-//                                            .averageValue(Math.round(averageValue,2))
-//                                            .averageAbsoulteValue(Math.round(averageAbsoulteValue,2))
-//                                            .averagePowerValue(Math.round(averagePowerValue,2))
-//                                            .varianceValue(Math.round(varianceValue,2))
-//                                            .effectivePowerValue(Math.round(effectivePowerValue,2))
+//                                            .averageValue(cps.model.Math.round(averageValue,2))
+//                                            .averageAbsoulteValue(cps.model.Math.round(averageAbsoulteValue,2))
+//                                            .averagePowerValue(cps.model.Math.round(averagePowerValue,2))
+//                                            .varianceValue(cps.model.Math.round(varianceValue,2))
+//                                            .effectivePowerValue(cps.model.Math.round(effectivePowerValue,2))
 //                                            .samplingFrequency(SAMPLING_RATE)
 //                                            .build();
 //
@@ -257,6 +255,8 @@ public class MainViewController {
 
                 drawChartAndHistogram(loadedSignal);
             } else if (resultExtension.equals(binaryExtension)) {
+                //TODO: Delegate to some function
+                //TODO: Close using stream
                 FileInputStream fis = new FileInputStream(file);
                 ObjectInputStream ois = new ObjectInputStream(fis);
                 SignalChart loadedSignal = (SignalChart) ois.readObject();
@@ -312,6 +312,7 @@ public class MainViewController {
             samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
 
         } catch (NumberFormatException exception) {
+            //TODO: Code duplication
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
             errorAlert.setHeaderText("Input not valid");
             errorAlert.setContentText(exception.getMessage() + "\n" + exception.getCause());
@@ -406,12 +407,26 @@ public class MainViewController {
     }
     private void drawChartAndHistogram(SignalChart loadedSignal) {
         setTextFields(loadedSignal);
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        final Duration MAX_SAMPLING_RATE = loadedSignal.getDuration().dividedBy(widthInPixels);
-        drawChart(loadedSignal, MAX_SAMPLING_RATE);
 
-        Histogram histogram = new Histogram(loadedSignal, histogramBins);
-        drawHistogram(histogram);
+        throw new UnsupportedOperationException("not implemented");
+        //drawChart(loadedSignal);
+
+        //chart.setCreateSymbols(false);
+//        chart.getStyleClass().remove("discrete-signal");
+//        chart.getStyleClass().add("continuous-signal");
+//        XYChart.Series series = new XYChart.Series();
+//
+//        double step = loadedSignal.getArgs().getSamplingFrequency().toMillis()/1000;
+//        for (int i = 0; i < loadedSignal.getProbes().size(); i++) {
+//            double y = loadedSignal.getProbes().get(i);
+//            series.getData().add(new XYChart.Data(step*i, y));
+//        }
+//
+//
+//        chart.getData().clear();
+//        chart.getData().add(series);
+//        Histogram histogram = new Histogram(loadedSignal, histogramBins);
+//        drawHistogram(histogram);
     }
 
     private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
@@ -429,7 +444,6 @@ public class MainViewController {
     }
 
     private void setTextFields(SignalChart sc) {
-        throw new UnsupportedOperationException("not implemented");
 //        signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(sc.getArgs().getSignalName()));
 //        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(sc.getArgs().getSignalName());
 //        if (layoutRearrangement != null) {
@@ -438,10 +452,10 @@ public class MainViewController {
 //        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getAmplitude()));
 //        periodSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getPeriod().toMillis()));
 //        t1SignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getInitialTime().toMillis()));
-//        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()));
+//        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()/1000));
 //        kwSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getKw()));
 //        nsSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getNs()));
-//        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis() * 1000));
+//        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis()/10));
 //        probabilitySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getProbability()));
 //
 //        averageValueLabel.setText(String.valueOf(sc.getArgs().getAverageValue()));
@@ -450,4 +464,5 @@ public class MainViewController {
 //        varianceValueLabel.setText(String.valueOf(sc.getArgs().getVarianceValue()));
 //        effectivePowerValueLabel.setText(String.valueOf(sc.getArgs().getEffectivePowerValue()));
     }
+
 }

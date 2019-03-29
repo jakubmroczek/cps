@@ -16,6 +16,7 @@ import static java.time.temporal.ChronoUnit.NANOS;
 
 class DiscreteSignal extends Signal {
 
+    List<Double> samples;
     public DiscreteSignal(Function<Long, Double> function) {
         super(Type.DISCRETE, null);
         this.function = function;
@@ -31,7 +32,7 @@ class DiscreteSignal extends Signal {
         //Floor -> takes only the full multiple of duration
         //TODO: Exception handling
         long size = duration.toNanos() / probingPeriod.toNanos();
-        List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
+        samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
         return new SignalChart(duration, probingPeriod, samples);
     }
 
