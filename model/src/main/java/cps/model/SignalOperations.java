@@ -46,7 +46,14 @@ public class SignalOperations {
     }
     
     public static SignalChart divide(SignalChart lhs, SignalChart rhs) {
-        throw new UnsupportedOperationException("not implemented yet.");
+        validate(lhs, rhs);
+
+        int size = lhs.getProbes().size();
+        //TODO: Division by zero error
+        List<Double> resultSamples = IntStream.range(0, size).mapToObj(index -> lhs.getProbes().get(index) / rhs.getProbes().get(index)).collect(Collectors.toList());
+
+        return new SignalChart(lhs.getDuration(), lhs.getProbingPeriod(), resultSamples);
+
     }
     
 }
