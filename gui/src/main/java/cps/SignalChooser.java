@@ -2,6 +2,7 @@ package cps;
 
 import cps.model.Signal;
 import cps.model.SignalArgs;
+import cps.model.SignalChart;
 import cps.model.SignalFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -77,36 +78,46 @@ public class SignalChooser extends VBox {
      */
     public Signal getSignal() throws IllegalArgumentException {
         try {
-            double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
-
-            double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
-            Duration periodInNs = Duration.ofNanos((long) (periodInSeconds * 1_000_000_000L));
-
-            double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
-            Duration initialTimeInNs = Duration.ofNanos((long) (initialTimeInSeconds * 1_000_000_000L));
-
-            int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
-
-            double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
-
-            //Check if the value is in range
-            double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
-
-            SignalArgs args = SignalArgs.builder()
-                                        .amplitude(amplitude)
-                                        .period(periodInNs)
-                                        .initialTime(initialTimeInNs)
-                                        .kw(kw)
-                                        .Ns(ns)
-                                        .probability(probability)
-                                        .build();
-
+            SignalArgs args = getSignalArgs();
             String selection = signalList.getSelectionModel().getSelectedItem();
             String signalType = LABEL_TO_SIGNAL_MAP.get(selection);
             return SignalFactory.createSignal(signalType, args);
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(exception);
         }
+    }
+
+    public SignalArgs getSignalArgs() throws IllegalArgumentException {
+        String name = signalList.getSelectionModel().getSelectedItem();
+
+        double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
+
+        double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
+        Duration periodInNs = Duration.ofNanos((long) (periodInSeconds * 1_000_000_000L));
+
+        double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
+        Duration initialTimeInNs = Duration.ofNanos((long) (initialTimeInSeconds * 1_000_000_000L));
+
+        double samplingFrequencyInHz = Double.valueOf(samplingFrequencySignalParameter.getParameterValue().getText());
+        Duration samplingFrequencyInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+
+        int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
+
+        double probability = Double.parseDouble(probabilitySignalParameter.getParameterValue().getText());
+
+        //Check if the value is in range
+        double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
+
+        return SignalArgs.builder()
+                                    .signalName(name)
+                                    .amplitude(amplitude)
+                                    .period(periodInNs)
+                                    .initialTime(initialTimeInNs)
+                                    .kw(kw)
+                                    .Ns(ns)
+                                    .probability(probability)
+                                    .samplingFrequency(samplingFrequencyInNs)
+                                    .build();
     }
 
     public double getDurationInSeconds() throws IllegalArgumentException {
@@ -137,6 +148,22 @@ public class SignalChooser extends VBox {
             };
             signalNameToSignalParametersLayoutMap.put(signal, layoutRearrangement);
         }
+    }
+
+    public void setSignalChart(SignalChart signalChart) {
+        signalList.getSelectionModel().select(AVAILABLE_SIGNALS.indexOf(signalChart.getArgs().getSignalName()));
+        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(signalChart.getArgs().getSignalName());
+        if (layoutRearrangement != null) {
+            layoutRearrangement.run();
+        }
+        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getAmplitude()));
+        periodSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getPeriod().toMillis()));
+        t1SignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getInitialTime().toMillis()));
+        durationSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getDuration().toMillis()/1000));
+        kwSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getKw()));
+        nsSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getNs()));
+        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getSamplingFrequency().toMillis()/10));
+        probabilitySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getProbability()));
     }
 
     private void initializeSignalParameters() {
