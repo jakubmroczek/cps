@@ -64,8 +64,10 @@ public class MainViewController {
         final Duration SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
         generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
 
+
+
         if (signal.getType() == Signal.Type.CONTINUOUS) {
-            plotContinuousSignal(signal, durationInNs);
+            plotContinuousSignal(generatedSignalChart);
             generatedSignalChart.setSignalType(Signal.Type.CONTINUOUS);
         } else {
             plotDiscreteSignal(generatedSignalChart);
@@ -121,28 +123,40 @@ public class MainViewController {
         chart.getData().add(series);
     }
 
-    private void plotContinuousSignal(Signal signal, Duration duration) {
+    private void plotContinuousSignal(SignalChart signal) {
+         chart.setCreateSymbols(false);
+         chart.getStyleClass().remove("discrete-signal");
+         chart.getStyleClass().add("continuous-signal");
+         XYChart.Series series = new XYChart.Series();
+
         //One point in one sample point
-        long widthInPixels = (long) chart.getXAxis().getWidth();
-        double stepInSeconds = duration.toNanos() / 1_000_000_000D;
-        stepInSeconds /= widthInPixels;
 
-        final Duration SAMPLING_RATE = duration.dividedBy(widthInPixels);
-        SignalChart signalChart = signal.createChart(duration, SAMPLING_RATE);
+        double stepInSeconds;
+        long step = 1;
 
-        chart.setCreateSymbols(false);
-        chart.getStyleClass().remove("discrete-signal");
-        chart.getStyleClass().add("continuous-signal");
-        XYChart.Series series = new XYChart.Series();
-
-        for (int i = 0; i < signalChart.getProbes().size(); i++) {
-            double y = signalChart.getProbes().get(i);
-            series.getData().add(new XYChart.Data(stepInSeconds * i, y));
+        final long NUMBER_OF_PIXELS_IN_CHART = (long) chart.getXAxis().getWidth();
+        if (signal.getProbes().size() <= NUMBER_OF_PIXELS_IN_CHART) {
+            stepInSeconds = signal.getDuration().toNanos() / 1_000_000_000D;
+            //TODO: Division by zero
+            if (signal.getProbes().size() - 1 != 0)
+             stepInSeconds /= (signal.getProbes().size() - 1);
+        } else {
+          step = (long) signal.getProbes().size() / NUMBER_OF_PIXELS_IN_CHART;
+          stepInSeconds = signal.getDuration().toNanos() / 1_000_000_000D;
+          stepInSeconds /= NUMBER_OF_PIXELS_IN_CHART;
         }
+
+
+       for (int i = 0, j = 0; i < signal.getProbes().size(); i += step, j++)  {
+                   double y = signal.getProbes().get(i);
+           series.getData().add(new XYChart.Data(stepInSeconds * j, y));
+       }
 
         chart.getData().clear();
         chart.getData().add(series);
     }
+
+
 
     //TODO: Differ between discrete and continuous functions
     private void drawChart(SignalChart signalChart) {
