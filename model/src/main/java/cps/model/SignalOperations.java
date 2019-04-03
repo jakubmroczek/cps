@@ -6,6 +6,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
 public class SignalOperations {
@@ -47,13 +48,14 @@ public class SignalOperations {
     
     public static SignalChart divide(SignalChart lhs, SignalChart rhs) {
         validate(lhs, rhs);
+        SignalChart inversion = inverse(lhs);
+        return multiply(inversion, rhs);
+    }
 
-        int size = lhs.getProbes().size();
-        //TODO: Division by zero error
-        List<Double> resultSamples = IntStream.range(0, size).mapToObj(index -> lhs.getProbes().get(index) / rhs.getProbes().get(index)).collect(Collectors.toList());
-
-        return new SignalChart(lhs.getDuration(), lhs.getProbingPeriod(), resultSamples);
-
+    private static SignalChart inverse(SignalChart instance) {
+        final double ZERO = 10e-9;
+        List<Double> resultSamples = instance.getProbes().stream().map(x -> abs(x) < ZERO ? 0.0 : 1.0 / x).collect(Collectors.toList());
+        return new SignalChart(instance.getDuration(), instance.getProbingPeriod(), resultSamples);
     }
     
 }
