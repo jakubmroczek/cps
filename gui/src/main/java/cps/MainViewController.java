@@ -41,60 +41,51 @@ public class MainViewController {
     private int histogramBins = 10;
 
     @FXML public void display() {
-        Signal signal;
-        Duration durationInNs;
-        long samplingFrequencyInHz;
-        SignalArgs signalArgs;
-
-        try {
-            signal = basicSignalChooser.getSignal();
+       try {
+            Signal signal = basicSignalChooser.getSignal();
 
             double durationInSeconds = basicSignalChooser.getDurationInSeconds();
-            durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
-            samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
-            signalArgs = basicSignalChooser.getSignalArgs();
+            Duration durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
+
+            long samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
+            SignalArgs signalArgs = basicSignalChooser.getSignalArgs();
+
+            final Duration SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+            generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
+
+            generatedSignalChart.setSignalType(signal.getType());
+            plotSignal(generatedSignalChart);
+
+            //TODO: Usun nadmiarowy czas
+            histogram = new Histogram(generatedSignalChart, histogramBins);
+            drawHistogram(histogram);
+
+            //TODO: Usun nadmiarowy czas
+            double averageValue = cps.model.Math.averageValue(signal, Duration.ZERO, durationInNs);
+            averageValueLabel.setText(String.format("%.2f", averageValue));
+
+            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, Duration.ZERO, durationInNs);
+            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
+
+            double averagePowerValue = cps.model.Math.averagePower(signal, Duration.ZERO, durationInNs);
+            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
+
+            double varianceValue = cps.model.Math.variance(signal, Duration.ZERO, durationInNs);
+            varianceValueLabel.setText(String.format("%.2f", varianceValue));
+
+            double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
+            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
+
+            signalArgs.setAverageValue(averageValue);
+            signalArgs.setAverageAbsoulteValue(averageAbsoulteValue);
+            signalArgs.setAveragePowerValue(averagePowerValue);
+            signalArgs.setVarianceValue(varianceValue);
+            signalArgs.setEffectivePowerValue(effectivePowerValue);
+            generatedSignalChart.setArgs(signalArgs);
 
         } catch (IllegalArgumentException exception) {
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText(exception.getMessage() + "\n" + exception.getCause());
-            errorAlert.showAndWait();
-            //TODO: Restore default state of the contolls after the crush
-            return;
+           onSignalCreationException(exception);
         }
-
-        final Duration SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-        generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
-
-        generatedSignalChart.setSignalType(signal.getType());
-        plotSignal(generatedSignalChart);
-
-        //TODO: Usun nadmiarowy czas
-        histogram = new Histogram(generatedSignalChart, histogramBins);
-        drawHistogram(histogram);
-
-        //TODO: Usun nadmiarowy czas
-        double averageValue = cps.model.Math.averageValue(signal, Duration.ZERO, durationInNs);
-        averageValueLabel.setText(String.format("%.2f", averageValue));
-
-        double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, Duration.ZERO, durationInNs);
-        averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
-
-        double averagePowerValue = cps.model.Math.averagePower(signal, Duration.ZERO, durationInNs);
-        averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
-
-        double varianceValue = cps.model.Math.variance(signal, Duration.ZERO, durationInNs);
-        varianceValueLabel.setText(String.format("%.2f", varianceValue));
-
-        double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
-        effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
-
-        signalArgs.setAverageValue(averageValue);
-        signalArgs.setAverageAbsoulteValue(averageAbsoulteValue);
-        signalArgs.setAveragePowerValue(averagePowerValue);
-        signalArgs.setVarianceValue(varianceValue);
-        signalArgs.setEffectivePowerValue(effectivePowerValue);
-        generatedSignalChart.setArgs(signalArgs);
     }
 
     private void plotSignal(SignalChart signal) {
@@ -137,24 +128,6 @@ public class MainViewController {
         chart.getStyleClass().add("discrete-signal");
     }
 
-    //TODO: Differ between discrete and continuous functions
-    private void drawChart(SignalChart signalChart) {
-        chart.setCreateSymbols(false);
-        chart.getStyleClass().remove("discrete-signal");
-        chart.getStyleClass().add("continuous-signal");
-        XYChart.Series series = new XYChart.Series();
-
-        double stepInSeconds = signalChart.getDuration().toNanos() / 1_000_000_000D / signalChart.getProbes().size();
-        System.out.println("STEP IN SEC: " + stepInSeconds);
-        for (int i = 0; i < signalChart.getProbes().size(); i++) {
-            double y = signalChart.getProbes().get(i);
-            series.getData().add(new XYChart.Data(stepInSeconds * i, y));
-        }
-
-        chart.getData().clear();
-        chart.getData().add(series);
-    }
-
     @FXML private void saveToFile() {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON File", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
@@ -188,8 +161,11 @@ public class MainViewController {
         fileChooser.setTitle("Wczytaj sygnał");
         fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
         File file = fileChooser.showOpenDialog(this.stage);
+
         if (file == null)
+        {
             return;
+        }
 
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
         try {
@@ -213,9 +189,7 @@ public class MainViewController {
 
     @FXML public void onExecuteButton() {
         String operation = (String) signalOperationList.getSelectionModel().getSelectedItem();
-
         BiFunction<SignalChart, SignalChart, SignalChart> operator;
-        //TODO: Extra map
         switch (operation) {
             case "+":
                 operator = SignalOperations::add;
@@ -234,64 +208,33 @@ public class MainViewController {
                 break;
 
             default:
-                throw new UnsupportedOperationException("unkown operatoin type in combo list.");
+                throw new UnsupportedOperationException("Unknown operation type in combo list.");
         }
 
-        Signal lhs = null, rhs = null;
-        Duration durationInNs = null;
-        long samplingFrequencyInHz = 0;
         try {
-            lhs = basicSignalChooser.getSignal();
-            rhs = extraSignalChooser.getSignal();
+            Signal lhs = basicSignalChooser.getSignal();
+            Signal rhs = extraSignalChooser.getSignal();
 
             double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
-            durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
+            Duration durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
 
-            samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
+            long samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
+            final Duration USER_SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+
+            SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
+            SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
+            SignalChart result = operator.apply(sc1, sc2);
+
+            result.setSignalType(lhs.getType());
+
+            plotSignal(result);
+
+            histogram = new Histogram(result, histogramBins);
+            drawHistogram(histogram);
 
         } catch (NumberFormatException exception) {
-            //TODO: Code duplication
-            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-            errorAlert.setHeaderText("Input not valid");
-            errorAlert.setContentText(exception.getMessage() + "\n" + exception.getCause());
-            errorAlert.showAndWait();
-            //TODO: Restore default state of the contolls after the crush
-            return;
+            onSignalCreationException(exception);
         }
-
-        final Duration USER_SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-
-        SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
-        SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
-        SignalChart result = operator.apply(sc1, sc2);
-
-        if (lhs.getType() == Signal.Type.CONTINUOUS) {
-            //One point in one sample point
-            long widthInPixels = (long) chart.getXAxis().getWidth();
-            double stepInSeconds = durationInNs.toNanos() / 1_000_000_000D;
-            stepInSeconds /= widthInPixels;
-
-            final Duration SAMPLING_RATE = durationInNs.dividedBy(widthInPixels);
-            SignalChart signalChart = operator.apply(sc1, sc2);
-
-            chart.setCreateSymbols(false);
-            chart.getStyleClass().remove("discrete-signal");
-            chart.getStyleClass().add("continuous-signal");
-            XYChart.Series series = new XYChart.Series();
-
-            for (int i = 0; i < signalChart.getProbes().size(); i++) {
-                double y = signalChart.getProbes().get(i);
-                series.getData().add(new XYChart.Data(stepInSeconds * i, y));
-            }
-
-            chart.getData().clear();
-            chart.getData().add(series);
-        } else {
-            //            plotDiscreteSignal(generatedSignalChart);
-        }
-
-        histogram = new Histogram(result, histogramBins);
-        drawHistogram(histogram);
     }
 
     @FXML public void initialize() {
@@ -304,17 +247,16 @@ public class MainViewController {
 
         chart.setAnimated(false);
         chart.setLegendVisible(false);
+        histogramChart.setCategoryGap(0);
+
+        histogramChart.setBarGap(0);
+        histogramChart.setAnimated(false);
         histogramChart.setLegendVisible(false);
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
     private void drawHistogram(Histogram histogram) {
-
-        histogramChart.setCategoryGap(0);
-        histogramChart.setBarGap(0);
-        histogramChart.setAnimated(false);
         XYChart.Series series1 = new XYChart.Series();
-        series1.setName("Histogram");
 
         double currentRange = histogram.getMin();
         final double columnWidth = (histogram.getMax() - histogram.getMin()) / histogram.getBins();
@@ -343,10 +285,18 @@ public class MainViewController {
 
     private void drawChartAndHistogram(SignalChart loadedSignal) {
         setTextFields(loadedSignal);
-                generatedSignalChart = loadedSignal;
-                plotSignal(loadedSignal);
-                histogram = new Histogram(loadedSignal, histogramBins);
-                drawHistogram(histogram);
+        generatedSignalChart = loadedSignal;
+        plotSignal(loadedSignal);
+        histogram = new Histogram(loadedSignal, histogramBins);
+        drawHistogram(histogram);
+    }
+
+    private void onSignalCreationException(Exception e) {
+        //TODO: Restore default state of the controlls after the crush
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.setHeaderText("Invalid input");
+        errorAlert.setContentText(e.getMessage() + "\n" + e.getCause());
+        errorAlert.showAndWait();
     }
 
     private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
