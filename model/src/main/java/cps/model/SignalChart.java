@@ -25,6 +25,7 @@ public class SignalChart implements Serializable {
     private Signal.Type signalType;
 
     private Duration duration;
+    @Setter
     private Duration probingPeriod;
     @Setter
     private List<Double> probes;

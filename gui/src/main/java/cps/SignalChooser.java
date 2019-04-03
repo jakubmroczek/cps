@@ -1,6 +1,5 @@
 package cps;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalFactory;
@@ -259,7 +258,7 @@ public class SignalChooser extends VBox {
                 probabilitySignalParameter);
     }
 
-    private SignalParameter map(Field field) {
+    public SignalParameter map(Field field) {
         switch (field){
             case AMPLITUDE:
                 return amplitudeSignalParameter;

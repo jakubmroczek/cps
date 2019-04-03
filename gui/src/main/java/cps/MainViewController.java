@@ -25,7 +25,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import sun.security.x509.AVA;
 
 import java.io.*;
 import java.lang.Math;
@@ -186,25 +185,17 @@ public class MainViewController {
     }
 
     //TODO: Differ between discrete and continuous functions
-    private void drawChart(SignalChart signalChart, Duration samplingRate) {
+    private void drawChart(SignalChart signalChart) {
         chart.setCreateSymbols(false);
         chart.getStyleClass().remove("discrete-signal");
         chart.getStyleClass().add("continuous-signal");
         XYChart.Series series = new XYChart.Series();
 
+        double stepInSeconds = signalChart.getDuration().toNanos() / 1_000_000_000D / signalChart.getProbes().size();
+        System.out.println("STEP IN SEC: " + stepInSeconds);
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-
-
-            //Mozliwosc przeklamania przez zmiane jednostke
-            if (samplingRate.toMillis() != 0) {
-                series.getData().add(new XYChart.Data(samplingRate.multipliedBy(i).toMillis(), y));
-            } else {
-                //HOW TO HANDLE THIS?
-                //NANOSECONDS
-                series.getData().add(new XYChart.Data(samplingRate.multipliedBy(i).toNanos(), y));
-            }
-
+            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
         }
 
         chart.getData().clear();
@@ -218,7 +209,7 @@ public class MainViewController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Zapisz sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
+        fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
         File file = fileChooser.showSaveDialog(this.stage);
         if (file == null)
             return;
@@ -228,7 +219,9 @@ public class MainViewController {
         if (resultExtension.equals(jsonExtension)) {
             SignalWriter.writeJSON(file, generatedSignalChart);
         } else if (resultExtension.equals(binaryExtension)) {
-            SignalWriter.writeBinary(file, generatedSignalChart);
+            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
+
+            SignalWriter.writeBinary(file,f,basicSignalChooser.getSamplingFrequencyInHz(), generatedSignalChart);
         } else {
             throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
         }
@@ -255,19 +248,13 @@ public class MainViewController {
 
                 drawChartAndHistogram(loadedSignal);
             } else if (resultExtension.equals(binaryExtension)) {
-                //TODO: Delegate to some function
-                //TODO: Close using stream
-                FileInputStream fis = new FileInputStream(file);
-                ObjectInputStream ois = new ObjectInputStream(fis);
-                SignalChart loadedSignal = (SignalChart) ois.readObject();
-                drawChartAndHistogram(loadedSignal);
+                SignalChart loadedSignal = SignalWriter.readBinary(file);
+//                drawChartAndHistogram(loadedSignal);
             } else {
                 throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -427,6 +414,15 @@ public class MainViewController {
 //        chart.getData().add(series);
 //        Histogram histogram = new Histogram(loadedSignal, histogramBins);
 //        drawHistogram(histogram);
+//        generatedSignalChart = loadedSignal;
+//        plotDiscreteSignal(loadedSignal);
+//        if(loadedSignal.getSignalType().equals(Signal.Type.CONTINUOUS)){
+//            chart.setCreateSymbols(false);
+//            chart.getStyleClass().remove("discrete-signal");
+//            chart.getStyleClass().add("continuous-signal");
+//        }
+//        Histogram histogram = new Histogram(loadedSignal, histogramBins);
+//        drawHistogram(histogram);
     }
 
     private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
@@ -444,6 +440,7 @@ public class MainViewController {
     }
 
     private void setTextFields(SignalChart sc) {
+    //throw new UnsupportedOperationException("not implemented");
 //        signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(sc.getArgs().getSignalName()));
 //        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(sc.getArgs().getSignalName());
 //        if (layoutRearrangement != null) {
