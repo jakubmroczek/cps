@@ -3,73 +3,42 @@ package cps;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 import cps.model.*;
-
-import cps.model.Signal;
-import cps.model.SignalArgs;
-import cps.model.SignalChart;
-import cps.model.SignalFactory;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-
-import javafx.scene.chart.*;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import javafx.scene.control.*;
-
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.Math;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
 import java.time.Duration;
-import java.util.*;
 import java.util.function.BiFunction;
-import java.util.stream.DoubleStream;
 
 public class MainViewController {
 
+    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/");
     private Stage stage;
-
     //TODO: Nullable?
     private SignalChart generatedSignalChart;
     private Histogram histogram;
-
-    @FXML
-    private LineChart<Number, Number> chart;
-
-    @FXML
-    private ComboBox signalOperationList;
-
-    @FXML
-    private Label averageValueLabel, averageAbsoluteValueLabel,
-                        averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
-
-    @FXML
-    private BarChart<Number, Number> histogramChart;
-
-    @FXML
-    private Slider histogramBinsSlider;
-
-    @FXML
-    private SignalChooser basicSignalChooser, extraSignalChooser;
-
+    @FXML private LineChart<Number, Number> chart;
+    @FXML private ComboBox signalOperationList;
+    @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
+    @FXML private BarChart<Number, Number> histogramChart;
+    @FXML private Slider histogramBinsSlider;
+    @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
     private int histogramBins = 10;
 
-    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList(
-      "+", "-", "*", "/"
-    );
-
-    @FXML
-    public void display() {
+    @FXML public void display() {
         Signal signal;
         Duration durationInNs;
         long samplingFrequencyInHz;
@@ -78,7 +47,7 @@ public class MainViewController {
             signal = basicSignalChooser.getSignal();
 
             double durationInSeconds = basicSignalChooser.getDurationInSeconds();
-            durationInNs = Duration.ofNanos((long)(durationInSeconds * 1_000_000_000L));
+            durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
             samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
 
         } catch (IllegalArgumentException exception) {
@@ -90,7 +59,7 @@ public class MainViewController {
             return;
         }
 
-        final Duration SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+        final Duration SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
         generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
 
         if (signal.getType() == Signal.Type.CONTINUOUS) {
@@ -104,7 +73,7 @@ public class MainViewController {
         //TODO: Usun nadmiarowy czas
         histogram = new Histogram(generatedSignalChart, histogramBins);
         drawHistogram(histogram);
-        
+
         //TODO: Usun nadmiarowy czas
         double averageValue = cps.model.Math.averageValue(signal, Duration.ZERO, durationInNs);
         averageValueLabel.setText(String.format("%.2f", averageValue));
@@ -121,23 +90,23 @@ public class MainViewController {
         double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
         effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
 
-//        SignalArgs signalArgs = SignalArgs.builder()
-//                                            .signalName(signalList.getSelectionModel().getSelectedItem().toString())
-//                                            .amplitude(Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText()))
-//                                            .period(Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText())))
-//                                            .initialTime(Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText())))
-//                                            .kw(Double.parseDouble(kwSignalParameter.getParameterValue().getText()))
-//                                            .Ns(Integer.parseInt(nsSignalParameter.getParameterValue().getText()))
-//                                            .probability(Double.parseDouble(probabilitySignalParameter.getParameterValue().getText()))
-//                                            .averageValue(cps.model.Math.round(averageValue,2))
-//                                            .averageAbsoulteValue(cps.model.Math.round(averageAbsoulteValue,2))
-//                                            .averagePowerValue(cps.model.Math.round(averagePowerValue,2))
-//                                            .varianceValue(cps.model.Math.round(varianceValue,2))
-//                                            .effectivePowerValue(cps.model.Math.round(effectivePowerValue,2))
-//                                            .samplingFrequency(SAMPLING_RATE)
-//                                            .build();
-//
-//        generatedSignalChart.setArgs(signalArgs);
+        //        SignalArgs signalArgs = SignalArgs.builder()
+        //                                            .signalName(signalList.getSelectionModel().getSelectedItem().toString())
+        //                                            .amplitude(Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText()))
+        //                                            .period(Duration.ofMillis(Integer.parseInt(periodSignalParameter.getParameterValue().getText())))
+        //                                            .initialTime(Duration.ofMillis(Integer.parseInt(t1SignalParameter.getParameterValue().getText())))
+        //                                            .kw(Double.parseDouble(kwSignalParameter.getParameterValue().getText()))
+        //                                            .Ns(Integer.parseInt(nsSignalParameter.getParameterValue().getText()))
+        //                                            .probability(Double.parseDouble(probabilitySignalParameter.getParameterValue().getText()))
+        //                                            .averageValue(cps.model.Math.round(averageValue,2))
+        //                                            .averageAbsoulteValue(cps.model.Math.round(averageAbsoulteValue,2))
+        //                                            .averagePowerValue(cps.model.Math.round(averagePowerValue,2))
+        //                                            .varianceValue(cps.model.Math.round(varianceValue,2))
+        //                                            .effectivePowerValue(cps.model.Math.round(effectivePowerValue,2))
+        //                                            .samplingFrequency(SAMPLING_RATE)
+        //                                            .build();
+        //
+        //        generatedSignalChart.setArgs(signalArgs);
     }
 
     private void plotDiscreteSignal(SignalChart signalChart) {
@@ -154,7 +123,7 @@ public class MainViewController {
 
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
+            series.getData().add(new XYChart.Data(stepInSeconds * i, y));
         }
 
         chart.getData().clear();
@@ -165,7 +134,7 @@ public class MainViewController {
         //One point in one sample point
         long widthInPixels = (long) chart.getXAxis().getWidth();
         double stepInSeconds = duration.toNanos() / 1_000_000_000D;
-        stepInSeconds /=widthInPixels;
+        stepInSeconds /= widthInPixels;
 
         final Duration SAMPLING_RATE = duration.dividedBy(widthInPixels);
         SignalChart signalChart = signal.createChart(duration, SAMPLING_RATE);
@@ -177,7 +146,7 @@ public class MainViewController {
 
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
+            series.getData().add(new XYChart.Data(stepInSeconds * i, y));
         }
 
         chart.getData().clear();
@@ -195,15 +164,14 @@ public class MainViewController {
         System.out.println("STEP IN SEC: " + stepInSeconds);
         for (int i = 0; i < signalChart.getProbes().size(); i++) {
             double y = signalChart.getProbes().get(i);
-            series.getData().add(new XYChart.Data(stepInSeconds*i, y));
+            series.getData().add(new XYChart.Data(stepInSeconds * i, y));
         }
 
         chart.getData().clear();
         chart.getData().add(series);
     }
 
-    @FXML
-    private void saveToFile() {
+    @FXML private void saveToFile() {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON File", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
@@ -221,14 +189,14 @@ public class MainViewController {
         } else if (resultExtension.equals(binaryExtension)) {
             Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
 
-            SignalWriter.writeBinary(file,f,basicSignalChooser.getSamplingFrequencyInHz(), generatedSignalChart);
+            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), generatedSignalChart);
         } else {
-            throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
+            throw new UnsupportedOperationException(
+                    "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
         }
     }
 
-    @FXML
-    private void loadFromFile() {
+    @FXML private void loadFromFile() {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
@@ -249,23 +217,22 @@ public class MainViewController {
                 drawChartAndHistogram(loadedSignal);
             } else if (resultExtension.equals(binaryExtension)) {
                 SignalChart loadedSignal = SignalWriter.readBinary(file);
-//                drawChartAndHistogram(loadedSignal);
+                //                drawChartAndHistogram(loadedSignal);
             } else {
-                throw new UnsupportedOperationException("Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
+                throw new UnsupportedOperationException(
+                        "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    @FXML
-    public void onExecuteButton() {
+    @FXML public void onExecuteButton() {
         String operation = (String) signalOperationList.getSelectionModel().getSelectedItem();
 
         BiFunction<SignalChart, SignalChart, SignalChart> operator;
         //TODO: Extra map
-        switch (operation)
-        {
+        switch (operation) {
             case "+":
                 operator = SignalOperations::add;
                 break;
@@ -294,7 +261,7 @@ public class MainViewController {
             rhs = extraSignalChooser.getSignal();
 
             double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
-            durationInNs = Duration.ofNanos((long)(durationInSeconds * 1_000_000_000L));
+            durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
 
             samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
 
@@ -308,8 +275,7 @@ public class MainViewController {
             return;
         }
 
-        final Duration USER_SAMPLING_RATE = Duration.ofNanos((long)((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-
+        final Duration USER_SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
         SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
         SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
@@ -319,7 +285,7 @@ public class MainViewController {
             //One point in one sample point
             long widthInPixels = (long) chart.getXAxis().getWidth();
             double stepInSeconds = durationInNs.toNanos() / 1_000_000_000D;
-            stepInSeconds /=widthInPixels;
+            stepInSeconds /= widthInPixels;
 
             final Duration SAMPLING_RATE = durationInNs.dividedBy(widthInPixels);
             SignalChart signalChart = operator.apply(sc1, sc2);
@@ -331,21 +297,20 @@ public class MainViewController {
 
             for (int i = 0; i < signalChart.getProbes().size(); i++) {
                 double y = signalChart.getProbes().get(i);
-                series.getData().add(new XYChart.Data(stepInSeconds*i, y));
+                series.getData().add(new XYChart.Data(stepInSeconds * i, y));
             }
 
             chart.getData().clear();
             chart.getData().add(series);
         } else {
-//            plotDiscreteSignal(generatedSignalChart);
+            //            plotDiscreteSignal(generatedSignalChart);
         }
 
         histogram = new Histogram(result, histogramBins);
         drawHistogram(histogram);
     }
 
-    @FXML
-    public void initialize() {
+    @FXML public void initialize() {
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
 
@@ -380,8 +345,7 @@ public class MainViewController {
         histogramChart.getData().add(series1);
     }
 
-    @FXML
-    public void onHistogramBinsChanged() {
+    @FXML public void onHistogramBinsChanged() {
         int newHistogramBins = (int) histogramBinsSlider.getValue();
         if (newHistogramBins != histogramBins) {
             histogramBins = newHistogramBins;
@@ -392,6 +356,7 @@ public class MainViewController {
             }
         }
     }
+
     private void drawChartAndHistogram(SignalChart loadedSignal) {
         setTextFields(loadedSignal);
 
@@ -399,67 +364,73 @@ public class MainViewController {
         //drawChart(loadedSignal);
 
         //chart.setCreateSymbols(false);
-//        chart.getStyleClass().remove("discrete-signal");
-//        chart.getStyleClass().add("continuous-signal");
-//        XYChart.Series series = new XYChart.Series();
-//
-//        double step = loadedSignal.getArgs().getSamplingFrequency().toMillis()/1000;
-//        for (int i = 0; i < loadedSignal.getProbes().size(); i++) {
-//            double y = loadedSignal.getProbes().get(i);
-//            series.getData().add(new XYChart.Data(step*i, y));
-//        }
-//
-//
-//        chart.getData().clear();
-//        chart.getData().add(series);
-//        Histogram histogram = new Histogram(loadedSignal, histogramBins);
-//        drawHistogram(histogram);
-//        generatedSignalChart = loadedSignal;
-//        plotDiscreteSignal(loadedSignal);
-//        if(loadedSignal.getSignalType().equals(Signal.Type.CONTINUOUS)){
-//            chart.setCreateSymbols(false);
-//            chart.getStyleClass().remove("discrete-signal");
-//            chart.getStyleClass().add("continuous-signal");
-//        }
-//        Histogram histogram = new Histogram(loadedSignal, histogramBins);
-//        drawHistogram(histogram);
+        //        chart.getStyleClass().remove("discrete-signal");
+        //        chart.getStyleClass().add("continuous-signal");
+        //        XYChart.Series series = new XYChart.Series();
+        //
+        //        double step = loadedSignal.getArgs().getSamplingFrequency().toMillis()/1000;
+        //        for (int i = 0; i < loadedSignal.getProbes().size(); i++) {
+        //            double y = loadedSignal.getProbes().get(i);
+        //            series.getData().add(new XYChart.Data(step*i, y));
+        //        }
+        //
+        //
+        //        chart.getData().clear();
+        //        chart.getData().add(series);
+        //        Histogram histogram = new Histogram(loadedSignal, histogramBins);
+        //        drawHistogram(histogram);
+        //        generatedSignalChart = loadedSignal;
+        //        plotDiscreteSignal(loadedSignal);
+        //        if(loadedSignal.getSignalType().equals(Signal.Type.CONTINUOUS)){
+        //            chart.setCreateSymbols(false);
+        //            chart.getStyleClass().remove("discrete-signal");
+        //            chart.getStyleClass().add("continuous-signal");
+        //        }
+        //        Histogram histogram = new Histogram(loadedSignal, histogramBins);
+        //        drawHistogram(histogram);
     }
 
     private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
-            extraSignalChooser.setArrangement(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, SignalChooser.Field.AMPLITUDE);
-            extraSignalChooser.setArrangement(SignalFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
-            extraSignalChooser.setArrangement(SignalFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
-            extraSignalChooser.setArrangement(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
-            extraSignalChooser.setArrangement(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
-            extraSignalChooser.setArrangement(SignalFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
-            extraSignalChooser.setArrangement(SignalFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
-            extraSignalChooser.setArrangement(SignalFactory.SYMETRIC_RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
-            extraSignalChooser.setArrangement(SignalFactory.TRIANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD, SignalChooser.Field.T1, SignalChooser.Field.KW);
-            extraSignalChooser.setArrangement(SignalFactory.KRONECKER_DELTA, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.NS);
-            extraSignalChooser.setArrangement(SignalFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
+        extraSignalChooser.setArrangement(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(SignalFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(SignalFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(SignalFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.SYMETRIC_RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.TRIANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+                SignalChooser.Field.T1, SignalChooser.Field.KW);
+        extraSignalChooser.setArrangement(SignalFactory.KRONECKER_DELTA, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.NS);
+        extraSignalChooser.setArrangement(SignalFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
     }
 
     private void setTextFields(SignalChart sc) {
-    //throw new UnsupportedOperationException("not implemented");
-//        signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(sc.getArgs().getSignalName()));
-//        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(sc.getArgs().getSignalName());
-//        if (layoutRearrangement != null) {
-//            layoutRearrangement.run();
-//        }
-//        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getAmplitude()));
-//        periodSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getPeriod().toMillis()));
-//        t1SignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getInitialTime().toMillis()));
-//        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()/1000));
-//        kwSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getKw()));
-//        nsSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getNs()));
-//        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis()/10));
-//        probabilitySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getProbability()));
-//
-//        averageValueLabel.setText(String.valueOf(sc.getArgs().getAverageValue()));
-//        averageAbsoluteValueLabel.setText(String.valueOf(sc.getArgs().getAverageAbsoulteValue()));
-//        averagePowerValueLabel.setText(String.valueOf(sc.getArgs().getAveragePowerValue()));
-//        varianceValueLabel.setText(String.valueOf(sc.getArgs().getVarianceValue()));
-//        effectivePowerValueLabel.setText(String.valueOf(sc.getArgs().getEffectivePowerValue()));
+        //throw new UnsupportedOperationException("not implemented");
+        //        signalList.getSelectionModel().select(AVALIABLE_SIGNALS.indexOf(sc.getArgs().getSignalName()));
+        //        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(sc.getArgs().getSignalName());
+        //        if (layoutRearrangement != null) {
+        //            layoutRearrangement.run();
+        //        }
+        //        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getAmplitude()));
+        //        periodSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getPeriod().toMillis()));
+        //        t1SignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getInitialTime().toMillis()));
+        //        durationSignalParameter.getParameterValue().setText(String.valueOf(sc.getDuration().toMillis()/1000));
+        //        kwSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getKw()));
+        //        nsSignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getNs()));
+        //        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getSamplingFrequency().toMillis()/10));
+        //        probabilitySignalParameter.getParameterValue().setText(String.valueOf(sc.getArgs().getProbability()));
+        //
+        //        averageValueLabel.setText(String.valueOf(sc.getArgs().getAverageValue()));
+        //        averageAbsoluteValueLabel.setText(String.valueOf(sc.getArgs().getAverageAbsoulteValue()));
+        //        averagePowerValueLabel.setText(String.valueOf(sc.getArgs().getAveragePowerValue()));
+        //        varianceValueLabel.setText(String.valueOf(sc.getArgs().getVarianceValue()));
+        //        effectivePowerValueLabel.setText(String.valueOf(sc.getArgs().getEffectivePowerValue()));
     }
 
 }

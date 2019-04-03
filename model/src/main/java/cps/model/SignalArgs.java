@@ -1,14 +1,13 @@
 package cps.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Duration;
 
-@Getter
-@Setter
-@Builder
-public class SignalArgs implements Serializable {
+@Getter @Setter @Builder public class SignalArgs implements Serializable {
 
     private String signalName;
     private double amplitude;

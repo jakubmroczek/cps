@@ -9,31 +9,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
-import javafx.util.Pair;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.RunnableFuture;
 
 public class SignalChooser extends VBox {
 
-    private static final ObservableList<String> AVAILABLE_SIGNALS = FXCollections.observableArrayList(
-            "Szum o rozkładzie jednostajnym",
-            "Szum gaussowski",
-            "Sygnał sinusoidalny",
-            "Sygnał sinusoidalny wyprostowany jednopołówkowo",
-            "Sygnał sinusoidalny wyprsotowany dwupołówkowo",
-            "Sygnał prostokątny",
-            "Sygnał prostokątny symetryczny",
-            "Sygnał trójkątny",
-            "Skok jednostkowy",
-            "Impuls jednostkowy",
-            "Szum impulsowy"
-    );
+    private static final ObservableList<String> AVAILABLE_SIGNALS = FXCollections.observableArrayList("Szum o rozkładzie jednostajnym",
+            "Szum gaussowski", "Sygnał sinusoidalny", "Sygnał sinusoidalny wyprostowany jednopołówkowo",
+            "Sygnał sinusoidalny wyprsotowany dwupołówkowo", "Sygnał prostokątny", "Sygnał prostokątny symetryczny", "Sygnał trójkątny",
+            "Skok jednostkowy", "Impuls jednostkowy", "Szum impulsowy");
 
     private static final Map<String, String> LABEL_TO_SIGNAL_MAP = new HashMap<>();
 
@@ -53,30 +41,11 @@ public class SignalChooser extends VBox {
 
     private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
 
-    @FXML
-    private ComboBox<String> signalList;
+    @FXML private ComboBox<String> signalList;
 
     //TODO: Getter is vary bad, cause shows implementation details -> provide custom mechanism allowing ordering this fileds in a custom way.
     @FXML
-    private SignalParameter amplitudeSignalParameter,
-            periodSignalParameter,
-            t1SignalParameter,
-            durationSignalParameter,
-            kwSignalParameter,
-            nsSignalParameter,
-            samplingFrequencySignalParameter,
-            probabilitySignalParameter;
-
-    public enum Field {
-        AMPLITUDE,
-        PERIOD,
-        T1,
-        DURATION,
-        KW,
-        NS,
-        SAMPLING_FREQUENCY,
-        PROBABILITY
-    }
+    private SignalParameter amplitudeSignalParameter, periodSignalParameter, t1SignalParameter, durationSignalParameter, kwSignalParameter, nsSignalParameter, samplingFrequencySignalParameter, probabilitySignalParameter;
 
     public SignalChooser() {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/SignalChooser.fxml"));
@@ -94,8 +63,7 @@ public class SignalChooser extends VBox {
         initializeLayout();
     }
 
-    @FXML
-    public void onSignalChosen() {
+    @FXML public void onSignalChosen() {
         String selection = signalList.getSelectionModel().getSelectedItem();
         String selectedSignal = LABEL_TO_SIGNAL_MAP.get(selection);
         Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(selectedSignal);
@@ -112,10 +80,10 @@ public class SignalChooser extends VBox {
             double amplitude = Double.parseDouble(amplitudeSignalParameter.getParameterValue().getText());
 
             double periodInSeconds = Double.valueOf(periodSignalParameter.getParameterValue().getText());
-            Duration periodInNs = Duration.ofNanos((long)(periodInSeconds * 1_000_000_000L));
+            Duration periodInNs = Duration.ofNanos((long) (periodInSeconds * 1_000_000_000L));
 
             double initialTimeInSeconds = Double.valueOf(t1SignalParameter.getParameterValue().getText());
-            Duration initialTimeInNs = Duration.ofNanos((long)(initialTimeInSeconds * 1_000_000_000L));
+            Duration initialTimeInNs = Duration.ofNanos((long) (initialTimeInSeconds * 1_000_000_000L));
 
             int ns = Integer.parseInt(nsSignalParameter.getParameterValue().getText());
 
@@ -124,7 +92,14 @@ public class SignalChooser extends VBox {
             //Check if the value is in range
             double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
 
-            SignalArgs args = SignalArgs.builder().amplitude(amplitude).period(periodInNs).initialTime(initialTimeInNs).kw(kw).Ns(ns).probability(probability).build();
+            SignalArgs args = SignalArgs.builder()
+                                        .amplitude(amplitude)
+                                        .period(periodInNs)
+                                        .initialTime(initialTimeInNs)
+                                        .kw(kw)
+                                        .Ns(ns)
+                                        .probability(probability)
+                                        .build();
 
             String selection = signalList.getSelectionModel().getSelectedItem();
             String signalType = LABEL_TO_SIGNAL_MAP.get(selection);
@@ -248,18 +223,12 @@ public class SignalChooser extends VBox {
 
     //TODO: Group it somehow usign java fx method and delete this workaround
     private void removeAllSignalParameters() {
-        getChildren().removeAll(amplitudeSignalParameter,
-                periodSignalParameter,
-                t1SignalParameter,
-                durationSignalParameter,
-                kwSignalParameter,
-                nsSignalParameter,
-                samplingFrequencySignalParameter,
-                probabilitySignalParameter);
+        getChildren().removeAll(amplitudeSignalParameter, periodSignalParameter, t1SignalParameter, durationSignalParameter,
+                kwSignalParameter, nsSignalParameter, samplingFrequencySignalParameter, probabilitySignalParameter);
     }
 
     public SignalParameter map(Field field) {
-        switch (field){
+        switch (field) {
             case AMPLITUDE:
                 return amplitudeSignalParameter;
             case PERIOD:
@@ -280,5 +249,9 @@ public class SignalChooser extends VBox {
             default:
                 throw new IllegalArgumentException("Unknwon field " + field);
         }
+    }
+
+    public enum Field {
+        AMPLITUDE, PERIOD, T1, DURATION, KW, NS, SAMPLING_FREQUENCY, PROBABILITY
     }
 }

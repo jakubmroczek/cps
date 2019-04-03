@@ -5,12 +5,12 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.DoubleStream;
 
-import static java.lang.Math.*;
+import static java.lang.Math.floor;
+import static java.lang.Math.min;
 
-@Data
-public class Histogram {
+@Data public class Histogram {
+
     // Liczba przedziałów
     private final int bins;
     private final double min, max;

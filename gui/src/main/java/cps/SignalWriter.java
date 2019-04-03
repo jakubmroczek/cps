@@ -8,12 +8,8 @@ import cps.model.SignalArgs;
 import cps.model.SignalChart;
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,8 +23,8 @@ public class SignalWriter {
         //TODO: Other sceneario
         if (signalChart != null) {
             List<Double> newProbes = new ArrayList<>();
-            for (Double d: signalChart.getProbes()) {
-                newProbes.add(d = Math.round(d,2));
+            for (Double d : signalChart.getProbes()) {
+                newProbes.add(d = Math.round(d, 2));
             }
             signalChart.setProbes(newProbes);
 
@@ -38,10 +34,11 @@ public class SignalWriter {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        }  else {
+        } else {
             System.out.println("generatedSignal is null");
         }
     }
+
     //Binary format:
     public static SignalChart readBinary(File file) {
         int i = 0;
@@ -56,30 +53,31 @@ public class SignalWriter {
             int count = fi.available();
             byte[] bytes = new byte[count];
             dis.read(bytes);
-            while(i<count){
-                if(i == 0){
-                    t1 = getByteBuffer(Arrays.copyOfRange(bytes,i,i += Float.BYTES)).getFloat();
-                }else if(i == 4){
-                    probingPeriod = Duration.ofNanos(1000_000_000L / getByteBuffer(Arrays.copyOfRange(bytes,i,i += Integer.BYTES)).getInt());
-                }else if(i==8) {
-                    type = getByteBuffer(Arrays.copyOfRange(bytes,i,i += Character.BYTES)).getChar();
-                }else {
-                    float sample = getByteBuffer(Arrays.copyOfRange(bytes,i,i += Float.BYTES)).getFloat();
+            while (i < count) {
+                if (i == 0) {
+                    t1 = getByteBuffer(Arrays.copyOfRange(bytes, i, i += Float.BYTES)).getFloat();
+                } else if (i == 4) {
+                    probingPeriod = Duration.ofNanos(
+                            1000_000_000L / getByteBuffer(Arrays.copyOfRange(bytes, i, i += Integer.BYTES)).getInt());
+                } else if (i == 8) {
+                    type = getByteBuffer(Arrays.copyOfRange(bytes, i, i += Character.BYTES)).getChar();
+                } else {
+                    float sample = getByteBuffer(Arrays.copyOfRange(bytes, i, i += Float.BYTES)).getFloat();
                     double probe = (double) sample;
                     probes.add(probe);
                 }
             }
-            duration = Duration.ofNanos(probingPeriod.toNanos()*probes.size());
+            duration = Duration.ofNanos(probingPeriod.toNanos() * probes.size());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        SignalChart sc = new SignalChart(duration,probingPeriod,probes);
-        long t1inNanos = (long ) t1 * 1000_000_000L;
+        SignalChart sc = new SignalChart(duration, probingPeriod, probes);
+        long t1inNanos = (long) t1 * 1000_000_000L;
         SignalArgs sa = SignalArgs.builder().initialTime(Duration.ofNanos(t1inNanos)).build();
         sc.setArgs(sa);
-        if(type == Signal.Type.CONTINUOUS.toString().charAt(0)){
+        if (type == Signal.Type.CONTINUOUS.toString().charAt(0)) {
             sc.setSignalType(Signal.Type.CONTINUOUS);
         } else {
             sc.setSignalType(Signal.Type.DISCRETE);
@@ -87,6 +85,7 @@ public class SignalWriter {
 
         return sc;
     }
+
     //t1 in s
     //samplingFreq
     //signal type C(ontinous) D(iscrete)
@@ -95,8 +94,8 @@ public class SignalWriter {
     public static void writeBinary(File file, float t1, long fq, SignalChart signalChart) {
 
         List<Double> newProbes = new ArrayList<>();
-        for (Double d: signalChart.getProbes()) {
-            newProbes.add(d = Math.round(d,2));
+        for (Double d : signalChart.getProbes()) {
+            newProbes.add(d = Math.round(d, 2));
         }
         signalChart.setProbes(newProbes);
 
@@ -104,10 +103,10 @@ public class SignalWriter {
 
             DataOutputStream dos = new DataOutputStream(fos);
             dos.writeFloat(t1);
-            dos.writeInt((int)fq);
+            dos.writeInt((int) fq);
             dos.writeChar(signalChart.getSignalType().toString().charAt(0));
-            for(Double d: signalChart.getProbes()){
-                double d1 = Math.round(d,2);
+            for (Double d : signalChart.getProbes()) {
+                double d1 = Math.round(d, 2);
                 float f = (float) d1;
                 dos.writeFloat(f);
             }
@@ -117,7 +116,8 @@ public class SignalWriter {
             e.printStackTrace();
         }
     }
-    private static ByteBuffer getByteBuffer(byte[] bytes){
+
+    private static ByteBuffer getByteBuffer(byte[] bytes) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(bytes.length);
         byteBuffer.put(bytes);
         byteBuffer.flip();

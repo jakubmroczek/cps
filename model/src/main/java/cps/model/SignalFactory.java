@@ -2,12 +2,9 @@ package cps.model;
 
 import java.time.Duration;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.lang.Math.*;
-import static java.lang.Math.ceil;
-import static java.lang.Math.floor;
 
 public class SignalFactory {
 
@@ -23,10 +20,12 @@ public class SignalFactory {
     public static final String KRONECKER_DELTA = "S10";
     public static final String IMPULSE_NOISE = "S11";
 
+    private SignalFactory() {
+    }
+
     //TODO: Ensure duration units!!!!!!
     public static Signal createSignal(String signal, SignalArgs args) {
-        switch (signal)
-        {
+        switch (signal) {
             case LINEARLY_DISTRIBUTED_NOISE:
                 return getLinearlyDistibutedNoise(args.getAmplitude());
 
@@ -34,37 +33,22 @@ public class SignalFactory {
                 return getGaussianNoise(args.getAmplitude());
 
             case SINUSOIDAL:
-                return getSinusoidal(args.getAmplitude(),
-                                    args.getPeriod(),
-                                    args.getInitialTime());
+                return getSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case HALF_STRAIGHT_SINUSOIDAL:
-                return getHalfStraightSinusoidal(args.getAmplitude(),
-                                                args.getPeriod(),
-                                                args.getInitialTime());
+                return getHalfStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case FULL_STRAIGHT_SINUSOIDAL:
-                return getFullStraightSinusoidal(args.getAmplitude(),
-                        args.getPeriod(),
-                        args.getInitialTime());
+                return getFullStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case RECTANGLE:
-                return getRectangleSignal(args.getAmplitude(),
-                        args.getPeriod(),
-                        args.getInitialTime(),
-                        args.getKw());
+                return getRectangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case SYMETRIC_RECTANGLE:
-                return getSymetricRectangleSignal(args.getAmplitude(),
-                        args.getPeriod(),
-                        args.getInitialTime(),
-                        args.getKw());
+                return getSymetricRectangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case TRIANGLE:
-                return getTriangleSignal(args.getAmplitude(),
-                        args.getPeriod(),
-                        args.getInitialTime(),
-                        args.getKw());
+                return getTriangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case UNIT_STEP:
                 return createUnitStep(args.getAmplitude(), args.getInitialTime());
@@ -180,7 +164,8 @@ public class SignalFactory {
                 return (amplitude / (kw * period.toNanos())) * (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos());
             } else {
                 integer = floor(coefficient - kw);
-                return (-amplitude / (period.toNanos() * (1.0 - kw))) * (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos()) + (amplitude / (1.0 - kw));
+                return (-amplitude / (period.toNanos() * (1.0 - kw))) *
+                        (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos()) + (amplitude / (1.0 - kw));
             }
         };
 
@@ -192,7 +177,7 @@ public class SignalFactory {
             int compareToResult = duration.compareTo(initialTime);
             if (compareToResult > 0) {
                 return amplitude;
-            } else if(compareToResult < 0) {
+            } else if (compareToResult < 0) {
                 return 0.0;
             } else {
                 return 0.5 * amplitude;
@@ -214,17 +199,14 @@ public class SignalFactory {
         Function<Long, Double> impulseNoise = n -> {
             Random random = new Random();
             double threshold = random.nextDouble();
-            if (threshold >=0 && threshold <= probability) {
+            if (threshold >= 0 && threshold <= probability) {
                 return amplitude;
             } else {
-                return  0.0;
+                return 0.0;
             }
         };
 
         return new DiscreteSignal(impulseNoise);
-    }
-
-    private SignalFactory() {
     }
 
 }

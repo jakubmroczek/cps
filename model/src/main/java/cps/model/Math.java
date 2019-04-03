@@ -16,7 +16,7 @@ public class Math {
 
     //TODO: Find proper english names
     public static double averageValue(Signal signal, Duration start, Duration end) {
-        if(signal.getType().equals(Signal.Type.CONTINUOUS)){
+        if (signal.getType().equals(Signal.Type.CONTINUOUS)) {
             validate(start, end);
             long startInMs = start.toMillis();
             long endInMs = end.toMillis();
@@ -30,13 +30,12 @@ public class Math {
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue)
-                                                    .sum() / (double) discreteSignal.samples.size();
+            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).sum() / (double) discreteSignal.samples.size();
         }
     }
 
     public static double averageAbsoluteValue(Signal signal, Duration start, Duration end) {
-        if(signal.getType().equals(Signal.Type.CONTINUOUS)){
+        if (signal.getType().equals(Signal.Type.CONTINUOUS)) {
             validate(start, end);
             //Code duplication
             long startInMs = start.toMillis();
@@ -51,14 +50,13 @@ public class Math {
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue)
-                                                    .map(java.lang.Math::abs)
-                                                    .sum() / (double) discreteSignal.samples.size();
+            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(java.lang.Math::abs).sum() /
+                    (double) discreteSignal.samples.size();
         }
     }
 
     public static double averagePower(Signal signal, Duration start, Duration end) {
-        if(signal.getType().equals(Signal.Type.CONTINUOUS)){
+        if (signal.getType().equals(Signal.Type.CONTINUOUS)) {
             validate(start, end);
             long startInMs = start.toMillis();
             long endInMs = end.toMillis();
@@ -66,20 +64,19 @@ public class Math {
             Function<Double, Double> adapter = timeInMs -> {
                 //TODO: Maybe we should take floor
                 Duration time = Duration.ofMillis(timeInMs.longValue());
-                return java.lang.Math.pow(signal.calculate(time),2);
+                return java.lang.Math.pow(signal.calculate(time), 2);
             };
             double integral = integrate(startInMs, endInMs, INTEGRATION_STEPS, adapter);
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue)
-                                                    .map(i -> java.lang.Math.pow(i, 2))
-                                                    .sum() / (double) discreteSignal.samples.size();
+            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i, 2)).sum() /
+                    (double) discreteSignal.samples.size();
         }
     }
 
     public static double variance(Signal signal, Duration start, Duration end) {
-        if(signal.getType().equals(Signal.Type.CONTINUOUS)){
+        if (signal.getType().equals(Signal.Type.CONTINUOUS)) {
             validate(start, end);
             long startInMs = start.toMillis();
             long endInMs = end.toMillis();
@@ -87,27 +84,26 @@ public class Math {
             Function<Double, Double> adapter = timeInMs -> {
                 //TODO: Maybe we should take floor
                 Duration time = Duration.ofMillis(timeInMs.longValue());
-                return java.lang.Math.pow(signal.calculate(time) - Math.averageValue(signal,start,end),2);
+                return java.lang.Math.pow(signal.calculate(time) - Math.averageValue(signal, start, end), 2);
             };
             double integral = integrate(startInMs, endInMs, INTEGRATION_STEPS, adapter);
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            double average = averageValue(signal,start,end);
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue)
-                                        .map(i -> java.lang.Math.pow(i - average, 2))
-                                        .sum() / (double) discreteSignal.samples.size();
+            double average = averageValue(signal, start, end);
+            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i - average, 2)).sum() /
+                    (double) discreteSignal.samples.size();
         }
     }
 
     public static double effectivePower(Signal signal, Duration start, Duration end) {
 
-        if(signal.getType().equals(Signal.Type.CONTINUOUS)){
+        if (signal.getType().equals(Signal.Type.CONTINUOUS)) {
             validate(start, end);
-            return java.lang.Math.sqrt(averagePower(signal,start,end));
+            return java.lang.Math.sqrt(averagePower(signal, start, end));
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return java.lang.Math.sqrt(averagePower(signal,start,end));
+            return java.lang.Math.sqrt(averagePower(signal, start, end));
         }
     }
 
@@ -122,7 +118,8 @@ public class Math {
     }
 
     public static Double round(Double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
+        if (places < 0)
+            throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(value);
         bd = bd.setScale(places, RoundingMode.HALF_UP);

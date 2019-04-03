@@ -1,34 +1,22 @@
 package cps.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
-import static java.lang.Math.*;
+@Getter public class SignalChart implements Serializable {
 
-@Getter
-public class SignalChart implements Serializable {
     //Parameters describing signal
     //TODO:
-    @Setter
-    private SignalArgs args;
-    @Setter
-    private Signal.Type signalType;
+    @Setter private SignalArgs args;
+    @Setter private Signal.Type signalType;
 
     private Duration duration;
-    @Setter
-    private Duration probingPeriod;
-    @Setter
-    private List<Double> probes;
+    @Setter private Duration probingPeriod;
+    @Setter private List<Double> probes;
 
     public SignalChart(Duration duration, Duration probingPeriod, List<Double> probes) {
         this.duration = duration;

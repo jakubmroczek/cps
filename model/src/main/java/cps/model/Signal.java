@@ -3,55 +3,41 @@ package cps.model;
 import lombok.Getter;
 
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
-
-import static java.time.temporal.ChronoUnit.NANOS;
 
 class DiscreteSignal extends Signal {
 
     List<Double> samples;
+    private Function<Long, Double> function;
+
     public DiscreteSignal(Function<Long, Double> function) {
         super(Type.DISCRETE, null);
         this.function = function;
     }
 
-    @Override
-    public double calculate(Duration duration) {
+    @Override public double calculate(Duration duration) {
         throw new UnsupportedOperationException("Discrete signal does not support this method.");
     }
 
-    @Override
-    public SignalChart createChart(Duration duration, Duration probingPeriod) {
+    @Override public SignalChart createChart(Duration duration, Duration probingPeriod) {
         //Floor -> takes only the full multiple of duration
         //TODO: Exception handling
         long size = duration.toNanos() / probingPeriod.toNanos();
         samples = LongStream.range(0, size).mapToObj(n -> function.apply(n)).collect(Collectors.toList());
         return new SignalChart(duration, probingPeriod, samples);
     }
-
-    private Function<Long, Double> function;
 }
 
 //TODO: Zrobic interfejs funkcyjny
-public class Signal  {
+public class Signal {
 
-    @Getter
-    private Function<Duration, Double> function;
+    @Getter private Function<Duration, Double> function;
 
-    @Getter
-    private Type type;
-
-    public enum Type {
-        CONTINUOUS,
-        DISCRETE
-    }
+    @Getter private Type type;
 
     public Signal(Type type, Function<Duration, Double> function) {
         this.type = type;
@@ -68,7 +54,7 @@ public class Signal  {
         Duration time = Duration.ZERO;
         List<Double> samples = new ArrayList<>();
 
-        int i=0;
+        int i = 0;
         while (time.compareTo(duration) <= 0) {
             double val = calculate(time);
             samples.add(val);
@@ -78,6 +64,10 @@ public class Signal  {
             double y = val;
         }
         return new SignalChart(duration, probingPeriod, samples);
+    }
+
+    public enum Type {
+        CONTINUOUS, DISCRETE
     }
 
 }
