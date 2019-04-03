@@ -342,31 +342,8 @@ public class MainViewController {
 
     private void drawChartAndHistogram(SignalChart loadedSignal) {
         setTextFields(loadedSignal);
-        drawChart(loadedSignal);
-
-        chart.setCreateSymbols(false);
-                chart.getStyleClass().remove("discrete-signal");
-                chart.getStyleClass().add("continuous-signal");
-                XYChart.Series series = new XYChart.Series();
-
-                double step = loadedSignal.getArgs().getSamplingFrequency().toMillis()/1000;
-                for (int i = 0; i < loadedSignal.getProbes().size(); i++) {
-                    double y = loadedSignal.getProbes().get(i);
-                    series.getData().add(new XYChart.Data(step*i, y));
-                }
-
-
-                chart.getData().clear();
-                chart.getData().add(series);
-                Histogram histogram = new Histogram(loadedSignal, histogramBins);
-                drawHistogram(histogram);
                 generatedSignalChart = loadedSignal;
-//                plotDiscreteSignal(loadedSignal);
-                if(loadedSignal.getSignalType().equals(Signal.Type.CONTINUOUS)){
-                    chart.setCreateSymbols(false);
-                    chart.getStyleClass().remove("discrete-signal");
-                    chart.getStyleClass().add("continuous-signal");
-                }
+                plotSignal(loadedSignal);
                 histogram = new Histogram(loadedSignal, histogramBins);
                 drawHistogram(histogram);
     }
