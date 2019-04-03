@@ -111,12 +111,13 @@ public class MainViewController {
             singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getProbes().size() - 1);
         }
 
-        long step = 1;
+        double step = 1.0;
         if (signal.getProbes().size() > NUMBER_OF_PIXELS_IN_CHART)
-             step = (long) (signal.getProbes().size() / NUMBER_OF_PIXELS_IN_CHART);
+             step = signal.getProbes().size() / NUMBER_OF_PIXELS_IN_CHART;
 
-       for (int i = 0, j = 0; i < signal.getProbes().size(); i += step, j++)  {
-                   double y = signal.getProbes().get(i);
+       double current = 0.0;
+       for (int j = 0; current < signal.getProbes().size(); current += step, j++)  {
+                   double y = signal.getProbes().get((int)current);
            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
        }
 
