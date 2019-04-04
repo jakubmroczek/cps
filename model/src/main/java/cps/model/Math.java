@@ -30,7 +30,7 @@ public class Math {
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).sum() / (double) discreteSignal.samples.size();
+            return discreteSignal.getSamples().stream().mapToDouble(Double::doubleValue).sum() / (double) discreteSignal.getSamples().size();
         }
     }
 
@@ -50,8 +50,8 @@ public class Math {
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(java.lang.Math::abs).sum() /
-                    (double) discreteSignal.samples.size();
+            return discreteSignal.getSamples().stream().mapToDouble(Double::doubleValue).map(java.lang.Math::abs).sum() /
+                    (double) discreteSignal.getSamples().size();
         }
     }
 
@@ -70,8 +70,8 @@ public class Math {
             return integral / duration;
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i, 2)).sum() /
-                    (double) discreteSignal.samples.size();
+            return discreteSignal.getSamples().stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i, 2)).sum() /
+                    (double) discreteSignal.getSamples().size();
         }
     }
 
@@ -91,8 +91,8 @@ public class Math {
         } else {
             DiscreteSignal discreteSignal = (DiscreteSignal) signal;
             double average = averageValue(signal, start, end);
-            return discreteSignal.samples.stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i - average, 2)).sum() /
-                    (double) discreteSignal.samples.size();
+            return discreteSignal.getSamples().stream().mapToDouble(Double::doubleValue).map(i -> java.lang.Math.pow(i - average, 2)).sum() /
+                    (double) discreteSignal.getSamples().size();
         }
     }
 

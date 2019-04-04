@@ -223,13 +223,41 @@ public class MainViewController {
 
             SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
             SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
-            SignalChart result = operator.apply(sc1, sc2);
+            generatedSignalChart = operator.apply(sc1, sc2);
+            
+            //TODO: Code duplication
+            //CHEATING!
+            DiscreteSignal tmp = new DiscreteSignal(null);
+            tmp.setSamples(generatedSignalChart.getProbes());
 
-            result.setSignalType(lhs.getType());
+            double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
+            averageValueLabel.setText(String.format("%.2f", averageValue));
 
-            plotSignal(result);
+            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(tmp, Duration.ZERO, durationInNs);
+            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
 
-            histogram = new Histogram(result, histogramBins);
+            double averagePowerValue = cps.model.Math.averagePower(tmp, Duration.ZERO, durationInNs);
+            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
+
+            double varianceValue = cps.model.Math.variance(tmp, Duration.ZERO, durationInNs);
+            varianceValueLabel.setText(String.format("%.2f", varianceValue));
+
+            double effectivePowerValue = cps.model.Math.effectivePower(tmp, Duration.ZERO, durationInNs);
+            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
+            
+            SignalArgs args = basicSignalChooser.getSignalArgs();
+            args.setAverageValue(averageValue);
+            args.setAverageAbsoulteValue(averageAbsoulteValue);
+            args.setAveragePowerValue(averagePowerValue);
+            args.setVarianceValue(varianceValue);
+            args.setEffectivePowerValue(effectivePowerValue);
+            
+            generatedSignalChart.setSignalType(lhs.getType());
+            generatedSignalChart.setArgs(args);
+            
+            plotSignal(generatedSignalChart);
+
+            histogram = new Histogram(generatedSignalChart, histogramBins);
             drawHistogram(histogram);
 
         } catch (NumberFormatException exception) {
