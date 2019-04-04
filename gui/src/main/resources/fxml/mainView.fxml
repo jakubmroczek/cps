@@ -1,96 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import cps.SignalChooser?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="651.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/8.0.121"
-            fx:controller="cps.MainViewController">
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane prefHeight="651.0" prefWidth="896.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
         <VBox layoutX="195.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="501.0">
             <children>
                 <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
                     <xAxis>
-                        <NumberAxis side="BOTTOM" fx:id="xAxis" label="t[s]"/>
+                        <NumberAxis label="t[s]" side="BOTTOM" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis fx:id="yAxis" prefWidth="30.0" side="LEFT" label="A"/>
+                        <NumberAxis fx:id="yAxis" label="A" prefWidth="30.0" side="LEFT" />
                     </yAxis>
                 </LineChart>
                 <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="526.0">
                     <xAxis>
-                        <CategoryAxis side="BOTTOM"/>
+                        <CategoryAxis side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                        <NumberAxis side="LEFT"/>
+                        <NumberAxis side="LEFT" />
                     </yAxis>
                 </BarChart>
             </children>
         </VBox>
         <VBox layoutX="696.0" prefHeight="458.0" prefWidth="194.0">
             <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE"
-                           width="200.0"/>
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox prefHeight="32.0" prefWidth="194.0">
                     <children>
-                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:"/>
-                        <Label fx:id="averageValueLabel" prefHeight="32.0" prefWidth="87.0"/>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
+                        <Label fx:id="averageValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE"
-                           width="200.0"/>
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
-                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:"/>
-                        <Label fx:id="averageAbsoluteValueLabel" prefHeight="32.0" prefWidth="87.0"/>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
+                        <Label fx:id="averageAbsoluteValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE"
-                           width="200.0"/>
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
-                        <Label prefHeight="46.0" prefWidth="107.0" text="Moc sr.:"/>
-                        <Label fx:id="averagePowerValueLabel" prefHeight="32.0" prefWidth="87.0"/>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="Moc sr.:" />
+                        <Label fx:id="averagePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE"
-                           width="200.0"/>
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
-                        <Label prefHeight="46.0" prefWidth="107.0" text="Wariancja:"/>
-                        <Label fx:id="varianceValueLabel" prefHeight="32.0" prefWidth="87.0"/>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="Wariancja:" />
+                        <Label fx:id="varianceValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE"
-                           width="200.0"/>
+                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
-                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc skuteczna:"/>
-                        <Label fx:id="effectivePowerValueLabel" prefHeight="32.0" prefWidth="87.0"/>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc skuteczna:" />
+                        <Label fx:id="effectivePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
                 <HBox prefHeight="80.0" prefWidth="150.0">
                     <children>
-                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveToFile" text="Save to file"/>
-                        <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadFromFile" text="Load from file"/>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveToFile" text="Save to file" />
+                        <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadFromFile" text="Load from file" />
                     </children>
                 </HBox>
-                <HBox prefHeight="0" prefWidth="170.0"/>
-                <HBox prefHeight="42.0" prefWidth="170.0"/>
+                <HBox prefHeight="0" prefWidth="170.0" />
+                <HBox prefHeight="42.0" prefWidth="170.0" />
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Button fx:id="addButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="+" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                  <Button fx:id="subtractButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="-" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                  <Button fx:id="multiplyButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="/" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                  <Button fx:id="divideButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="*" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+               </children>
+            </GridPane>
             </children>
         </VBox>
-        <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0"
-                minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true"
-                value="10.0"/>
-        <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0"/>
-        <Button fx:id="displayButton" layoutX="356.0" layoutY="522.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-                onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres"/>
-        <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                       minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0"/>
-        <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity"
-                       minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0"/>
-        <Button fx:id="executeButton" layoutX="356.0" layoutY="573.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
-                onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!"/>
+        <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+        <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
+        <Button fx:id="displayButton" layoutX="356.0" layoutY="522.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres" />
+        <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+        <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+        <Button fx:id="executeButton" layoutX="356.0" layoutY="573.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="159.0" text="Press me!" />
     </children>
 </AnchorPane>
