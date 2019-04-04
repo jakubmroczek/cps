@@ -177,7 +177,8 @@ public class MainViewController {
                 drawChartAndHistogram(loadedSignal);
             } else if (resultExtension.equals(binaryExtension)) {
                 SignalChart loadedSignal = SignalWriter.readBinary(file);
-                 drawChartAndHistogram(loadedSignal);
+                plotSignal(loadedSignal);
+                histogram = new Histogram(loadedSignal, histogramBins);
             } else {
                 throw new UnsupportedOperationException(
                         "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
@@ -190,11 +191,10 @@ public class MainViewController {
     //TODO: Code duplication
     private SignalChart load() throws IOException {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
+        fileChooser.getExtensionFilters().addAll(jsonExtension);
         File file = fileChooser.showOpenDialog(this.stage);
 
         if (file == null)
@@ -203,13 +203,9 @@ public class MainViewController {
         }
 
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
-        if (resultExtension.equals(jsonExtension)) {
-            Gson gson = new Gson();
-            JsonReader reader = new JsonReader(new FileReader(file));
-            return gson.fromJson(reader, SignalChart.class);
-        } else {
-            return SignalWriter.readBinary(file);
-        }
+        Gson gson = new Gson();
+        JsonReader reader = new JsonReader(new FileReader(file));
+        return gson.fromJson(reader, SignalChart.class);
     }
 
     @FXML

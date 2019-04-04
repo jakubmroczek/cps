@@ -110,8 +110,6 @@ public class SignalWriter {
                 float f = (float) d1;
                 dos.writeFloat(f);
             }
-            dos.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
