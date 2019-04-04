@@ -240,7 +240,7 @@ public class MainViewController {
     @FXML public void initialize() {
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
-
+        signalOperationList.setValue(AVAILABLE_SIGNAL_OPERATIONS.get(0));
         // We need to hide duration and sampling frequency fields in extraSignalChooser from the client,
         // because those values will be provided by querying basicSignalChooser.
         removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser();
@@ -252,6 +252,10 @@ public class MainViewController {
         histogramChart.setBarGap(0);
         histogramChart.setAnimated(false);
         histogramChart.setLegendVisible(false);
+
+        //Reareane layout
+        basicSignalChooser.onSignalChosen();
+        extraSignalChooser.onSignalChosen();
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe

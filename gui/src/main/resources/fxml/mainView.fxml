@@ -6,7 +6,6 @@
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
@@ -17,7 +16,7 @@
 
 <AnchorPane prefHeight="713.0" prefWidth="932.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
-        <VBox layoutX="195.0" onDragDropped="#onHistogramBinsChanged" prefHeight="458.0" prefWidth="501.0">
+        <VBox layoutX="206.0" onDragDropped="#onHistogramBinsChanged" prefHeight="683.0" prefWidth="477.0">
             <children>
                 <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
                     <xAxis>
@@ -27,7 +26,7 @@
                         <NumberAxis fx:id="yAxis" label="A" prefWidth="30.0" side="LEFT" />
                     </yAxis>
                 </LineChart>
-                <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="526.0">
+                <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="453.0">
                     <xAxis>
                         <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -35,6 +34,7 @@
                         <NumberAxis side="LEFT" />
                     </yAxis>
                 </BarChart>
+              <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" prefHeight="38.0" prefWidth="360.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
             </children>
         </VBox>
         <VBox layoutX="696.0" prefHeight="188.0" prefWidth="200.0">
@@ -76,18 +76,16 @@
                 </HBox>
             </children>
         </VBox>
-        <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" layoutX="363.0" layoutY="457.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
         <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
-        <Button fx:id="displayButton" layoutX="648.0" layoutY="568.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="31.0" prefWidth="159.0" text="Wykres" />
+        <Button fx:id="displayButton" layoutX="701.0" layoutY="276.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
         <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
         <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
-        <Button fx:id="executeButton" layoutX="780.0" layoutY="495.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="31.0" prefWidth="102.0" text="Press me!" />
-      <ButtonBar layoutX="580.0" layoutY="468.0" prefHeight="40.0" prefWidth="200.0" />
-      <Button fx:id="addButton" layoutX="487.0" layoutY="628.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="+" />
-            <Button fx:id="saveButton" layoutX="806.0" layoutY="609.0" mnemonicParsing="false" onAction="#saveToFile" text="Save to file" />
-          <Button fx:id="multiplyButton" layoutX="612.0" layoutY="497.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="/" />
-          <Button fx:id="subtractButton" layoutX="497.0" layoutY="563.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="-" />
-          <Button fx:id="divideButton" layoutX="494.0" layoutY="486.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="102.0" text="*" />
-      <Button fx:id="loadButton" layoutX="597.0" layoutY="623.0" mnemonicParsing="false" onAction="#loadFromFile" text="Load from file" />
+        <Button fx:id="executeButton" layoutX="803.0" layoutY="276.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="30.0" prefWidth="80.0" text="Press me!" />
+            <Button fx:id="saveButton" layoutX="700.0" layoutY="242.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
+          <Button fx:id="multiplyButton" layoutX="803.0" layoutY="347.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="/" />
+          <Button fx:id="subtractButton" layoutX="803.0" layoutY="312.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="-" />
+          <Button fx:id="divideButton" layoutX="701.0" layoutY="347.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="*" />
+      <Button fx:id="loadButton" layoutX="803.0" layoutY="242.0" mnemonicParsing="false" onAction="#loadFromFile" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
+      <Button fx:id="addButton" layoutX="701.0" layoutY="312.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="+" />
     </children>
 </AnchorPane>

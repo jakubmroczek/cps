@@ -24,7 +24,7 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
-        Scene scene = new Scene(rootNode, 900, 670);
+        Scene scene = new Scene(rootNode, 900, 700);
         scene.getStylesheets().add("/styles/styles.css");
 
         stage.setTitle("CPS");

@@ -62,6 +62,10 @@ public class SignalChooser extends VBox {
 
         initializeSignalParameters();
         initializeLayout();
+
+        //Default value
+        signalList.setValue(AVAILABLE_SIGNALS.get(3));
+
     }
 
     @FXML public void onSignalChosen() {
