@@ -51,8 +51,8 @@ public class SignalOperations {
 
     public static SignalChart divide(SignalChart lhs, SignalChart rhs) {
         validate(lhs, rhs);
-        SignalChart inversion = inverse(lhs);
-        return multiply(inversion, rhs);
+        SignalChart inversion = inverse(rhs);
+        return multiply(lhs, inversion);
     }
 
     private static SignalChart inverse(SignalChart instance) {
