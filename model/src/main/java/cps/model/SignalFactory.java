@@ -24,31 +24,31 @@ public class SignalFactory {
     }
 
     //TODO: Ensure duration units!!!!!!
-    public static Signal createSignal(String signal, SignalArgs args) {
-        switch (signal) {
+    public static Function<Double, Double> createFunction(String function, SignalArgs args) {
+        switch (function) {
             case LINEARLY_DISTRIBUTED_NOISE:
-                return getLinearlyDistibutedNoise(args.getAmplitude());
+                return createLinearlyDistributedNoise(args.getAmplitude());
 
             case GAUSSIAN_NOISE:
-                return getGaussianNoise(args.getAmplitude());
+                return createGaussianNoise(args.getAmplitude());
 
             case SINUSOIDAL:
-                return getSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case HALF_STRAIGHT_SINUSOIDAL:
-                return getHalfStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createHalfStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case FULL_STRAIGHT_SINUSOIDAL:
-                return getFullStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createFullStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
 
             case RECTANGLE:
-                return getRectangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createRectangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case SYMETRIC_RECTANGLE:
-                return getSymetricRectangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createSymmetricRectangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case TRIANGLE:
-                return getTriangleSignal(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createTriangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
 
             case UNIT_STEP:
                 return createUnitStep(args.getAmplitude(), args.getInitialTime());
@@ -63,140 +63,104 @@ public class SignalFactory {
         }
     }
 
-    private static Signal getLinearlyDistibutedNoise(double amplitude) {
-        Function<Duration, Double> function = duration -> {
+    private static Function<Double, Double> createLinearlyDistributedNoise(double amplitude) {
+        return x -> {
             Random random = new Random();
             return amplitude * (random.nextDouble() * 2.0 - 1.0);
         };
-        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
-    private static Signal getGaussianNoise(double amplitude) {
-        Function<Duration, Double> function = duration -> {
+    private static Function<Double, Double> createGaussianNoise(double amplitude) {
+        return x -> {
             Random random = new Random();
             return amplitude * random.nextGaussian();
         };
-        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
-    private static Signal getSinusoidal(double amplitude, Duration period, Duration initialTime) {
-        Function<Duration, Double> fun = duration -> {
-            assert duration != null;
-            double angleVelocity = 2.0 * PI / period.toNanos();
-            Duration argument = duration.minus(initialTime);
-            return amplitude * sin(angleVelocity * argument.toNanos());
+    private static Function<Double, Double> createSinusoidal(double amplitude, double period, double initialTime) {
+        return x -> {
+            double angleVelocity = 2.0 * PI / period;
+            double argument = x - initialTime;
+            return amplitude * sin(angleVelocity * argument);
         };
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal getHalfStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
-        Function<Duration, Double> fun = duration -> {
-            double angleVelocity = 2.0 * PI / period.toNanos();
-            Duration argument = duration.minus(initialTime);
-            double left = sin(angleVelocity * argument.toNanos());
+    private static Function<Double, Double> createHalfStraightSinusoidal(double amplitude, double period, double initialTime) {
+        return x -> {
+            double angleVelocity = 2.0 * PI / period;
+            double argument = x - initialTime;
+            double left = sin(angleVelocity * argument);
             double right = abs(left);
             return 0.5 * amplitude * (left + right);
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal getFullStraightSinusoidal(double amplitude, Duration period, Duration initialTime) {
-        Function<Duration, Double> fun = duration -> {
-            assert duration != null;
-            double angleVelocity = 2.0 * PI / period.toNanos();
-            Duration argument = duration.minus(initialTime);
-            return amplitude * abs(sin(angleVelocity * argument.toNanos()));
+    private static Function<Double, Double> createFullStraightSinusoidal(double amplitude, double period, double initialTime) {
+        return x  -> {
+            double angleVelocity = 2.0 * PI / period;
+            double argument = x -initialTime;
+            return amplitude * abs(sin(angleVelocity * argument));
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal getRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toNanos() != 0;
+    private static Function<Double, Double> createRectangleFunction(double amplitude, double period, double initialTime, double kw) {
+        return  x -> {
 
-        Function<Duration, Double> fun = duration -> {
-            //TODO: Better description
-            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
-
-            double kMax = coefficient;
-            double kMin = coefficient - kw;
+            double kMax = (x - initialTime) / period;
+            double kMin = kMax - kw;
 
             double integer = ceil(kMin);
 
             return integer >= kMin && integer < kMax ? amplitude : 0;
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal getSymetricRectangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toNanos() != 0;
-
-        Function<Duration, Double> fun = duration -> {
-            //TODO: Better description
-            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
-
-            double kMax = coefficient;
-            double kMin = coefficient - kw;
+    private static Function<Double, Double> createSymmetricRectangleFunction(double amplitude, double period, double initialTime, double kw) {
+        return x -> {
+            double kMax = (x - initialTime) / period;
+            double kMin = kMax - kw;
 
             double integer = ceil(kMin);
 
             return integer >= kMin && integer < kMax ? amplitude : -amplitude;
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal getTriangleSignal(double amplitude, Duration period, Duration initialTime, double kw) {
-        assert period != null && period.toNanos() != 0;
-
-        Function<Duration, Double> fun = duration -> {
-            //TODO: Better description
-            double coefficient = (duration.toNanos() - initialTime.toNanos()) / (double) period.toNanos();
-
-            double kMax = coefficient;
-            double kMin = coefficient - kw;
+    private static Function<Double, Double> createTriangleFunction(double amplitude, double period, double initialTime, double kw) {
+        return x -> {
+            double kMax = (x - initialTime) / period;
+            double kMin = kMax - kw;
 
             double integer = ceil(kMin);
 
             if (integer >= kMin && integer < kMax) {
-                return (amplitude / (kw * period.toNanos())) * (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos());
+                return (amplitude / (kw * period)) * (x - integer * period - initialTime);
             } else {
-                integer = floor(coefficient - kw);
-                return (-amplitude / (period.toNanos() * (1.0 - kw))) *
-                        (duration.toNanos() - integer * period.toNanos() - initialTime.toNanos()) + (amplitude / (1.0 - kw));
+                integer = floor(kMax - kw);
+                return (-amplitude / (period * (1.0 - kw))) *
+                        (x - integer * period - initialTime) + (amplitude / (1.0 - kw));
             }
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, fun);
     }
 
-    private static Signal createUnitStep(double amplitude, Duration initialTime) {
-        Function<Duration, Double> function = duration -> {
-            int compareToResult = duration.compareTo(initialTime);
-            if (compareToResult > 0) {
+    private static Function<Double, Double> createUnitStep(double amplitude, double initialTime) {
+        return x -> {
+            if (x > initialTime) {
                 return amplitude;
-            } else if (compareToResult < 0) {
+            } else if (x < initialTime) {
                 return 0.0;
             } else {
                 return 0.5 * amplitude;
             }
         };
-
-        return new Signal(Signal.Type.CONTINUOUS, function);
     }
 
-    // Ns przesunieci numeru probki dla skoku jednostkowego
-    //TODO: ?
-    private static Signal createKroneckerDelta(double amplitude, int Ns) {
-        Function<Long, Double> kroneckerDelta = n -> n - Ns == 0 ? amplitude : 0;
-        return new DiscreteSignal(kroneckerDelta);
+    private static Function<Double, Double> createKroneckerDelta(double amplitude, int Ns) {
+        return n -> n - Ns == 0 ? amplitude : 0;
     }
 
-    private static Signal createImpulseNoise(double amplitude, double probability) {
-        //TODO: Probability <0, 1>
-        Function<Long, Double> impulseNoise = n -> {
+    private static Function<Double, Double> createImpulseNoise(double amplitude, double probability) {
+        return n -> {
             Random random = new Random();
             double threshold = random.nextDouble();
             if (threshold >= 0 && threshold <= probability) {
@@ -205,8 +169,6 @@ public class SignalFactory {
                 return 0.0;
             }
         };
-
-        return new DiscreteSignal(impulseNoise);
     }
 
 }

@@ -12,10 +12,13 @@ import java.util.List;
     //Parameters describing signal
     //TODO:
     @Setter private SignalArgs args;
+
     @Setter private Signal.Type signalType;
 
     private Duration duration;
+
     @Setter private Duration probingPeriod;
+
     @Setter private List<Double> probes;
 
     public SignalChart(Duration duration, Duration probingPeriod, List<Double> probes) {
