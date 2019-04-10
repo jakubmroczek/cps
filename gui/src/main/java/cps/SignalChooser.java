@@ -86,7 +86,7 @@ public class SignalChooser extends VBox {
             String selection = signalList.getSelectionModel().getSelectedItem();
             String function = LABEL_TO_SIGNAL_MAP.get(selection);
             return FunctionFactory.createFunction(function, args);
-        } catch (NumberFormatException exception) {
+        } catch (Exception exception) {
             throw new IllegalArgumentException(exception);
         }
     }
@@ -165,21 +165,13 @@ public class SignalChooser extends VBox {
         }
     }
 
-    public void setSignalChart(Signal signal) {
-        //       /* signalList.getSelectionModel().select(AVAILABLE_SIGNALS.indexOf(signalChart.getArgs().getSignalName()));
-        //        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(signalChart.getArgs().getSignalName());
-        //        if (layoutRearrangement != null) {
-        //            layoutRearrangement.run();
-        //        }
-        //        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getAmplitude()));
-        //        periodSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getPeriod().toMillis()));
-        //        t1SignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getInitialTime().toMillis()));
-        //        durationSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getDuration().toMillis()/1000));
-        //        kwSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getKw()));
-        //        nsSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getNs()));
-        //        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getSamplingFrequency().toMillis()/10));
-        //        probabilitySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getP*/robability()));
-        throw new UnsupportedOperationException("not implemented");
+    public void displaySignal(Signal signal, String title) {
+        removeAllSignalParameters();
+        getChildren().add(durationSignalParameter);
+        getChildren().add(samplingFrequencySignalParameter);
+        durationSignalParameter.getParameterValue().setText(signal.getDurationInNs().toString());
+        samplingFrequencySignalParameter.getParameterValue().setText(signal.getSamplingPeriod().toString());
+        signalList.setValue(title);
     }
 
     private void initializeSignalParameters() {

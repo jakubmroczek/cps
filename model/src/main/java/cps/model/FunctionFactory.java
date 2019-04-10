@@ -58,7 +58,7 @@ public class FunctionFactory {
             case IMPULSE_NOISE:
                 return createImpulseNoise(args.getAmplitude(), args.getProbability());
             default:
-                throw new UnsupportedOperationException(function + " unknown function");
+                throw new IllegalArgumentException(function + " unknown function");
         }
     }
 

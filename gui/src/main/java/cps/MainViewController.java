@@ -140,6 +140,8 @@ public class MainViewController {
             //TODO: Or functions can be merged together
             SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
             displaySignalMeasurement(signalMeasurement);
+
+            basicSignalChooser.displaySignal(signal, "Zaladowany z pliku");
         } catch (IOException e) {
             onSignalCreationException(e);
         }
@@ -196,6 +198,8 @@ public class MainViewController {
                     //TODO: Or functions can be merged together
                     SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
                     displaySignalMeasurement(signalMeasurement);
+
+                    basicSignalChooser.displaySignal(signal, "Zaladowane z pliku");
                 } catch (IOException e) {
                     onSignalCreationException(e);
                 }
