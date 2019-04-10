@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.Duration;
 
 @Getter @Setter @Builder public class SignalArgs implements Serializable {
+
     private Signal.Type type;
 
     private String signalName;

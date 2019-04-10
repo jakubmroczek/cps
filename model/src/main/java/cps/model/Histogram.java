@@ -1,23 +1,22 @@
 package cps.model;
 
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Math.copySign;
 import static java.lang.Math.floor;
 import static java.lang.Math.min;
 
-@Getter
-public class Histogram {
+@Getter public class Histogram {
+
     private final int bins;
     private final double min, max;
     private final List<Double> frequencyList;
 
     public Histogram(Signal signal, int bins) {
+        //TODO: Usun nadmiarowy czas
         this.bins = bins;
 
         List<Double> samples = signal.getSamples();

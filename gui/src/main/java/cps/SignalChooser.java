@@ -1,6 +1,7 @@
 package cps;
 
 import cps.model.FunctionFactory;
+import cps.model.Signal;
 import cps.model.SignalArgs;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -112,15 +113,15 @@ public class SignalChooser extends VBox {
         double kw = Double.parseDouble(kwSignalParameter.getParameterValue().getText());
 
         return SignalArgs.builder()
-                                    .signalName(name)
-                                    .amplitude(amplitude)
-                                    .period(periodInNs)
-                                    .initialTime(initialTimeInNs)
-                                    .kw(kw)
-                                    .Ns(ns)
-                                    .probability(probability)
-                                    .samplingFrequency(samplingFrequencyInNs)
-                                    .build();
+                         .signalName(name)
+                         .amplitude(amplitude)
+                         .periodInNs(periodInNs.toNanos())
+                         .initialTimeInNs(initialTimeInNs.toNanos())
+                         .kw(kw)
+                         .Ns(ns)
+                         .probability(probability)
+                         .samplingFrequency(samplingFrequencyInNs)
+                         .build();
     }
 
     public double getDurationInSeconds() throws IllegalArgumentException {
@@ -139,6 +140,17 @@ public class SignalChooser extends VBox {
         }
     }
 
+    public Signal.Type getSignalType() {
+        String name = signalList.getSelectionModel().getSelectedItem();
+        name = LABEL_TO_SIGNAL_MAP.get(name);
+
+        if (name.equals(FunctionFactory.KRONECKER_DELTA) || name.equals(FunctionFactory.IMPULSE_NOISE)) {
+            return Signal.Type.DISCRETE;
+        } else {
+            return Signal.Type.CONTINUOUS;
+        }
+    }
+
     /**
      * Use signal constants from FunctionFactory.
      */
@@ -153,20 +165,21 @@ public class SignalChooser extends VBox {
         }
     }
 
-    public void setSignalChart(SignalChart signalChart) {
-        signalList.getSelectionModel().select(AVAILABLE_SIGNALS.indexOf(signalChart.getArgs().getSignalName()));
-        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(signalChart.getArgs().getSignalName());
-        if (layoutRearrangement != null) {
-            layoutRearrangement.run();
-        }
-        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getAmplitude()));
-        periodSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getPeriod().toMillis()));
-        t1SignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getInitialTime().toMillis()));
-        durationSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getDuration().toMillis()/1000));
-        kwSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getKw()));
-        nsSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getNs()));
-        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getSamplingFrequency().toMillis()/10));
-        probabilitySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getProbability()));
+    public void setSignalChart(Signal signal) {
+        //       /* signalList.getSelectionModel().select(AVAILABLE_SIGNALS.indexOf(signalChart.getArgs().getSignalName()));
+        //        Runnable layoutRearrangement = signalNameToSignalParametersLayoutMap.get(signalChart.getArgs().getSignalName());
+        //        if (layoutRearrangement != null) {
+        //            layoutRearrangement.run();
+        //        }
+        //        amplitudeSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getAmplitude()));
+        //        periodSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getPeriod().toMillis()));
+        //        t1SignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getInitialTime().toMillis()));
+        //        durationSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getDuration().toMillis()/1000));
+        //        kwSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getKw()));
+        //        nsSignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getNs()));
+        //        samplingFrequencySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getSamplingFrequency().toMillis()/10));
+        //        probabilitySignalParameter.getParameterValue().setText(String.valueOf(signalChart.getArgs().getP*/robability()));
+        throw new UnsupportedOperationException("not implemented");
     }
 
     private void initializeSignalParameters() {
