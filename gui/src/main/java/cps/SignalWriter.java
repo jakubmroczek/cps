@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import cps.model.Math;
 import cps.model.Signal;
 import cps.model.SignalArgs;
-import cps.model.SignalChart;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -75,7 +74,7 @@ public class SignalWriter {
         }
         SignalChart sc = new SignalChart(duration, probingPeriod, probes);
         long t1inNanos = (long) t1 * 1000_000_000L;
-        SignalArgs sa = SignalArgs.builder().initialTime(Duration.ofNanos(t1inNanos)).build();
+        SignalArgs sa = SignalArgs.builder().initialTimeInNs(t1inNanos).build();
         sc.setArgs(sa);
         if (type == Signal.Type.CONTINUOUS.toString().charAt(0)) {
             sc.setSignalType(Signal.Type.CONTINUOUS);

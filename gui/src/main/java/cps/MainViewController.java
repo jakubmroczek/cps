@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.omg.CORBA.UnknownUserException;
 
 import java.io.File;
 import java.io.FileReader;
@@ -50,7 +51,7 @@ public class MainViewController {
             SignalArgs args = basicSignalChooser.getSignalArgs();
 
             Duration durationInNs = Duration.ofNanos((long)(basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
-
+            
             //TODO: Sprawdz sampling frequency
             signal = Signal.create(toType(args.getSignalName()),
                                 function,
@@ -70,16 +71,16 @@ public class MainViewController {
             double averageValue = cps.model.Math.averageValue(function, 0, durationInNs.toNanos());
             averageValueLabel.setText(String.format("%.2f", averageValue));
 
-            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, Duration.ZERO, durationInNs);
+            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(function, 0, durationInNs.toNanos());
             averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
 
-            double averagePowerValue = cps.model.Math.averagePower(signal, Duration.ZERO, durationInNs);
+            double averagePowerValue = cps.model.Math.averagePower(function, 0, durationInNs.toNanos());
             averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
 
-            double varianceValue = cps.model.Math.variance(signal, Duration.ZERO, durationInNs);
+            double varianceValue = cps.model.Math.variance(function, 0, durationInNs.toNanos());
             varianceValueLabel.setText(String.format("%.2f", varianceValue));
 
-            double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
+            double effectivePowerValue = cps.model.Math.effectivePower(function, 0, durationInNs.toNanos());
             effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
 
             args.setAverageValue(averageValue);
@@ -110,7 +111,7 @@ public class MainViewController {
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
 
-        double singlePointDurationInSeconds = signal. / 1_000_000_000D;
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
         if (signal.getSamples().size() != 1) {
             singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
         }
@@ -155,11 +156,13 @@ public class MainViewController {
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
 
         if (resultExtension.equals(jsonExtension)) {
-            SignalWriter.writeJSON(file, signal);
+            throw new UnsupportedOperationException("Implement me!");
+            // SignalWriter.writeJSON(file, signal);
         } else if (resultExtension.equals(binaryExtension)) {
-            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
+            throw new UnsupportedOperationException("Implement me!");
+//            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
 
-            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
+//            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
         } else {
             throw new UnsupportedOperationException(
                     "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
@@ -167,58 +170,59 @@ public class MainViewController {
     }
 
     @FXML private void loadFromFile() {
-        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
-        File file = fileChooser.showOpenDialog(this.stage);
-
-        if (file == null)
-        {
-            return;
-        }
-
-        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
-        try {
-            if (resultExtension.equals(jsonExtension)) {
-                Gson gson = new Gson();
-                JsonReader reader = new JsonReader(new FileReader(file));
-                SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
-
-                drawChartAndHistogram(loadedSignal);
-            } else if (resultExtension.equals(binaryExtension)) {
-                SignalChart loadedSignal = SignalWriter.readBinary(file);
-                plotSignal(loadedSignal);
-                histogram = new Histogram(loadedSignal, histogramBins);
-            } else {
-                throw new UnsupportedOperationException(
-                        "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+//        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+//        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
+//
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Wczytaj sygnał");
+//        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
+//        File file = fileChooser.showOpenDialog(this.stage);
+//
+//        if (file == null)
+//        {
+//            return;
+//        }
+//
+//        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
+//        try {
+//            if (resultExtension.equals(jsonExtension)) {
+//                Gson gson = new Gson();
+//                JsonReader reader = new JsonReader(new FileReader(file));
+//                SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
+//
+//                drawChartAndHistogram(loadedSignal);
+//            } else if (resultExtension.equals(binaryExtension)) {
+//                SignalChart loadedSignal = SignalWriter.readBinary(file);
+//                plotSignal(loadedSignal);
+//                histogram = new Histogram(loadedSignal, histogramBins);
+//            } else {
+//                throw new UnsupportedOperationException(
+//                        "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
+//            }
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
     }
 
     //TODO: Code duplication
     private SignalChart load() throws IOException {
-        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension);
-        File file = fileChooser.showOpenDialog(this.stage);
-
-        if (file == null)
-        {
-            throw new IOException("Unable to open provided file");
-        }
-
-        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
-        Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new FileReader(file));
-        return gson.fromJson(reader, SignalChart.class);
+        throw new UnsupportedOperationException("not implemented yet");
+//        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+//
+//        FileChooser fileChooser = new FileChooser();
+//        fileChooser.setTitle("Wczytaj sygnał");
+//        fileChooser.getExtensionFilters().addAll(jsonExtension);
+//        File file = fileChooser.showOpenDialog(this.stage);
+//
+//        if (file == null)
+//        {
+//            throw new IOException("Unable to open provided file");
+//        }
+//
+//        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
+//        Gson gson = new Gson();
+//        JsonReader reader = new JsonReader(new FileReader(file));
+//        return gson.fromJson(reader, SignalChart.class);
     }
 
     @FXML
@@ -241,58 +245,59 @@ public class MainViewController {
         loadSignalsAndApplyOperator(SignalOperations::divide);
     }
 
-    void loadSignalsAndApplyOperator(BiFunction<SignalChart, SignalChart, SignalChart> operator) {
-        try {
-            SignalChart lhs = load();
-            SignalChart rhs = load();
-            signal = operator.apply(lhs, rhs);
-
-            Duration durationInNs = lhs.getDuration();
-
-            //TODO: Code duplication
-            //CHEATING!
-            DiscreteSignal tmp = new DiscreteSignal(null);
-            tmp.setSamples(signal.getSamples());
-
-            double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
-            averageValueLabel.setText(String.format("%.2f", averageValue));
-
-            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(tmp, Duration.ZERO, durationInNs);
-            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
-
-            double averagePowerValue = cps.model.Math.averagePower(tmp, Duration.ZERO, durationInNs);
-            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
-
-            double varianceValue = cps.model.Math.variance(tmp, Duration.ZERO, durationInNs);
-            varianceValueLabel.setText(String.format("%.2f", varianceValue));
-
-            double effectivePowerValue = cps.model.Math.effectivePower(tmp, Duration.ZERO, durationInNs);
-            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
-
-            SignalArgs args = basicSignalChooser.getSignalArgs();
-            args.setAverageValue(averageValue);
-            args.setAverageAbsoulteValue(averageAbsoulteValue);
-            args.setAveragePowerValue(averagePowerValue);
-            args.setVarianceValue(varianceValue);
-            args.setEffectivePowerValue(effectivePowerValue);
-
-            args.setSignalName(lhs.getArgs().getSignalName());
-            signal.setSignalType(lhs.getSignalType());
-            signal.setArgs(args);
-
-            plotSignal(signal);
-
-            histogram = new Histogram(signal, histogramBins);
-            drawHistogram(histogram);
-        } catch (IOException e) {
-            onSignalCreationException(e);
-        }
+    void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
+//        try {
+//            Signal lhs = load();
+//            Signal rhs = load();
+//            signal = operator.apply(lhs, rhs);
+//
+//            Duration durationInNs = lhs.getDuration();
+//
+//            //TODO: Code duplication
+//            //CHEATING!
+//            DiscreteSignal tmp = new DiscreteSignal(null);
+//            tmp.setSamples(signal.getSamples());
+//
+//            double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
+//            averageValueLabel.setText(String.format("%.2f", averageValue));
+//
+//            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(tmp, Duration.ZERO, durationInNs);
+//            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
+//
+//            double averagePowerValue = cps.model.Math.averagePower(tmp, Duration.ZERO, durationInNs);
+//            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
+//
+//            double varianceValue = cps.model.Math.variance(tmp, Duration.ZERO, durationInNs);
+//            varianceValueLabel.setText(String.format("%.2f", varianceValue));
+//
+//            double effectivePowerValue = cps.model.Math.effectivePower(tmp, Duration.ZERO, durationInNs);
+//            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
+//
+//            SignalArgs args = basicSignalChooser.getSignalArgs();
+//            args.setAverageValue(averageValue);
+//            args.setAverageAbsoulteValue(averageAbsoulteValue);
+//            args.setAveragePowerValue(averagePowerValue);
+//            args.setVarianceValue(varianceValue);
+//            args.setEffectivePowerValue(effectivePowerValue);
+//
+//            args.setSignalName(lhs.getArgs().getSignalName());
+//            signal.setSignalType(lhs.getSignalType());
+//            signal.setArgs(args);
+//
+//            plotSignal(signal);
+//
+//            histogram = new Histogram(signal, histogramBins);
+//            drawHistogram(histogram);
+//        } catch (IOException e) {
+//            onSignalCreationException(e);
+//        }
+        throw new UnsupportedOperationException("not implemented");
     }
 
 
     @FXML public void onExecuteButton() {
         String operation = (String) signalOperationList.getSelectionModel().getSelectedItem();
-        BiFunction<SignalChart, SignalChart, SignalChart> operator;
+        BiFunction<Signal, Signal, Signal> operator;
         switch (operation) {
             case "+":
                 operator = SignalOperations::add;
@@ -315,8 +320,8 @@ public class MainViewController {
         }
 
         try {
-            Signal lhs = basicSignalChooser.getSignal();
-            Signal rhs = extraSignalChooser.getSignal();
+            Function lhs = basicSignalChooser.creatFunction();
+            Function rhs = extraSignalChooser.creatFunction();
 
             double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
             Duration durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
@@ -461,6 +466,10 @@ public class MainViewController {
                 averagePowerValueLabel.setText(String.format("%.2f", sc.getArgs().getAveragePowerValue()));
                 varianceValueLabel.setText(String.format("%.2f", sc.getArgs().getVarianceValue()));
                 effectivePowerValueLabel.setText(String.format("%.2f", sc.getArgs().getEffectivePowerValue()));
+    }
+
+    private void displaySignalMeasurement(SignalMeasurement signalMeasurement) {
+
     }
 
 }

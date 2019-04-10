@@ -1,10 +1,7 @@
 package cps;
 
-import com.sun.org.apache.xpath.internal.functions.FunctionMultiArgs;
 import cps.model.FunctionFactory;
-import cps.model.Signal;
 import cps.model.SignalArgs;
-import cps.model.SignalChart;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;

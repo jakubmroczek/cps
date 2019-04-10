@@ -22,17 +22,25 @@ public class Signal {
     private Type type;
 
     @Getter
+    private Duration durationInNs;
+
+    @Getter
+    private Duration samplingPeriod;
+
+    @Getter
     private List<Double> samples;
 
-    public Signal(Type type, List<Double> samples) {
+    public Signal(Type type, Duration durationInNs, Duration samplingPeriod, List<Double> samples) {
         this.type = type;
+        this.durationInNs = durationInNs;
+        this.samplingPeriod = samplingPeriod;
         this.samples = samples;
     }
 
     public static Signal create(Type type,
                                 Function<Double, Double> function,
                                Duration duration,
-                               Duration samplingFrequency) {
+                               Duration samplingPeriod) {
 
         Duration time = Duration.ZERO;
 
@@ -41,9 +49,9 @@ public class Signal {
         while (time.compareTo(duration) <= 0) {
             double timeInNs = time.toNanos();
             samples.add(function.apply(timeInNs));
-            time = time.plus(samplingFrequency);
+            time = time.plus(samplingPeriod);
         }
 
-        return new Signal(type, samples);
+        return new Signal(type, duration, samplingPeriod, samples);
     }
 }
