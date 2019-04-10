@@ -1,34 +1,33 @@
 package cps;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import cps.model.Signal;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+
+import static cps.model.Math.round;
 
 public class SignalWriter {
 
-    public static void writeJSON(File file, Signal signalChart) {
-        //        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        //
-        //        //TODO: Other sceneario
-        //        if (signalChart != null) {
-        //            List<Double> newProbes = new ArrayList<>();
-        //            for (Double d : signalChart.getProbes()) {
-        //                newProbes.add(d = Math.round(d, 2));
-        //            }
-        //            signalChart.setProbes(newProbes);
-        //
-        //            String signalJson = gson.toJson(signalChart);
-        //            try {
-        //                Files.write(file.toPath(), signalJson.getBytes());
-        //            } catch (IOException ex) {
-        //                ex.printStackTrace();
-        //            }
-        //        } else {
-        //            System.out.println("generatedSignal is null");
-        //        }
-        throw new UnsupportedOperationException("not implemented");
+    static void writeJSON(File file, Signal signal) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+            //TODO: Do we really need this?
+            for (int i = 0; i < signal.getSamples().size(); i++) {
+                double rounded = signal.getSamples().get(i);
+                rounded = round(rounded, 2);
+                signal.getSamples().set(i, rounded);
+            }
 
+            String signalJson = gson.toJson(signal);
+            Files.write(file.toPath(), signalJson.getBytes());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     //Binary format:

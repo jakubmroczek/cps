@@ -115,14 +115,15 @@ public class MainViewController {
         fileChooser.setTitle("Zapisz sygnał");
         fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
         File file = fileChooser.showSaveDialog(this.stage);
-        if (file == null)
+
+        if (file == null || signal == null) {
             return;
+        }
 
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
 
         if (resultExtension.equals(jsonExtension)) {
-            throw new UnsupportedOperationException("Implement me!");
-            // SignalWriter.writeJSON(file, signal);
+            SignalWriter.writeJSON(file, signal);
         } else if (resultExtension.equals(binaryExtension)) {
             throw new UnsupportedOperationException("Implement me!");
             //            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
