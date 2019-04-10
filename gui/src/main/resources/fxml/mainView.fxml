@@ -92,7 +92,7 @@
                 onAction="#subtract" prefHeight="30.0" prefWidth="80.0" text="-"/>
         <Button fx:id="divideButton" layoutX="701.0" layoutY="347.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
                 onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*"/>
-        <Button fx:id="loadButton" layoutX="803.0" layoutY="242.0" mnemonicParsing="false" onAction="#loadFromFile" prefHeight="30.0"
+        <Button fx:id="loadButton" layoutX="803.0" layoutY="242.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0"
                 prefWidth="80.0" text="Ładuj"/>
         <Button fx:id="addButton" layoutX="701.0" layoutY="312.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false"
                 onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+"/>
