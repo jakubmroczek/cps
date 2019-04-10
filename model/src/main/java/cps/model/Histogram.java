@@ -1,29 +1,29 @@
 package cps.model;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Math.copySign;
 import static java.lang.Math.floor;
 import static java.lang.Math.min;
 
-@Data public class Histogram {
-
-    // Liczba przedziałów
+@Getter
+public class Histogram {
     private final int bins;
     private final double min, max;
     private final List<Double> frequencyList;
 
-    public Histogram(SignalChart chart, int bins) {
+    public Histogram(Signal signal, int bins) {
         this.bins = bins;
 
-        //TODO: Efficiency lost, two loops, maybe chart should know it min and max value?
-        //TODO: Change name from probes to samples
-        List<Double> samples = chart.getProbes();
+        List<Double> samples = signal.getSamples();
 
-        //  TODO: NO SUCH ELEMENT EXCEPTION (WHEN SAMPLES IS EMPTY)
+        //TODO: Efficiency lost, two loops, maybe chart should know it min and max value?
+        // TODO: NO SUCH ELEMENT EXCEPTION (WHEN SAMPLES IS EMPTY)
         min = Collections.min(samples);
         max = Collections.max(samples);
 
@@ -35,11 +35,8 @@ import static java.lang.Math.min;
         }
 
         for (double value : samples) {
-            //Shows in which percent of the histogram length the sample is
-            //TODO
             double percentage = (value - min) / (max - min);
             int index = (int) floor(percentage * bins);
-            // In case when index is equal number of bins, (it can exceed the list size)
             index = min(index, bins - 1);
             double freq = frequencyList.get(index);
             frequencyList.set(index, freq + 1);

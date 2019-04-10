@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import static java.lang.Math.*;
 
-public class SignalFactory {
+public class FunctionFactory {
 
     public static final String LINEARLY_DISTRIBUTED_NOISE = "S1";
     public static final String GAUSSIAN_NOISE = "S2";
@@ -20,7 +20,7 @@ public class SignalFactory {
     public static final String KRONECKER_DELTA = "S10";
     public static final String IMPULSE_NOISE = "S11";
 
-    private SignalFactory() {
+    private FunctionFactory() {
     }
 
     //TODO: Ensure duration units!!!!!!
@@ -33,25 +33,25 @@ public class SignalFactory {
                 return createGaussianNoise(args.getAmplitude());
 
             case SINUSOIDAL:
-                return createSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createSinusoidal(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs());
 
             case HALF_STRAIGHT_SINUSOIDAL:
-                return createHalfStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createHalfStraightSinusoidal(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs());
 
             case FULL_STRAIGHT_SINUSOIDAL:
-                return createFullStraightSinusoidal(args.getAmplitude(), args.getPeriod(), args.getInitialTime());
+                return createFullStraightSinusoidal(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs());
 
             case RECTANGLE:
-                return createRectangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createRectangleFunction(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs(), args.getKw());
 
             case SYMETRIC_RECTANGLE:
-                return createSymmetricRectangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createSymmetricRectangleFunction(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs(), args.getKw());
 
             case TRIANGLE:
-                return createTriangleFunction(args.getAmplitude(), args.getPeriod(), args.getInitialTime(), args.getKw());
+                return createTriangleFunction(args.getAmplitude(), args.getPeriodInNs(), args.getInitialTimeInNs(), args.getKw());
 
             case UNIT_STEP:
-                return createUnitStep(args.getAmplitude(), args.getInitialTime());
+                return createUnitStep(args.getAmplitude(), args.getInitialTimeInNs());
 
             case KRONECKER_DELTA:
                 return createKroneckerDelta(args.getAmplitude(), args.getNs());
@@ -59,7 +59,7 @@ public class SignalFactory {
             case IMPULSE_NOISE:
                 return createImpulseNoise(args.getAmplitude(), args.getProbability());
             default:
-                throw new UnsupportedOperationException(signal + " unknown signal type");
+                throw new UnsupportedOperationException(function + " unknown function");
         }
     }
 

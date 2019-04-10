@@ -8,16 +8,19 @@ import java.io.Serializable;
 import java.time.Duration;
 
 @Getter @Setter @Builder public class SignalArgs implements Serializable {
+    private Signal.Type type;
 
     private String signalName;
+
     private double amplitude;
-    private Duration period;
-    private Duration initialTime;
+    private double periodInNs;
+    private double initialTimeInNs;
     private double kw;
 
     //Przesuniecie probki dla skoku jednostokowego
     private int Ns;
     //TODO: Moze zunifikowac z period?
+    private Duration duration;
     private Duration samplingFrequency;
     private double probability;
 

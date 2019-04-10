@@ -1,9 +1,10 @@
 package cps;
 
+import com.sun.org.apache.xpath.internal.functions.FunctionMultiArgs;
+import cps.model.FunctionFactory;
 import cps.model.Signal;
 import cps.model.SignalArgs;
 import cps.model.SignalChart;
-import cps.model.SignalFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class SignalChooser extends VBox {
 
@@ -27,17 +29,17 @@ public class SignalChooser extends VBox {
     private static final Map<String, String> LABEL_TO_SIGNAL_MAP = new HashMap<>();
 
     static {
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(0), SignalFactory.LINEARLY_DISTRIBUTED_NOISE);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(1), SignalFactory.GAUSSIAN_NOISE);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(2), SignalFactory.SINUSOIDAL);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(3), SignalFactory.HALF_STRAIGHT_SINUSOIDAL);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(4), SignalFactory.FULL_STRAIGHT_SINUSOIDAL);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(5), SignalFactory.RECTANGLE);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(6), SignalFactory.SYMETRIC_RECTANGLE);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(7), SignalFactory.TRIANGLE);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(8), SignalFactory.UNIT_STEP);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(9), SignalFactory.KRONECKER_DELTA);
-        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(10), SignalFactory.IMPULSE_NOISE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(0), FunctionFactory.LINEARLY_DISTRIBUTED_NOISE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(1), FunctionFactory.GAUSSIAN_NOISE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(2), FunctionFactory.SINUSOIDAL);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(3), FunctionFactory.HALF_STRAIGHT_SINUSOIDAL);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(4), FunctionFactory.FULL_STRAIGHT_SINUSOIDAL);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(5), FunctionFactory.RECTANGLE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(6), FunctionFactory.SYMETRIC_RECTANGLE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(7), FunctionFactory.TRIANGLE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(8), FunctionFactory.UNIT_STEP);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(9), FunctionFactory.KRONECKER_DELTA);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(10), FunctionFactory.IMPULSE_NOISE);
     }
 
     private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
@@ -80,12 +82,12 @@ public class SignalChooser extends VBox {
     /**
      * Creates Signal assembled from user parameters.
      */
-    public Signal getSignal() throws IllegalArgumentException {
+    public Function<Double, Double> creatFunction() throws IllegalArgumentException {
         try {
             SignalArgs args = getSignalArgs();
             String selection = signalList.getSelectionModel().getSelectedItem();
-            String signalType = LABEL_TO_SIGNAL_MAP.get(selection);
-            return SignalFactory.createSignal(signalType, args);
+            String function = LABEL_TO_SIGNAL_MAP.get(selection);
+            return FunctionFactory.createFunction(function, args);
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(exception);
         }
@@ -141,7 +143,7 @@ public class SignalChooser extends VBox {
     }
 
     /**
-     * Use signal constants from SignalFactory.
+     * Use signal constants from FunctionFactory.
      */
     public void setArrangement(String signal, Field... field) {
         if (signalNameToSignalParametersLayoutMap.containsKey(signal)) {
@@ -228,13 +230,13 @@ public class SignalChooser extends VBox {
             getChildren().add(probabilitySignalParameter);
         };
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement0);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.GAUSSIAN_NOISE, layoutRearrangement0);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SINUSOIDAL, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.LINEARLY_DISTRIBUTED_NOISE, layoutRearrangement0);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.GAUSSIAN_NOISE, layoutRearrangement0);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.HALF_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.FULL_STRAIGHT_SINUSOIDAL, layoutRearrangement1);
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.UNIT_STEP, () -> {
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.UNIT_STEP, () -> {
             removeAllSignalParameters();
             getChildren().add(amplitudeSignalParameter);
             getChildren().add(t1SignalParameter);
@@ -243,13 +245,13 @@ public class SignalChooser extends VBox {
 
         });
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.RECTANGLE, layoutRearrangement2);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.TRIANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.SYMETRIC_RECTANGLE, layoutRearrangement2);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.TRIANGLE, layoutRearrangement2);
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.KRONECKER_DELTA, layoutRearrangement3);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.KRONECKER_DELTA, layoutRearrangement3);
 
-        signalNameToSignalParametersLayoutMap.put(SignalFactory.IMPULSE_NOISE, layoutRearrangement4);
+        signalNameToSignalParametersLayoutMap.put(FunctionFactory.IMPULSE_NOISE, layoutRearrangement4);
     }
 
     //TODO: Group it somehow usign java fx method and delete this workaround

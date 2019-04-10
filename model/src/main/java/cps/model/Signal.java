@@ -1,6 +1,8 @@
 package cps.model;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.jfree.ui.about.resources.AboutResources;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -12,39 +14,36 @@ import java.util.stream.LongStream;
 //TODO: Zrobic interfejs funkcyjny
 public class Signal {
 
-    @Getter private Function<Duration, Double> function;
-
-    @Getter private Type type;
-
-    public Signal(Type type, Function<Duration, Double> function) {
-        this.type = type;
-        this.function = function;
-    }
-
-    //TODO: Adnotacje notnull
-    public double calculate(Duration duration) {
-        return function.apply(duration);
-    }
-
-    //TODO: To chyba nie jed odpowidzialnosc sygnalu, przeniesc gdzies indziej
-    public SignalChart createChart(Duration duration, Duration probingPeriod) {
-        Duration time = Duration.ZERO;
-        List<Double> samples = new ArrayList<>();
-
-        int i = 0;
-        while (time.compareTo(duration) <= 0) {
-            double val = calculate(time);
-            samples.add(val);
-            time = time.plus(probingPeriod);
-
-            double x = i++ * probingPeriod.toMillis();
-            double y = val;
-        }
-        return new SignalChart(duration, probingPeriod, samples);
-    }
-
     public enum Type {
         CONTINUOUS, DISCRETE
     }
 
+    @Getter
+    private Type type;
+
+    @Getter
+    private List<Double> samples;
+
+    public Signal(Type type, List<Double> samples) {
+        this.type = type;
+        this.samples = samples;
+    }
+
+    public static Signal create(Type type,
+                                Function<Double, Double> function,
+                               Duration duration,
+                               Duration samplingFrequency) {
+
+        Duration time = Duration.ZERO;
+
+        List<Double> samples = new ArrayList<>();
+
+        while (time.compareTo(duration) <= 0) {
+            double timeInNs = time.toNanos();
+            samples.add(function.apply(timeInNs));
+            time = time.plus(samplingFrequency);
+        }
+
+        return new Signal(type, samples);
+    }
 }

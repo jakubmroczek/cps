@@ -19,18 +19,22 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.Math;
 import java.time.Duration;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.lang.Math.min;
 
 public class MainViewController {
 
+    private Signal.Type toType(String function) {
+        throw new UnsupportedOperationException("implement me");
+    }
+
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/");
     private Stage stage;
     //TODO: Nullable?
-    private SignalChart generatedSignalChart;
+    private Signal signal;
     private Histogram histogram;
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
@@ -42,26 +46,28 @@ public class MainViewController {
 
     @FXML public void display() {
        try {
-            Signal signal = basicSignalChooser.getSignal();
+            Function<Double, Double> function = basicSignalChooser.creatFunction();
+            SignalArgs args = basicSignalChooser.getSignalArgs();
 
-            double durationInSeconds = basicSignalChooser.getDurationInSeconds();
-            Duration durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
+            Duration durationInNs = Duration.ofNanos((long)(basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
-            long samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
-            SignalArgs signalArgs = basicSignalChooser.getSignalArgs();
+            //TODO: Sprawdz sampling frequency
+            signal = Signal.create(toType(args.getSignalName()),
+                                function,
+                                durationInNs,
+                                args.getSamplingFrequency());
 
-            final Duration SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
-            generatedSignalChart = signal.createChart(durationInNs, SAMPLING_RATE);
 
-            generatedSignalChart.setSignalType(signal.getType());
-            plotSignal(generatedSignalChart);
+            plotSignal(signal);
+
+            // TODO: Podzial na dyskretne i ciagle
 
             //TODO: Usun nadmiarowy czas
-            histogram = new Histogram(generatedSignalChart, histogramBins);
+            histogram = new Histogram(signal, histogramBins);
             drawHistogram(histogram);
 
             //TODO: Usun nadmiarowy czas
-            double averageValue = cps.model.Math.averageValue(signal, Duration.ZERO, durationInNs);
+            double averageValue = cps.model.Math.averageValue(function, 0, durationInNs.toNanos());
             averageValueLabel.setText(String.format("%.2f", averageValue));
 
             double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, Duration.ZERO, durationInNs);
@@ -76,39 +82,46 @@ public class MainViewController {
             double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
             effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
 
-            signalArgs.setAverageValue(averageValue);
-            signalArgs.setAverageAbsoulteValue(averageAbsoulteValue);
-            signalArgs.setAveragePowerValue(averagePowerValue);
-            signalArgs.setVarianceValue(varianceValue);
-            signalArgs.setEffectivePowerValue(effectivePowerValue);
-            generatedSignalChart.setArgs(signalArgs);
+            args.setAverageValue(averageValue);
+            args.setAverageAbsoulteValue(averageAbsoulteValue);
+            args.setAveragePowerValue(averagePowerValue);
+            args.setVarianceValue(varianceValue);
+            args.setEffectivePowerValue(effectivePowerValue);
+
+            //TODO: Save
+//            signal.setArgsgs(signalArgs);
 
         } catch (IllegalArgumentException exception) {
            onSignalCreationException(exception);
         }
     }
 
-    private void plotSignal(SignalChart signal) {
-        if (signal.getSignalType() == Signal.Type.CONTINUOUS)
-        prepareChartToDisplayContinousSignal();
+    private void plotSignal(Signal signal) {
+        if (signal.getType() == Signal.Type.CONTINUOUS)
+        {
+            prepareChartToDisplayContinousSignal();
+        }
         else
+        {
             prepareChartToDisplayDiscreteSignal();
+        }
 
          XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-        double singlePointDurationInSeconds = signal.getDuration().toNanos() / 1_000_000_000D;
-        if (signal.getProbes().size() != 1) {
-            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getProbes().size() - 1);
+
+        double singlePointDurationInSeconds = signal. / 1_000_000_000D;
+        if (signal.getSamples().size() != 1) {
+            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
         }
 
         double step = 1.0;
-        if (signal.getProbes().size() > NUMBER_OF_PIXELS_IN_CHART)
-             step = signal.getProbes().size() / NUMBER_OF_PIXELS_IN_CHART;
+        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
+             step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
 
        double current = 0.0;
-       for (int j = 0; current < signal.getProbes().size(); current += step, j++)  {
-                   double y = signal.getProbes().get((int)current);
+       for (int j = 0; current < signal.getSamples().size(); current += step, j++)  {
+                   double y = signal.getSamples().get((int)current);
            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
        }
 
@@ -142,11 +155,11 @@ public class MainViewController {
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
 
         if (resultExtension.equals(jsonExtension)) {
-            SignalWriter.writeJSON(file, generatedSignalChart);
+            SignalWriter.writeJSON(file, signal);
         } else if (resultExtension.equals(binaryExtension)) {
             Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
 
-            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), generatedSignalChart);
+            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
         } else {
             throw new UnsupportedOperationException(
                     "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
@@ -232,14 +245,14 @@ public class MainViewController {
         try {
             SignalChart lhs = load();
             SignalChart rhs = load();
-            generatedSignalChart = operator.apply(lhs, rhs);
+            signal = operator.apply(lhs, rhs);
 
             Duration durationInNs = lhs.getDuration();
 
             //TODO: Code duplication
             //CHEATING!
             DiscreteSignal tmp = new DiscreteSignal(null);
-            tmp.setSamples(generatedSignalChart.getProbes());
+            tmp.setSamples(signal.getSamples());
 
             double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
             averageValueLabel.setText(String.format("%.2f", averageValue));
@@ -264,12 +277,12 @@ public class MainViewController {
             args.setEffectivePowerValue(effectivePowerValue);
 
             args.setSignalName(lhs.getArgs().getSignalName());
-            generatedSignalChart.setSignalType(lhs.getSignalType());
-            generatedSignalChart.setArgs(args);
+            signal.setSignalType(lhs.getSignalType());
+            signal.setArgs(args);
 
-            plotSignal(generatedSignalChart);
+            plotSignal(signal);
 
-            histogram = new Histogram(generatedSignalChart, histogramBins);
+            histogram = new Histogram(signal, histogramBins);
             drawHistogram(histogram);
         } catch (IOException e) {
             onSignalCreationException(e);
@@ -313,12 +326,12 @@ public class MainViewController {
 
             SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
             SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
-            generatedSignalChart = operator.apply(sc1, sc2);
+            signal = operator.apply(sc1, sc2);
             
             //TODO: Code duplication
             //CHEATING!
             DiscreteSignal tmp = new DiscreteSignal(null);
-            tmp.setSamples(generatedSignalChart.getProbes());
+            tmp.setSamples(signal.getSamples());
 
             double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
             averageValueLabel.setText(String.format("%.2f", averageValue));
@@ -342,12 +355,12 @@ public class MainViewController {
             args.setVarianceValue(varianceValue);
             args.setEffectivePowerValue(effectivePowerValue);
             
-            generatedSignalChart.setSignalType(lhs.getType());
-            generatedSignalChart.setArgs(args);
+            signal.setSignalType(lhs.getType());
+            signal.setArgs(args);
             
-            plotSignal(generatedSignalChart);
+            plotSignal(signal);
 
-            histogram = new Histogram(generatedSignalChart, histogramBins);
+            histogram = new Histogram(signal, histogramBins);
             drawHistogram(histogram);
 
         } catch (NumberFormatException exception) {
@@ -398,8 +411,8 @@ public class MainViewController {
         if (newHistogramBins != histogramBins) {
             histogramBins = newHistogramBins;
             //TODO: Can we be sure that is not null?
-            if (generatedSignalChart != null) {
-                histogram = new Histogram(generatedSignalChart, histogramBins);
+            if (signal != null) {
+                histogram = new Histogram(signal, histogramBins);
                 drawHistogram(histogram);
             }
         }
@@ -407,7 +420,7 @@ public class MainViewController {
 
     private void drawChartAndHistogram(SignalChart loadedSignal) {
         setTextFields(loadedSignal);
-        generatedSignalChart = loadedSignal;
+        signal = loadedSignal;
         plotSignal(loadedSignal);
         histogram = new Histogram(loadedSignal, histogramBins);
         drawHistogram(histogram);
@@ -422,23 +435,23 @@ public class MainViewController {
     }
 
     private void removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser() {
-        extraSignalChooser.setArrangement(SignalFactory.LINEARLY_DISTRIBUTED_NOISE, SignalChooser.Field.AMPLITUDE);
-        extraSignalChooser.setArrangement(SignalFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
-        extraSignalChooser.setArrangement(SignalFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.LINEARLY_DISTRIBUTED_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(FunctionFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
+        extraSignalChooser.setArrangement(FunctionFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(SignalFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(SignalFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(SignalFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(SignalFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(FunctionFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1, SignalChooser.Field.KW);
-        extraSignalChooser.setArrangement(SignalFactory.SYMETRIC_RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.SYMETRIC_RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1, SignalChooser.Field.KW);
-        extraSignalChooser.setArrangement(SignalFactory.TRIANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
+        extraSignalChooser.setArrangement(FunctionFactory.TRIANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1, SignalChooser.Field.KW);
-        extraSignalChooser.setArrangement(SignalFactory.KRONECKER_DELTA, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.NS);
-        extraSignalChooser.setArrangement(SignalFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
+        extraSignalChooser.setArrangement(FunctionFactory.KRONECKER_DELTA, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.NS);
+        extraSignalChooser.setArrangement(FunctionFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
     }
 
     private void setTextFields(SignalChart sc) {
