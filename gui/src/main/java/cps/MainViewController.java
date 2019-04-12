@@ -1,7 +1,5 @@
 package cps;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,7 +15,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiFunction;
@@ -26,10 +23,6 @@ import java.util.function.Function;
 import static java.lang.Math.min;
 
 public class MainViewController {
-
-    private Signal.Type toType(String function) {
-        throw new UnsupportedOperationException("implement me");
-    }
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/");
     private Stage stage;
@@ -45,85 +38,58 @@ public class MainViewController {
     private int histogramBins = 10;
 
     @FXML public void display() {
-       try {
+        try {
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             SignalArgs args = basicSignalChooser.getSignalArgs();
 
-            Duration durationInNs = Duration.ofNanos((long)(basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
+            Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
             //TODO: Sprawdz sampling frequency
-            signal = Signal.create(toType(args.getSignalName()),
-                                function,
-                                durationInNs,
-                                args.getSamplingFrequency());
-
+            signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
 
             plotSignal(signal);
-
-            // TODO: Podzial na dyskretne i ciagle
-
-            //TODO: Usun nadmiarowy czas
-            histogram = new Histogram(signal, histogramBins);
-            drawHistogram(histogram);
-
-            //TODO: Usun nadmiarowy czas
-            double averageValue = cps.model.Math.averageValue(function, 0, durationInNs.toNanos());
-            averageValueLabel.setText(String.format("%.2f", averageValue));
-
-            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(signal, Duration.ZERO, durationInNs);
-            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
-
-            double averagePowerValue = cps.model.Math.averagePower(signal, Duration.ZERO, durationInNs);
-            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
-
-            double varianceValue = cps.model.Math.variance(signal, Duration.ZERO, durationInNs);
-            varianceValueLabel.setText(String.format("%.2f", varianceValue));
-
-            double effectivePowerValue = cps.model.Math.effectivePower(signal, Duration.ZERO, durationInNs);
-            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
-
-            args.setAverageValue(averageValue);
-            args.setAverageAbsoulteValue(averageAbsoulteValue);
-            args.setAveragePowerValue(averagePowerValue);
-            args.setVarianceValue(varianceValue);
-            args.setEffectivePowerValue(effectivePowerValue);
-
-            //TODO: Save
-//            signal.setArgsgs(signalArgs);
+            drawHistogram(signal);
+            SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
+            displaySignalMeasurement(signalMeasurement);
 
         } catch (IllegalArgumentException exception) {
-           onSignalCreationException(exception);
+            onSignalCreationException(exception);
+        }
+    }
+
+    SignalMeasurement measure(Signal signal, Function<Double, Double> function, Duration durationInNs) {
+        if (signal.getType() == Signal.Type.CONTINUOUS) {
+            return SignalMeasurement.measure(function, 0, durationInNs.toNanos());
+        } else {
+            return SignalMeasurement.measure(signal);
         }
     }
 
     private void plotSignal(Signal signal) {
-        if (signal.getType() == Signal.Type.CONTINUOUS)
-        {
+        if (signal.getType() == Signal.Type.CONTINUOUS) {
             prepareChartToDisplayContinousSignal();
-        }
-        else
-        {
+        } else {
             prepareChartToDisplayDiscreteSignal();
         }
 
-         XYChart.Series series = new XYChart.Series();
+        XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
 
-        double singlePointDurationInSeconds = signal. / 1_000_000_000D;
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
         if (signal.getSamples().size() != 1) {
             singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
         }
 
         double step = 1.0;
         if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
-             step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
+            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
 
-       double current = 0.0;
-       for (int j = 0; current < signal.getSamples().size(); current += step, j++)  {
-                   double y = signal.getSamples().get((int)current);
-           series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
-       }
+        double current = 0.0;
+        for (int j = 0; current < signal.getSamples().size(); current += step, j++) {
+            double y = signal.getSamples().get((int) current);
+            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
+        }
 
         chart.getData().clear();
         chart.getData().add(series);
@@ -149,98 +115,78 @@ public class MainViewController {
         fileChooser.setTitle("Zapisz sygnał");
         fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
         File file = fileChooser.showSaveDialog(this.stage);
-        if (file == null)
+
+        if (file == null || signal == null) {
             return;
+        }
 
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
 
         if (resultExtension.equals(jsonExtension)) {
             SignalWriter.writeJSON(file, signal);
-        } else if (resultExtension.equals(binaryExtension)) {
-            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
-
-            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
         } else {
-            throw new UnsupportedOperationException(
-                    "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
+            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
+            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
         }
     }
 
-    @FXML private void loadFromFile() {
+    @FXML public void loadSignal() {
+        try {
+            signal = loadFromFile();
+
+            plotSignal(signal);
+            drawHistogram(signal);
+            //TODO: We do not have info about function so we must use for the discrete signal or maybe
+            //TODO: Or functions can be merged together
+            SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
+            displaySignalMeasurement(signalMeasurement);
+
+            basicSignalChooser.displaySignal(signal, "Zaladowany z pliku");
+        } catch (IOException e) {
+            onSignalCreationException(e);
+        }
+    }
+
+    private Signal loadFromFile() throws IOException {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Wczytaj sygnał");
         fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
+
         File file = fileChooser.showOpenDialog(this.stage);
 
-        if (file == null)
-        {
-            return;
-        }
-
-        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
-        try {
-            if (resultExtension.equals(jsonExtension)) {
-                Gson gson = new Gson();
-                JsonReader reader = new JsonReader(new FileReader(file));
-                SignalChart loadedSignal = gson.fromJson(reader, SignalChart.class);
-
-                drawChartAndHistogram(loadedSignal);
-            } else if (resultExtension.equals(binaryExtension)) {
-                SignalChart loadedSignal = SignalWriter.readBinary(file);
-                plotSignal(loadedSignal);
-                histogram = new Histogram(loadedSignal, histogramBins);
-            } else {
-                throw new UnsupportedOperationException(
-                        "Signal can not be saved to the file with given extension: " + resultExtension.getExtensions());
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    //TODO: Code duplication
-    private SignalChart load() throws IOException {
-        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension);
-        File file = fileChooser.showOpenDialog(this.stage);
-
-        if (file == null)
-        {
+        if (file == null) {
             throw new IOException("Unable to open provided file");
         }
 
         FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
-        Gson gson = new Gson();
-        JsonReader reader = new JsonReader(new FileReader(file));
-        return gson.fromJson(reader, SignalChart.class);
+
+        if (resultExtension.equals(jsonExtension)) {
+            return SignalWriter.readJSON(file);
+        } else {
+            return SignalWriter.readBinary(file);
+        }
     }
 
-    @FXML
-    void add() {
+    @FXML void add() {
         loadSignalsAndApplyOperator(SignalOperations::add);
     }
 
-    @FXML
-    void subtract() {
+    @FXML void subtract() {
         loadSignalsAndApplyOperator(SignalOperations::subtract);
     }
 
-    @FXML
-    void multiply() {
+    @FXML void multiply() {
         loadSignalsAndApplyOperator(SignalOperations::multiply);
     }
 
-    @FXML
-    void divide() {
+    @FXML void divide() {
         loadSignalsAndApplyOperator(SignalOperations::divide);
     }
 
+<<<<<<< HEAD
     void loadSignalsAndApplyOperator(BiFunction<SignalChart, SignalChart, SignalChart> operator) {
 //        try {
 //            SignalChart lhs = load();
@@ -287,12 +233,31 @@ public class MainViewController {
         } catch (IOException e) {
             onSignalCreationException(e);
         }
-    }
+=======
+    private void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
+                try {
+                    Signal lhs = loadFromFile();
+                    Signal rhs = loadFromFile();
+                    signal = operator.apply(lhs, rhs);
 
+                    plotSignal(signal);
+                    drawHistogram(signal);
+                    //TODO: We do not have info about function so we must use for the discrete signal or maybe
+                    //TODO: Or functions can be merged together
+                    SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
+                    displaySignalMeasurement(signalMeasurement);
+
+                    basicSignalChooser.displaySignal(signal, "Zaladowane z pliku");
+                } catch (IOException e) {
+                    onSignalCreationException(e);
+                }
+>>>>>>> 5b0c07f8caa829c006b655b04b5a825cf1fc5bcb
+    }
 
     @FXML public void onExecuteButton() {
         String operation = (String) signalOperationList.getSelectionModel().getSelectedItem();
-        BiFunction<SignalChart, SignalChart, SignalChart> operator;
+        BiFunction<Signal, Signal, Signal> operator;
+
         switch (operation) {
             case "+":
                 operator = SignalOperations::add;
@@ -315,8 +280,8 @@ public class MainViewController {
         }
 
         try {
-            Signal lhs = basicSignalChooser.getSignal();
-            Signal rhs = extraSignalChooser.getSignal();
+            Function lhsFunction = basicSignalChooser.creatFunction();
+            Function rhsFunction = extraSignalChooser.creatFunction();
 
             double durationInSeconds = Double.valueOf(basicSignalChooser.getDurationInSeconds());
             Duration durationInNs = Duration.ofNanos((long) (durationInSeconds * 1_000_000_000L));
@@ -324,44 +289,19 @@ public class MainViewController {
             long samplingFrequencyInHz = basicSignalChooser.getSamplingFrequencyInHz();
             final Duration USER_SAMPLING_RATE = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
-            SignalChart sc1 = lhs.createChart(durationInNs, USER_SAMPLING_RATE);
-            SignalChart sc2 = rhs.createChart(durationInNs, USER_SAMPLING_RATE);
-            signal = operator.apply(sc1, sc2);
-            
-            //TODO: Code duplication
-            //CHEATING!
-            DiscreteSignal tmp = new DiscreteSignal(null);
-            tmp.setSamples(signal.getSamples());
+            Signal.Type type = basicSignalChooser.getSignalType();
 
-            double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
-            averageValueLabel.setText(String.format("%.2f", averageValue));
+            Signal lhs = Signal.create(type, lhsFunction, durationInNs, USER_SAMPLING_RATE);
+            Signal rhs = Signal.create(type, rhsFunction, durationInNs, USER_SAMPLING_RATE);
 
-            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(tmp, Duration.ZERO, durationInNs);
-            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
+            signal = operator.apply(lhs, rhs);
 
-            double averagePowerValue = cps.model.Math.averagePower(tmp, Duration.ZERO, durationInNs);
-            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
-
-            double varianceValue = cps.model.Math.variance(tmp, Duration.ZERO, durationInNs);
-            varianceValueLabel.setText(String.format("%.2f", varianceValue));
-
-            double effectivePowerValue = cps.model.Math.effectivePower(tmp, Duration.ZERO, durationInNs);
-            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
-            
-            SignalArgs args = basicSignalChooser.getSignalArgs();
-            args.setAverageValue(averageValue);
-            args.setAverageAbsoulteValue(averageAbsoulteValue);
-            args.setAveragePowerValue(averagePowerValue);
-            args.setVarianceValue(varianceValue);
-            args.setEffectivePowerValue(effectivePowerValue);
-            
-            signal.setSignalType(lhs.getType());
-            signal.setArgs(args);
-            
             plotSignal(signal);
-
-            histogram = new Histogram(signal, histogramBins);
-            drawHistogram(histogram);
+            drawHistogram(signal);
+            //TODO: We do not have info about function so we must use for the discrete signal or maybe
+            //TODO: Or functions can be merged together
+            SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
+            displaySignalMeasurement(signalMeasurement);
 
         } catch (NumberFormatException exception) {
             onSignalCreationException(exception);
@@ -390,7 +330,9 @@ public class MainViewController {
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
-    private void drawHistogram(Histogram histogram) {
+    private void drawHistogram(Signal signal) {
+        histogram = new Histogram(signal, histogramBins);
+
         XYChart.Series series1 = new XYChart.Series();
 
         double currentRange = histogram.getMin();
@@ -412,18 +354,9 @@ public class MainViewController {
             histogramBins = newHistogramBins;
             //TODO: Can we be sure that is not null?
             if (signal != null) {
-                histogram = new Histogram(signal, histogramBins);
-                drawHistogram(histogram);
+                drawHistogram(signal);
             }
         }
-    }
-
-    private void drawChartAndHistogram(SignalChart loadedSignal) {
-        setTextFields(loadedSignal);
-        signal = loadedSignal;
-        plotSignal(loadedSignal);
-        histogram = new Histogram(loadedSignal, histogramBins);
-        drawHistogram(histogram);
     }
 
     private void onSignalCreationException(Exception e) {
@@ -439,10 +372,10 @@ public class MainViewController {
         extraSignalChooser.setArrangement(FunctionFactory.GAUSSIAN_NOISE, SignalChooser.Field.AMPLITUDE);
         extraSignalChooser.setArrangement(FunctionFactory.SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(FunctionFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
-                SignalChooser.Field.T1);
-        extraSignalChooser.setArrangement(FunctionFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
-                SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(FunctionFactory.HALF_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE,
+                SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
+        extraSignalChooser.setArrangement(FunctionFactory.FULL_STRAIGHT_SINUSOIDAL, SignalChooser.Field.AMPLITUDE,
+                SignalChooser.Field.PERIOD, SignalChooser.Field.T1);
         extraSignalChooser.setArrangement(FunctionFactory.UNIT_STEP, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.T1);
         extraSignalChooser.setArrangement(FunctionFactory.RECTANGLE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PERIOD,
                 SignalChooser.Field.T1, SignalChooser.Field.KW);
@@ -454,13 +387,12 @@ public class MainViewController {
         extraSignalChooser.setArrangement(FunctionFactory.IMPULSE_NOISE, SignalChooser.Field.AMPLITUDE, SignalChooser.Field.PROBABILITY);
     }
 
-    private void setTextFields(SignalChart sc) {
-                basicSignalChooser.setSignalChart(sc);
-                averageValueLabel.setText(String.format("%.2f", sc.getArgs().getAverageValue()));
-                averageAbsoluteValueLabel.setText(String.format("%.2f", sc.getArgs().getAverageAbsoulteValue()));
-                averagePowerValueLabel.setText(String.format("%.2f", sc.getArgs().getAveragePowerValue()));
-                varianceValueLabel.setText(String.format("%.2f", sc.getArgs().getVarianceValue()));
-                effectivePowerValueLabel.setText(String.format("%.2f", sc.getArgs().getEffectivePowerValue()));
+    private void displaySignalMeasurement(SignalMeasurement signalMeasurement) {
+        averageValueLabel.setText(String.format("%.2f", signalMeasurement.getAverage()));
+        averageAbsoluteValueLabel.setText(String.format("%.2f", signalMeasurement.getAbsoluteAverage()));
+        averagePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getAveragePower()));
+        varianceValueLabel.setText(String.format("%.2f", signalMeasurement.getVariance()));
+        effectivePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getEffectivePower()));
     }
 
 }

@@ -8,57 +8,58 @@ import static java.lang.Math.abs;
 
 public class SignalOperations {
 
-    private static void validate(SignalChart lhs, SignalChart rhs) {
+    private static void validate(Signal lhs, Signal rhs) {
         //TODO: Change to exception
-        assert lhs.getProbingPeriod().equals(rhs.getProbingPeriod());
-        assert lhs.getDuration().equals(rhs.getDuration());
-        assert lhs.getProbes().size() == rhs.getProbes().size();
-        assert lhs.getSignalType().equals(rhs.getSignalType());
+        assert lhs.getType().equals(rhs.getType());
+        assert lhs.getDurationInNs().equals(rhs.getDurationInNs());
+        assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
+        assert lhs.getSamples().size() == rhs.getSamples().size();
     }
 
-    public static SignalChart add(SignalChart lhs, SignalChart rhs) {
+    public static Signal add(Signal lhs, Signal rhs) {
         validate(lhs, rhs);
 
-        int size = lhs.getProbes().size();
+        int size = lhs.getSamples().size();
         List<Double> resultSamples = IntStream.range(0, size)
-                                              .mapToObj(index -> lhs.getProbes().get(index) + rhs.getProbes().get(index))
+                                              .mapToObj(index -> lhs.getSamples().get(index) + rhs.getSamples().get(index))
                                               .collect(Collectors.toList());
 
-        return new SignalChart(lhs.getDuration(), lhs.getProbingPeriod(), resultSamples);
+        return new Signal(lhs.getType(), lhs.getDurationInNs(), lhs.getSamplingPeriod(), resultSamples);
     }
 
-    public static SignalChart subtract(SignalChart lhs, SignalChart rhs) {
+    public static Signal subtract(Signal lhs, Signal rhs) {
         validate(lhs, rhs);
 
-        int size = lhs.getProbes().size();
+        int size = lhs.getSamples().size();
         List<Double> resultSamples = IntStream.range(0, size)
-                                              .mapToObj(index -> lhs.getProbes().get(index) - rhs.getProbes().get(index))
+                                              .mapToObj(index -> lhs.getSamples().get(index) - rhs.getSamples().get(index))
                                               .collect(Collectors.toList());
 
-        return new SignalChart(lhs.getDuration(), lhs.getProbingPeriod(), resultSamples);
+        return new Signal(lhs.getType(), lhs.getDurationInNs(), lhs.getSamplingPeriod(), resultSamples);
     }
 
-    public static SignalChart multiply(SignalChart lhs, SignalChart rhs) {
+    public static Signal multiply(Signal lhs, Signal rhs) {
         validate(lhs, rhs);
 
-        int size = lhs.getProbes().size();
+        int size = lhs.getSamples().size();
         List<Double> resultSamples = IntStream.range(0, size)
-                                              .mapToObj(index -> lhs.getProbes().get(index) * rhs.getProbes().get(index))
+                                              .mapToObj(index -> lhs.getSamples().get(index) * rhs.getSamples().get(index))
                                               .collect(Collectors.toList());
 
-        return new SignalChart(lhs.getDuration(), lhs.getProbingPeriod(), resultSamples);
+        return new Signal(lhs.getType(), lhs.getDurationInNs(), lhs.getSamplingPeriod(), resultSamples);
     }
 
-    public static SignalChart divide(SignalChart lhs, SignalChart rhs) {
+    public static Signal divide(Signal lhs, Signal rhs) {
         validate(lhs, rhs);
-        SignalChart inversion = inverse(rhs);
+        Signal inversion = inverse(rhs);
         return multiply(lhs, inversion);
     }
 
-    private static SignalChart inverse(SignalChart instance) {
+    private static Signal inverse(Signal instance) {
         final double ZERO = 10e-9;
-        List<Double> resultSamples = instance.getProbes().stream().map(x -> abs(x) < ZERO ? 0.0 : 1.0 / x).collect(Collectors.toList());
-        return new SignalChart(instance.getDuration(), instance.getProbingPeriod(), resultSamples);
+        List<Double> resultSamples = instance.getSamples().stream().map(x -> abs(x) < ZERO ? 0.0 : 1.0 / x).collect(Collectors.toList());
+        return new Signal(instance.getType(), instance.getDurationInNs(), instance.getSamplingPeriod(), resultSamples);
+
     }
 
 }

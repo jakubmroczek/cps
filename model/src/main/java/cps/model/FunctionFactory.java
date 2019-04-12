@@ -1,6 +1,5 @@
 package cps.model;
 
-import java.time.Duration;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -59,7 +58,7 @@ public class FunctionFactory {
             case IMPULSE_NOISE:
                 return createImpulseNoise(args.getAmplitude(), args.getProbability());
             default:
-                throw new UnsupportedOperationException(function + " unknown function");
+                throw new IllegalArgumentException(function + " unknown function");
         }
     }
 
@@ -96,15 +95,15 @@ public class FunctionFactory {
     }
 
     private static Function<Double, Double> createFullStraightSinusoidal(double amplitude, double period, double initialTime) {
-        return x  -> {
+        return x -> {
             double angleVelocity = 2.0 * PI / period;
-            double argument = x -initialTime;
+            double argument = x - initialTime;
             return amplitude * abs(sin(angleVelocity * argument));
         };
     }
 
     private static Function<Double, Double> createRectangleFunction(double amplitude, double period, double initialTime, double kw) {
-        return  x -> {
+        return x -> {
 
             double kMax = (x - initialTime) / period;
             double kMin = kMax - kw;
@@ -115,7 +114,8 @@ public class FunctionFactory {
         };
     }
 
-    private static Function<Double, Double> createSymmetricRectangleFunction(double amplitude, double period, double initialTime, double kw) {
+    private static Function<Double, Double> createSymmetricRectangleFunction(double amplitude, double period, double initialTime,
+            double kw) {
         return x -> {
             double kMax = (x - initialTime) / period;
             double kMin = kMax - kw;
@@ -137,8 +137,7 @@ public class FunctionFactory {
                 return (amplitude / (kw * period)) * (x - integer * period - initialTime);
             } else {
                 integer = floor(kMax - kw);
-                return (-amplitude / (period * (1.0 - kw))) *
-                        (x - integer * period - initialTime) + (amplitude / (1.0 - kw));
+                return (-amplitude / (period * (1.0 - kw))) * (x - integer * period - initialTime) + (amplitude / (1.0 - kw));
             }
         };
     }
