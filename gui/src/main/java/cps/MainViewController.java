@@ -186,54 +186,6 @@ public class MainViewController {
         loadSignalsAndApplyOperator(SignalOperations::divide);
     }
 
-<<<<<<< HEAD
-    void loadSignalsAndApplyOperator(BiFunction<SignalChart, SignalChart, SignalChart> operator) {
-//        try {
-//            SignalChart lhs = load();
-//            SignalChart rhs = load();
-//            signal = operator.apply(lhs, rhs);
-//
-//            Duration durationInNs = lhs.getDuration();
-//
-//            //TODO: Code duplication
-//            //CHEATING!
-//            DiscreteSignal tmp = new DiscreteSignal(null);
-//            tmp.setSamples(signal.getSamples());
-//
-//            double averageValue = cps.model.Math.averageValue(tmp, Duration.ZERO, durationInNs);
-//            averageValueLabel.setText(String.format("%.2f", averageValue));
-//
-//            double averageAbsoulteValue = cps.model.Math.averageAbsoluteValue(tmp, Duration.ZERO, durationInNs);
-//            averageAbsoluteValueLabel.setText(String.format("%.2f", averageAbsoulteValue));
-//
-//            double averagePowerValue = cps.model.Math.averagePower(tmp, Duration.ZERO, durationInNs);
-//            averagePowerValueLabel.setText(String.format("%.2f", averagePowerValue));
-//
-//            double varianceValue = cps.model.Math.variance(tmp, Duration.ZERO, durationInNs);
-//            varianceValueLabel.setText(String.format("%.2f", varianceValue));
-//
-//            double effectivePowerValue = cps.model.Math.effectivePower(tmp, Duration.ZERO, durationInNs);
-//            effectivePowerValueLabel.setText(String.format("%.2f", effectivePowerValue));
-//
-//            SignalArgs args = basicSignalChooser.getSignalArgs();
-//            args.setAverageValue(averageValue);
-//            args.setAverageAbsoulteValue(averageAbsoulteValue);
-//            args.setAveragePowerValue(averagePowerValue);
-//            args.setVarianceValue(varianceValue);
-//            args.setEffectivePowerValue(effectivePowerValue);
-//
-//            args.setSignalName(lhs.getArgs().getSignalName());
-//            signal.setSignalType(lhs.getSignalType());
-//            signal.setArgs(args);
-//
-//            plotSignal(signal);
-//
-//            histogram = new Histogram(signal, histogramBins);
-//            drawHistogram(histogram);
-        } catch (IOException e) {
-            onSignalCreationException(e);
-        }
-=======
     private void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
                 try {
                     Signal lhs = loadFromFile();
@@ -251,7 +203,6 @@ public class MainViewController {
                 } catch (IOException e) {
                     onSignalCreationException(e);
                 }
->>>>>>> 5b0c07f8caa829c006b655b04b5a825cf1fc5bcb
     }
 
     @FXML public void onExecuteButton() {

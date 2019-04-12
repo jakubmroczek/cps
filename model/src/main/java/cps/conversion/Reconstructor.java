@@ -15,7 +15,7 @@ public class Reconstructor {
 
     public Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
         Duration elapsedTime = Duration.ZERO;
-        Duration duration = signal.getDuraionInNs();
+        Duration duration = signal.getDurationInNs();
 
         //TODO: Allocatie proper number of memory to make it faster
         List<Double> samples = new ArrayList<>();
@@ -26,14 +26,14 @@ public class Reconstructor {
             elapsedTime.plus(reconstructionFrequency);
         }
 
-        return new Signal(signal.getType(), samples);
+        return new Signal(signal.getType(), signal.getDurationInNs(), reconstructionFrequency, samples);
     }
 
     private static double sincReconstruct(Signal signal, Duration x, int maxProbes) {
         assert !x.isNegative();
 
         double sum = 0.0;
-        double ratio = (double) x.toNanos() / (double) signal.getSamplingPeriodNs().toNanos();
+        double ratio = (double) x.toNanos() / (double) signal.getSamplingPeriod().toNanos();
 
         for (int i =0; i < signal.getSamples().size(); i++) {
             sum += signal.getSamples().get(i) * sinc(ratio - i);
