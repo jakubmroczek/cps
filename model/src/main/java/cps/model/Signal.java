@@ -21,6 +21,16 @@ public class Signal {
     @Getter
     private Type type;
 
+    //TODO: Push from mac and merge changes
+
+    @Getter
+    @Setter
+    private Duration duraionInNs;
+
+    @Getter
+    @Setter
+    private Duration samplingPeriodNs;
+
     @Getter
     private List<Double> samples;
 
