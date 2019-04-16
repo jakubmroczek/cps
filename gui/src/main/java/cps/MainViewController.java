@@ -1,5 +1,7 @@
 package cps;
 
+import cps.conversion.Quantizer;
+import cps.conversion.Sampler;
 import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -32,10 +31,28 @@ public class MainViewController {
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
+    @FXML private TextField samplingValue, bitsValue;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
     @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
     private int histogramBins = 10;
+
+    @FXML public void sample(){
+        double samplingFrequencyInHz = Double.valueOf(samplingValue.getText());
+        Duration samplingFrequencyInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+
+        Signal sampledSignal = Sampler.sample(signal, samplingFrequencyInNs);
+        plotSignal(sampledSignal);
+        drawHistogram(sampledSignal);
+    }
+
+    @FXML public void quantize(){
+        int bits = Integer.valueOf(bitsValue.getText());
+
+        Signal quantizedSignal = Quantizer.quantize(signal, bits);
+        plotSignal(quantizedSignal);
+        drawHistogram(quantizedSignal);
+    }
 
     @FXML public void display() {
         try {
@@ -46,7 +63,6 @@ public class MainViewController {
 
             //TODO: Sprawdz sampling frequency
             signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
-
             plotSignal(signal);
             drawHistogram(signal);
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
