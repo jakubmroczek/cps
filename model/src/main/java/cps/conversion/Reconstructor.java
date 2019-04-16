@@ -13,7 +13,7 @@ import static java.lang.Math.sin;
 
 public class Reconstructor {
 
-    public Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
+    public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
         Duration elapsedTime = Duration.ZERO;
         Duration duration = signal.getDurationInNs();
 
@@ -40,6 +40,30 @@ public class Reconstructor {
         }
 
         return sum;
+    }
+
+
+    public static Signal interpolate(Signal signal, Duration frequency) {
+        double startTime = 0;
+        double endTime = signal.getDurationInNs().toNanos();
+        double oldTimeStep = signal.getSamplingPeriod().toNanos();
+        double newTimeStep = frequency.toNanos();
+        int n = (int) Math.ceil((endTime - startTime) / newTimeStep);
+        List<Double> oldValues = signal.getSamples();
+        List<Double> newValues = new ArrayList<>();
+        double time = 0.0;
+        for (int i = 0; i < n; i++) {
+            int j = (int) (time / oldTimeStep);
+            if (j == oldValues.size() - 1) {
+                --j;
+            }
+            double a = (oldValues.get(j + 1) - oldValues.get(j)) / oldTimeStep;
+            double b = oldValues.get(j + 1) - a * ((j + 1) * 1.0 * oldTimeStep);
+            newValues.add(a * time + b);
+            time += newTimeStep;
+        }
+
+        return new Signal(signal.getType(), signal.getDurationInNs(), frequency, newValues);
     }
 
     private static double sinc(double x) {

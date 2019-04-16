@@ -88,19 +88,34 @@
         <Button fx:id="divideButton" layoutX="701.0" layoutY="347.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
         <Button fx:id="loadButton" layoutX="803.0" layoutY="242.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
         <Button fx:id="addButton" layoutX="701.0" layoutY="312.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
-        <HBox layoutX="699.0" layoutY="399.0" prefHeight="38.0" prefWidth="200.0">
+        <HBox layoutX="699.0" layoutY="399.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Label fx:id="samplingLabel" prefHeight="104.0" prefWidth="100.0" text="Sampling[Hz]" />
                 <TextField fx:id="samplingValue" prefHeight="38.0" prefWidth="64.0" />
                 <Button fx:id="sampleButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sample" prefHeight="38.0" prefWidth="62.0" text="Sample" />
             </children>
         </HBox>
-        <HBox layoutX="699.0" layoutY="441.0" prefHeight="51.0" prefWidth="200.0">
+        <HBox layoutX="699.0" layoutY="435.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Label fx:id="bitsLabel" prefHeight="51.0" prefWidth="91.0" text="Bits" />
                 <TextField fx:id="bitsValue" prefHeight="38.0" prefWidth="47.0" />
                 <Button fx:id="quantizeButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#quantize" prefHeight="38.0" prefWidth="73.0" text="Quantize" />
             </children>
         </HBox>
+      <HBox layoutX="698.0" layoutY="473.0" prefHeight="31.0" prefWidth="200.0">
+         <children>
+             <Label fx:id="freqLabel" prefHeight="25.0" prefWidth="88.0" text="Frequency[Hz]" />
+             <TextField fx:id="interpolationFreqValue" prefHeight="25.0" prefWidth="41.0" />
+             <Button fx:id="interpolateButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#interpolate" prefHeight="25.0" prefWidth="77.0" text="Interpolate" />
+         </children>
+      </HBox>
+      <HBox layoutX="700.0" layoutY="505.0" prefHeight="25.0" prefWidth="200.0">
+         <children>
+             <Label fx:id="probesLabel" prefHeight="51.0" prefWidth="91.0" text="Probes" />
+             <TextField fx:id="probesValue" prefHeight="38.0" prefWidth="47.0" />
+             <Button fx:id="sincButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sinc" prefHeight="31.0" prefWidth="80.0" text="Sinc" />
+         </children>
+      </HBox>
+
     </children>
 </AnchorPane>

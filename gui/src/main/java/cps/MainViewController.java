@@ -1,11 +1,13 @@
 package cps;
 
 import cps.conversion.Quantizer;
+import cps.conversion.Reconstructor;
 import cps.conversion.Sampler;
 import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -27,11 +29,13 @@ public class MainViewController {
     private Stage stage;
     //TODO: Nullable?
     private Signal signal;
+    private Signal sampledSignal;
+    private Signal quantizedSignal;
     private Histogram histogram;
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
-    @FXML private TextField samplingValue, bitsValue;
+    @FXML private TextField samplingValue, bitsValue, interpolationFreqValue, probesValue;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
     @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
@@ -41,21 +45,53 @@ public class MainViewController {
         double samplingFrequencyInHz = Double.valueOf(samplingValue.getText());
         Duration samplingFrequencyInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
-        Signal sampledSignal = Sampler.sample(signal, samplingFrequencyInNs);
-        plotSignal(sampledSignal);
+        sampledSignal = Sampler.sample(signal, samplingFrequencyInNs);
+        plotSignal(signal, true);
+        setCssSamplingSignal(samplingValue.getScene());
+        plotSignal(sampledSignal, false);
         drawHistogram(sampledSignal);
+
     }
 
     @FXML public void quantize(){
         int bits = Integer.valueOf(bitsValue.getText());
 
-        Signal quantizedSignal = Quantizer.quantize(signal, bits);
-        plotSignal(quantizedSignal);
+        if(sampledSignal == null){
+            sample();
+        }
+        quantizedSignal = Quantizer.quantize(signal, bits);
+
+        plotSignal(signal, true);
+        setCssLineSignals(bitsValue.getScene());
+        plotSignal(quantizedSignal, false);
         drawHistogram(quantizedSignal);
+    }
+
+    @FXML public void interpolate(){
+
+        double freqInHz = Double.valueOf(interpolationFreqValue.getText());
+        Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
+
+        Signal interpolated = Reconstructor.interpolate(signal,frequencyInNs);
+        plotSignal(signal, true);
+        setCssLineSignals(bitsValue.getScene());
+        plotSignal(interpolated, false);
+        drawHistogram(interpolated);
+    }
+    @FXML public void sinc(){
+        int probes = Integer.valueOf(probesValue.getText());
+        double freqInHz = Double.valueOf(interpolationFreqValue.getText());
+        Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
+
+        Signal reconstructed = Reconstructor.reconstruct(signal,frequencyInNs, probes);
+        plotSignal(signal, true);
+        setCssLineSignals(bitsValue.getScene());
+        plotSignal(reconstructed, false);
     }
 
     @FXML public void display() {
         try {
+            setCssSingleSignal(bitsValue.getScene());
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             SignalArgs args = basicSignalChooser.getSignalArgs();
 
@@ -63,7 +99,7 @@ public class MainViewController {
 
             //TODO: Sprawdz sampling frequency
             signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
-            plotSignal(signal);
+            plotSignal(signal, true);
             drawHistogram(signal);
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
             displaySignalMeasurement(signalMeasurement);
@@ -81,7 +117,7 @@ public class MainViewController {
         }
     }
 
-    private void plotSignal(Signal signal) {
+    private void plotSignal(Signal signal, boolean clearChart) {
         if (signal.getType() == Signal.Type.CONTINUOUS) {
             prepareChartToDisplayContinousSignal();
         } else {
@@ -107,7 +143,7 @@ public class MainViewController {
             series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
         }
 
-        chart.getData().clear();
+        if(clearChart) chart.getData().clear();
         chart.getData().add(series);
     }
 
@@ -150,7 +186,7 @@ public class MainViewController {
         try {
             signal = loadFromFile();
 
-            plotSignal(signal);
+            plotSignal(signal, true);
             drawHistogram(signal);
             //TODO: We do not have info about function so we must use for the discrete signal or maybe
             //TODO: Or functions can be merged together
@@ -208,7 +244,7 @@ public class MainViewController {
                     Signal rhs = loadFromFile();
                     signal = operator.apply(lhs, rhs);
 
-                    plotSignal(signal);
+                    plotSignal(signal, true);
                     drawHistogram(signal);
                     //TODO: We do not have info about function so we must use for the discrete signal or maybe
                     //TODO: Or functions can be merged together
@@ -263,7 +299,7 @@ public class MainViewController {
 
             signal = operator.apply(lhs, rhs);
 
-            plotSignal(signal);
+            plotSignal(signal, true);
             drawHistogram(signal);
             //TODO: We do not have info about function so we must use for the discrete signal or maybe
             //TODO: Or functions can be merged together
@@ -362,4 +398,28 @@ public class MainViewController {
         effectivePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getEffectivePower()));
     }
 
+    private final String cssSingleSignal="/styles/chartSingleSignal.css";
+    private final String cssSamplingSignal="/styles/chartSampling.css";
+    private final String cssLineSignals="/styles/chartLineSignals.css";
+
+    private void setCssSingleSignal(Scene scene){
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssSingleSignal);
+    }
+
+    private void setCssSamplingSignal(Scene scene){
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssSamplingSignal);
+    }
+
+    private void setCssLineSignals(Scene scene){
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssLineSignals);
+    }
+
+    private void removeChartCss(Scene scene){
+        scene.getStylesheets().remove(cssSingleSignal);
+        scene.getStylesheets().remove(cssSamplingSignal);
+        scene.getStylesheets().remove(cssLineSignals);
+    }
 }

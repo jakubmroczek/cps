@@ -26,6 +26,7 @@ public class MainApp extends Application {
 
         Scene scene = new Scene(rootNode, 900, 700);
         scene.getStylesheets().add("/styles/styles.css");
+        scene.getStylesheets().add("/styles/chartSingleSignal.css");
 
         stage.setTitle("CPS");
         stage.setScene(scene);
