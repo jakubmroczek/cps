@@ -10,18 +10,10 @@ public class Quantizer {
 
         List<Double> values = signal.getSamples();
         int levels = (int) (Math.pow(2, bits)) - 1;
-        double minValue = values.get(0);
-        for (double value : values) {
-            if (value < minValue) {
-                minValue = value;
-            }
-        }
-        double maxValue = values.get(0);
-        for (double value : values) {
-            if (value > maxValue) {
-                maxValue = value;
-            }
-        }
+
+        double minValue = signal.getSamples().stream().min(Double::compareTo).orElse(signal.getSamples().get(0));
+        double maxValue = signal.getSamples().stream().max(Double::compareTo).orElse(signal.getSamples().get(0));
+
         double span = (maxValue - minValue) / levels;
         List<Double> newValues = new ArrayList<>();
         for (int i = 0; i < values.size(); i++) {

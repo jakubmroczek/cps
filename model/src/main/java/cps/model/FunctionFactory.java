@@ -18,6 +18,8 @@ public class FunctionFactory {
     public static final String UNIT_STEP = "S9";
     public static final String KRONECKER_DELTA = "S10";
     public static final String IMPULSE_NOISE = "S11";
+    //For debugging
+    public static final String LINEAR = "S12";
 
     private FunctionFactory() {
     }
@@ -57,6 +59,9 @@ public class FunctionFactory {
 
             case IMPULSE_NOISE:
                 return createImpulseNoise(args.getAmplitude(), args.getProbability());
+
+            case LINEAR:
+                return createLinear();
             default:
                 throw new IllegalArgumentException(function + " unknown function");
         }
@@ -168,6 +173,10 @@ public class FunctionFactory {
                 return 0.0;
             }
         };
+    }
+
+    private static Function<Double, Double> createLinear() {
+        return x -> x;
     }
 
 }

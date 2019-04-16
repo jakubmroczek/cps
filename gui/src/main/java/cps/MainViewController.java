@@ -46,17 +46,17 @@ public class MainViewController {
         Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
 
-        Signal sampledSignal = Sampler.sample(function, Duration.ZERO, durationInNs, samplingPeriodInNs);
-        plotSignal(sampledSignal);
-        drawHistogram(sampledSignal);
+        signal = Sampler.sample(function, Duration.ZERO, durationInNs, samplingPeriodInNs);
+        plotSignal(signal);
+        drawHistogram(signal);
     }
 
     @FXML public void quantize(){
         int bits = Integer.valueOf(bitsValue.getText());
 
-        Signal quantizedSignal = Quantizer.quantize(signal, bits);
-        plotSignal(quantizedSignal);
-        drawHistogram(quantizedSignal);
+        Signal generatedSignal = Quantizer.quantize(signal, bits);
+        plotSignal(generatedSignal);
+        drawHistogram(generatedSignal);
     }
 
     @FXML public void display() {

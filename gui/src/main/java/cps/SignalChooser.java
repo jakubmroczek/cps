@@ -22,7 +22,7 @@ public class SignalChooser extends VBox {
     private static final ObservableList<String> AVAILABLE_SIGNALS = FXCollections.observableArrayList("Szum o rozkładzie jednostajnym",
             "Szum gaussowski", "Sygnał sinusoidalny", "Sygnał sinusoidalny wyprostowany jednopołówkowo",
             "Sygnał sinusoidalny wyprsotowany dwupołówkowo", "Sygnał prostokątny", "Sygnał prostokątny symetryczny", "Sygnał trójkątny",
-            "Skok jednostkowy", "Impuls jednostkowy", "Szum impulsowy");
+            "Skok jednostkowy", "Impuls jednostkowy", "Szum impulsowy", "Funkcja liniowa");
 
     private static final Map<String, String> LABEL_TO_SIGNAL_MAP = new HashMap<>();
 
@@ -38,6 +38,7 @@ public class SignalChooser extends VBox {
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(8), FunctionFactory.UNIT_STEP);
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(9), FunctionFactory.KRONECKER_DELTA);
         LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(10), FunctionFactory.IMPULSE_NOISE);
+        LABEL_TO_SIGNAL_MAP.put(AVAILABLE_SIGNALS.get(11), FunctionFactory.LINEAR);
     }
 
     private final Map<String, Runnable> signalNameToSignalParametersLayoutMap = new HashMap<>();
