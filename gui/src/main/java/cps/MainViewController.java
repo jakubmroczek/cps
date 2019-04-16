@@ -39,9 +39,14 @@ public class MainViewController {
 
     @FXML public void sample(){
         double samplingFrequencyInHz = Double.valueOf(samplingValue.getText());
-        Duration samplingFrequencyInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+        Duration samplingPeriodInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
-        Signal sampledSignal = Sampler.sample(signal, samplingFrequencyInNs);
+        Function<Double, Double> function = basicSignalChooser.creatFunction();
+        //TODO: Wrap is somewhere
+        Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
+
+
+        Signal sampledSignal = Sampler.sample(function, Duration.ZERO, durationInNs, samplingPeriodInNs);
         plotSignal(sampledSignal);
         drawHistogram(sampledSignal);
     }
