@@ -70,7 +70,7 @@ public class MainViewController {
         quantizedSignal = Quantizer.quantize(signal, bits);
 
         plotSignal(signal, true);
-        setCssLineSignals(bitsValue.getScene());
+        setCssSingleSignal(bitsValue.getScene());
         plotSignal(quantizedSignal, false);
         drawHistogram(quantizedSignal);
         displaySignalsError(signal, quantizedSignal);
