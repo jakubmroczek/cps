@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane prefHeight="713.0" prefWidth="932.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
@@ -40,39 +39,58 @@
         </VBox>
         <VBox layoutX="696.0" prefHeight="188.0" prefWidth="200.0">
             <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
                         <Label fx:id="averageValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
                         <Label fx:id="averageAbsoluteValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Moc sr.:" />
                         <Label fx:id="averagePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wariancja:" />
                         <Label fx:id="varianceValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc skuteczna:" />
                         <Label fx:id="effectivePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="MSE:" />
+                        <Label fx:id="mseLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="SNR:" />
+                        <Label fx:id="snrLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="PSNR:" />
+                        <Label fx:id="psnrLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="MD:" />
+                        <Label fx:id="mdLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
             </children>

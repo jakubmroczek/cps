@@ -3,6 +3,7 @@ package cps;
 import cps.conversion.Quantizer;
 import cps.conversion.Reconstructor;
 import cps.conversion.Sampler;
+import cps.conversion.Error;
 import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,6 +36,7 @@ public class MainViewController {
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
+    @FXML private Label mseLabel, snrLabel, psnrLabel, mdLabel;
     @FXML private TextField samplingValue, bitsValue, interpolationFreqValue, probesValue;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
@@ -50,7 +52,7 @@ public class MainViewController {
         setCssSamplingSignal(samplingValue.getScene());
         plotSignal(sampledSignal, false);
         drawHistogram(sampledSignal);
-
+        displaySignalsError(signal,sampledSignal);
     }
 
     @FXML public void quantize(){
@@ -65,6 +67,7 @@ public class MainViewController {
         setCssLineSignals(bitsValue.getScene());
         plotSignal(quantizedSignal, false);
         drawHistogram(quantizedSignal);
+        displaySignalsError(signal, quantizedSignal);
     }
 
     @FXML public void interpolate(){
@@ -77,6 +80,7 @@ public class MainViewController {
         setCssLineSignals(bitsValue.getScene());
         plotSignal(interpolated, false);
         drawHistogram(interpolated);
+        displaySignalsError(signal, interpolated);
     }
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
@@ -87,6 +91,7 @@ public class MainViewController {
         plotSignal(signal, true);
         setCssLineSignals(bitsValue.getScene());
         plotSignal(reconstructed, false);
+        displaySignalsError(signal, reconstructed);
     }
 
     @FXML public void display() {
@@ -396,6 +401,14 @@ public class MainViewController {
         averagePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getAveragePower()));
         varianceValueLabel.setText(String.format("%.2f", signalMeasurement.getVariance()));
         effectivePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getEffectivePower()));
+    }
+
+    private void displaySignalsError(Signal s1, Signal s2){
+        mseLabel.setText(String.format("%.2f", Error.mse(s1,s2)));
+        snrLabel.setText(String.format("%.2f", Error.snr(s1,s2)));
+        psnrLabel.setText(String.format("%.2f", Error.psnr(s1,s2)));
+        mdLabel.setText(String.format("%.2f", Error.md(s1,s2)));
+
     }
 
     private final String cssSingleSignal="/styles/chartSingleSignal.css";
