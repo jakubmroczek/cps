@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane prefHeight="713.0" prefWidth="932.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
+<AnchorPane prefHeight="713.0" prefWidth="932.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
         <VBox layoutX="206.0" onDragDropped="#onHistogramBinsChanged" prefHeight="683.0" prefWidth="477.0">
             <children>
@@ -102,5 +102,12 @@
                 <Button fx:id="quantizeButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#quantize" prefHeight="38.0" prefWidth="73.0" text="Quantize" />
             </children>
         </HBox>
+      <HBox layoutX="699.0" layoutY="492.0" prefHeight="51.0" prefWidth="200.0">
+         <children>
+            <Label fx:id="bitsLabel1" prefHeight="51.0" prefWidth="91.0" text="FOH[Hz]" />
+            <TextField fx:id="interpolationFrequencyTextField" prefHeight="38.0" prefWidth="47.0" />
+            <Button fx:id="interpolateButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#interpolate" prefHeight="38.0" prefWidth="73.0" text="Interpolate" />
+         </children>
+      </HBox>
     </children>
 </AnchorPane>

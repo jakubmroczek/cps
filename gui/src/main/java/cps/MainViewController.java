@@ -1,6 +1,7 @@
 package cps;
 
 import cps.conversion.Quantizer;
+import cps.conversion.Reconstructor;
 import cps.conversion.Sampler;
 import cps.model.*;
 import javafx.collections.FXCollections;
@@ -31,10 +32,11 @@ public class MainViewController {
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
-    @FXML private TextField samplingValue, bitsValue;
+    @FXML private TextField samplingValue, bitsValue, interpolationFrequencyTextField;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
     @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
+
     private int histogramBins = 10;
 
     @FXML public void sample(){
@@ -54,9 +56,18 @@ public class MainViewController {
     @FXML public void quantize(){
         int bits = Integer.valueOf(bitsValue.getText());
 
-        Signal generatedSignal = Quantizer.quantize(signal, bits);
-        plotSignal(generatedSignal);
-        drawHistogram(generatedSignal);
+        signal = Quantizer.quantize(signal, bits);
+        plotSignal(signal);
+        drawHistogram(signal);
+    }
+
+    @FXML public void interpolate() {
+        double samplingFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
+        Duration samplingPeriodInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+
+        signal = Reconstructor.firstHoldInterpolation(signal, samplingPeriodInNs);
+        plotSignal(signal);
+        drawHistogram(signal);
     }
 
     @FXML public void display() {

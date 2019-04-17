@@ -7,6 +7,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.sin;
@@ -16,6 +17,7 @@ public class Reconstructor {
     public static Signal firstHoldInterpolation(final Signal signal, Duration samplingPeriodInNs) {
         //TODO: Allocatie proper number of memory to make it faster
         List<Double> samples = new ArrayList<>();
+        List<Double> segmentInterpolation = new ArrayList<>();
 
         Duration elapsedTime = Duration.ZERO;
         final Duration duration = signal.getDurationInNs();
@@ -25,17 +27,21 @@ public class Reconstructor {
         while (elapsedTime.compareTo(duration) < 0) {
             //TODO: array out of bounds
             if (elapsedTime.compareTo(signal.getSamplingPeriod().multipliedBy((previous + 1))) > 0) {
+                samples.addAll(segmentInterpolation);
+                segmentInterpolation.clear();
                 previous++;
             }
 
-            double tangenns = (signal.getSamples().get(previous + 1) - signal.getSamples().get(previous)) / (signal.getSamplingPeriod().toNanos());
-            double b = signal.getSamples().get(previous) - tangenns * signal.getSamplingPeriod().multipliedBy(previous).toNanos();
+            double a = (signal.getSamples().get(previous + 1) - signal.getSamples().get(previous)) / (signal.getSamplingPeriod().toNanos());
+            double b = signal.getSamples().get(previous) - a * signal.getSamplingPeriod().multipliedBy(previous).toNanos();
 
-            double interpolatedValue = b * elapsedTime.toNanos() + b;
+            double interpolatedValue = a * elapsedTime.toNanos() + b;
 
-            samples.add(interpolatedValue);
-            elapsedTime.plus(samplingPeriodInNs);
+            segmentInterpolation.add(interpolatedValue);
+            elapsedTime = elapsedTime.plus(samplingPeriodInNs);
         }
+
+        samples.add(signal.getSamples().get(signal.getSamples().size() - 1) );
 
         return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
@@ -50,7 +56,7 @@ public class Reconstructor {
         while (elapsedTime.compareTo(duration) < 0) {
             double interpolatedValue = sincReconstruct(signal, elapsedTime, maxProbes);
             samples.add(interpolatedValue);
-            elapsedTime.plus(reconstructionFrequency);
+            elapsedTime = elapsedTime.plus(reconstructionFrequency);
         }
 
         return new Signal(signal.getType(), signal.getDurationInNs(), reconstructionFrequency, samples);
