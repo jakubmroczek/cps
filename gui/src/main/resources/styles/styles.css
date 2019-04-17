@@ -31,15 +31,3 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 0, 0, 0, 1);
 }
 
-.continuous-signal .chart-series-line {
-    -fx-stroke-width: 2px;
-    -fx-stroke: red;
-}
-
-.discrete-signal .chart-series-line {
-    -fx-stroke: transparent;
-}
-
-.discrete-signal .chart-line-symbol {
-    -fx-background-color: red, red;
-}

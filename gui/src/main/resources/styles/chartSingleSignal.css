@@ -1,0 +1,12 @@
+.continuous-signal .chart-series-line {
+    -fx-stroke-width: 1px;
+    -fx-stroke: red;
+}
+
+.discrete-signal .chart-series-line {
+    -fx-stroke: transparent;
+}
+
+.discrete-signal .chart-line-symbol {
+    -fx-background-color: red, red;
+}

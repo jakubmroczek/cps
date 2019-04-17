@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane prefHeight="713.0" prefWidth="932.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
@@ -40,39 +39,58 @@
         </VBox>
         <VBox layoutX="696.0" prefHeight="188.0" prefWidth="200.0">
             <children>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc srednia:" />
                         <Label fx:id="averageValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc sr. bez:" />
                         <Label fx:id="averageAbsoluteValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Moc sr.:" />
                         <Label fx:id="averagePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wariancja:" />
                         <Label fx:id="varianceValueLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
-                <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="7.0" stroke="TRANSPARENT" strokeType="INSIDE" width="200.0" />
                 <HBox layoutX="10.0" layoutY="17.0" prefHeight="32.0" prefWidth="194.0">
                     <children>
                         <Label prefHeight="46.0" prefWidth="107.0" text="Wartosc skuteczna:" />
                         <Label fx:id="effectivePowerValueLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="MSE:" />
+                        <Label fx:id="mseLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="SNR:" />
+                        <Label fx:id="snrLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="PSNR:" />
+                        <Label fx:id="psnrLabel" prefHeight="32.0" prefWidth="87.0" />
+                    </children>
+                </HBox>
+                <HBox layoutX="10.0" layoutY="138.0" prefHeight="32.0" prefWidth="200.0">
+                    <children>
+                        <Label prefHeight="46.0" prefWidth="107.0" text="MD:" />
+                        <Label fx:id="mdLabel" prefHeight="32.0" prefWidth="87.0" />
                     </children>
                 </HBox>
             </children>
@@ -88,25 +106,32 @@
         <Button fx:id="divideButton" layoutX="701.0" layoutY="347.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
         <Button fx:id="loadButton" layoutX="803.0" layoutY="242.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
         <Button fx:id="addButton" layoutX="701.0" layoutY="312.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
-        <HBox layoutX="699.0" layoutY="399.0" prefHeight="38.0" prefWidth="200.0">
+        <HBox layoutX="699.0" layoutY="399.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Label fx:id="samplingLabel" prefHeight="104.0" prefWidth="100.0" text="Sampling[Hz]" />
                 <TextField fx:id="samplingValue" prefHeight="38.0" prefWidth="64.0" />
                 <Button fx:id="sampleButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sample" prefHeight="38.0" prefWidth="62.0" text="Sample" />
             </children>
         </HBox>
-        <HBox layoutX="699.0" layoutY="441.0" prefHeight="51.0" prefWidth="200.0">
+        <HBox layoutX="699.0" layoutY="435.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Label fx:id="bitsLabel" prefHeight="51.0" prefWidth="91.0" text="Bits" />
                 <TextField fx:id="bitsValue" prefHeight="38.0" prefWidth="47.0" />
                 <Button fx:id="quantizeButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#quantize" prefHeight="38.0" prefWidth="73.0" text="Quantize" />
             </children>
         </HBox>
-      <HBox layoutX="699.0" layoutY="492.0" prefHeight="51.0" prefWidth="200.0">
+      <HBox layoutX="698.0" layoutY="473.0" prefHeight="31.0" prefWidth="200.0">
          <children>
-            <Label fx:id="bitsLabel1" prefHeight="51.0" prefWidth="91.0" text="FOH[Hz]" />
-            <TextField fx:id="interpolationFrequencyTextField" prefHeight="38.0" prefWidth="47.0" />
-            <Button fx:id="interpolateButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#interpolate" prefHeight="38.0" prefWidth="73.0" text="Interpolate" />
+             <Label fx:id="freqLabel" prefHeight="25.0" prefWidth="88.0" text="Frequency[Hz]" />
+             <TextField fx:id="interpolationFrequencyTextField" prefHeight="25.0" prefWidth="41.0" />
+             <Button fx:id="interpolateButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#interpolate" prefHeight="25.0" prefWidth="77.0" text="Interpolate" />
+         </children>
+      </HBox>
+      <HBox layoutX="700.0" layoutY="505.0" prefHeight="25.0" prefWidth="200.0">
+         <children>
+             <Label fx:id="probesLabel" prefHeight="51.0" prefWidth="91.0" text="Probes" />
+             <TextField fx:id="probesValue" prefHeight="38.0" prefWidth="47.0" />
+             <Button fx:id="sincButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sinc" prefHeight="31.0" prefWidth="80.0" text="Sinc" />
          </children>
       </HBox>
     </children>

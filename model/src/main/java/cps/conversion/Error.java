@@ -1,6 +1,5 @@
 package cps.conversion;
 import cps.model.*;
-import sun.awt.image.IntegerComponentRaster;
 
 import java.lang.Math;
 import java.util.stream.IntStream;
@@ -33,14 +32,14 @@ public class Error {
         return 10.0 * Math.log10(squaresSum / noiseSquaresSum);
     }
 
-    public double psnr(final Signal lhs, final Signal rhs) {
+    public static double psnr(final Signal lhs, final Signal rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
 
         double maxLhs = lhs.getSamples().stream().max(Double::compareTo).orElseGet(() ->lhs.getSamples().get(0));
         return 10.0 * Math.log10(maxLhs / mse(lhs, rhs));
     }
 
-    public double md(final Signal lhs, final Signal rhs) {
+    public static double md(final Signal lhs, final Signal rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
 
         int size = min(lhs.getSamples().size(), rhs.getSamples().size());
