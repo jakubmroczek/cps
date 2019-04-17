@@ -67,11 +67,32 @@ public class MainViewController {
             sample();
         }
 
-        quantizedSignal = Quantizer.quantize(signal, bits);
+        quantizedSignal = Quantizer.quantize(sampledSignal, bits);
+
+//        plotSignal(signal, true);
+//        setCssSingleSignal(bitsValue.getScene());
+//        setCssSamplingSignal(bitsValue.getScene());
+
+        var scene = bitsValue.getScene();
+
+        scene.getStylesheets().remove(cssSingleSignal);
+        scene.getStylesheets().remove(cssSamplingSignal);
+        scene.getStylesheets().remove(cssLineSignals);
+        scene.getStylesheets().clear();
+
+        scene.getStylesheets().add(cssSamplingSignal);
 
         plotSignal(signal, true);
-        setCssSingleSignal(bitsValue.getScene());
+
+        scene.getStylesheets().remove(cssSingleSignal);
+        scene.getStylesheets().remove(cssSamplingSignal);
+        scene.getStylesheets().remove(cssLineSignals);
+        scene.getStylesheets().clear();
+
+        scene.getStylesheets().add(cssSamplingSignal);
+
         plotSignal(quantizedSignal, false);
+
         drawHistogram(quantizedSignal);
         displaySignalsError(signal, quantizedSignal);
     }
@@ -101,6 +122,8 @@ public class MainViewController {
         Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
 
         Signal reconstructed = Reconstructor.reconstruct(signal,frequencyInNs, probes);
+
+
         plotSignal(signal, true);
         setCssLineSignals(bitsValue.getScene());
         plotSignal(reconstructed, false);
@@ -136,12 +159,12 @@ public class MainViewController {
     }
 
     private void plotSignal(Signal signal, boolean clearChart) {
-        if (signal.getType() == Signal.Type.CONTINUOUS) {
-            prepareChartToDisplayContinousSignal();
-        } else {
-            prepareChartToDisplayDiscreteSignal();
-        }
-
+//        if (signal.getType() == Signal.Type.CONTINUOUS) {
+//            prepareChartToDisplayContinousSignal();
+//        } else {
+//            prepareChartToDisplayDiscreteSignal();
+//        }
+//
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
