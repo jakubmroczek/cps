@@ -69,27 +69,12 @@ public class MainViewController {
 
         quantizedSignal = Quantizer.quantize(sampledSignal, bits);
 
-//        plotSignal(signal, true);
-//        setCssSingleSignal(bitsValue.getScene());
-//        setCssSamplingSignal(bitsValue.getScene());
-
         var scene = bitsValue.getScene();
-
-        scene.getStylesheets().remove(cssSingleSignal);
-        scene.getStylesheets().remove(cssSamplingSignal);
-        scene.getStylesheets().remove(cssLineSignals);
-        scene.getStylesheets().clear();
-
-        scene.getStylesheets().add(cssSamplingSignal);
 
         plotSignal(signal, true);
 
-        scene.getStylesheets().remove(cssSingleSignal);
-        scene.getStylesheets().remove(cssSamplingSignal);
-        scene.getStylesheets().remove(cssLineSignals);
-        scene.getStylesheets().clear();
 
-        scene.getStylesheets().add(cssSamplingSignal);
+        setCssSamplingSignal(scene);
 
         plotSignal(quantizedSignal, false);
 
@@ -99,22 +84,19 @@ public class MainViewController {
 
     @FXML public void interpolate(){
 
-        double samplingFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
-        Duration samplingPeriodInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
+        double interpolationFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
+        Duration interpolationPeriodInNs = Duration.ofNanos((long) ((1.0 / interpolationFrequencyInHz) * 1_000_000_000));
 
-        signal = Reconstructor.firstHoldInterpolation(signal, samplingPeriodInNs);
+        setCssLineSignals(interpolationFrequencyTextField.getScene());
         plotSignal(signal, true);
-        drawHistogram(signal);
-//        double freqInHz = Double.valueOf(interpolationFreqValue.getText());
-//        Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
-//
-//        Signal interpolated = Reconstructor.interpolate(signal,frequencyInNs);
-//        plotSignal(signal, true);
-//        setCssLineSignals(bitsValue.getScene());
-//        plotSignal(interpolated, false);
-//        drawHistogram(interpolated);
-//        displaySignalsError(signal, interpolated);
 
+        // TODO: Other name ?
+        quantizedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
+
+        plotSignal(quantizedSignal, false);
+
+        drawHistogram(quantizedSignal);
+        displaySignalsError(signal, quantizedSignal);
     }
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
@@ -159,12 +141,12 @@ public class MainViewController {
     }
 
     private void plotSignal(Signal signal, boolean clearChart) {
-//        if (signal.getType() == Signal.Type.CONTINUOUS) {
-//            prepareChartToDisplayContinousSignal();
-//        } else {
-//            prepareChartToDisplayDiscreteSignal();
-//        }
-//
+        if (signal.getType() == Signal.Type.CONTINUOUS) {
+            prepareChartToDisplayContinousSignal();
+        } else {
+            prepareChartToDisplayDiscreteSignal();
+        }
+
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
