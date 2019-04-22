@@ -19,23 +19,23 @@ public class Reconstructor {
         assert samplingPeriodInNs.toNanos() % signal.getSamplingPeriod().toNanos() == 0;
 
         var time = Duration.ZERO;
-        var stopTime = signal.getDurationInNs();
         var samples = new ArrayList<Double>();
 
         if (signal.getSamples().size() > 1) {
             for (int i = 0, j = 1; j < signal.getSamples().size(); i++, j++) {
-                double a = (signal.getSamples().get(j) - signal.getSamples().get(i)) / (signal.getSamplingPeriod().toNanos());
-                double b = signal.getSamples().get(j) - a * signal.getSamplingPeriod().multipliedBy(i).toNanos();
-
                 samples.add(signal.getSamples().get(i));
-//                time = time.plus(samplingPeriodInNs);
-
                 time =  signal.getSamplingPeriod().multipliedBy(i);
+                final int numberOfPoints = (int) signal.getSamplingPeriod().dividedBy(samplingPeriodInNs) - 1;
+                int index = 0;
+                while (index++ < numberOfPoints) {
+                    double y0 = signal.getSamples().get(i);
+                    double y1 = signal.getSamples().get(j);
 
-                while (time.compareTo(signal.getSamplingPeriod().multipliedBy(j)) < 0) {
-//                    double interpolatedValue = a * time.toNanos() + b;
-//                    samples.add(interpolatedValue);
-                    samples.add(0.0);
+                    double interpolatedValue =
+                    y0* (1 - (samplingPeriodInNs.toNanos() * index) / ((double) signal.getSamplingPeriod().toNanos()))
+                    + y1 * ((samplingPeriodInNs.toNanos() * index) / ((double) signal.getSamplingPeriod().toNanos()));
+
+                    samples.add(interpolatedValue);
                     time = time.plus(samplingPeriodInNs);
                 }
             }
@@ -75,30 +75,6 @@ public class Reconstructor {
         }
 
         return sum;
-    }
-
-
-    public static Signal interpolate(Signal signal, Duration frequency) {
-        double startTime = 0;
-        double endTime = signal.getDurationInNs().toNanos();
-        double oldTimeStep = signal.getSamplingPeriod().toNanos();
-        double newTimeStep = frequency.toNanos();
-        int n = (int) Math.ceil((endTime - startTime) / newTimeStep);
-        List<Double> oldValues = signal.getSamples();
-        List<Double> newValues = new ArrayList<>();
-        double time = 0.0;
-        for (int i = 0; i < n; i++) {
-            int j = (int) (time / oldTimeStep);
-            if (j == oldValues.size() - 1) {
-                --j;
-            }
-            double a = (oldValues.get(j + 1) - oldValues.get(j)) / oldTimeStep;
-            double b = oldValues.get(j + 1) - a * ((j + 1) * 1.0 * oldTimeStep);
-            newValues.add(a * time + b);
-            time += newTimeStep;
-        }
-
-        return new Signal(signal.getType(), signal.getDurationInNs(), frequency, newValues);
     }
 
     private static double sinc(double x) {

@@ -8,5 +8,5 @@
 }
 
 .discrete-signal .chart-line-symbol {
-    -fx-background-color: red, red;
+    -fx-background-color: transparent, red;
 }
