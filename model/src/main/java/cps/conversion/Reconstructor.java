@@ -10,40 +10,65 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.incrementExact;
 import static java.lang.Math.sin;
 
 public class Reconstructor {
 
     public static Signal firstHoldInterpolation(final Signal signal, Duration samplingPeriodInNs) {
-        //TODO: Allocatie proper number of memory to make it faster
-        List<Double> samples = new ArrayList<>();
-        List<Double> segmentInterpolation = new ArrayList<>();
+        int current = 0;
 
-        Duration elapsedTime = Duration.ZERO;
-        final Duration duration = signal.getDurationInNs();
+        var time = Duration.ZERO;
 
-        int previous = 0;
+        var samples = new ArrayList<Double>();
 
-        while (elapsedTime.compareTo(duration) < 0) {
-            //TODO: array out of bounds
-            if (elapsedTime.compareTo(signal.getSamplingPeriod().multipliedBy((previous + 1))) > 0) {
-                samples.addAll(segmentInterpolation);
-                segmentInterpolation.clear();
-                previous++;
+        while (current != signal.getSamples().size() - 1) {
+//            samples.add(signal.getSamples().get(current));
+            current++;
+//            time = time.plus(samplingPeriodInNs);
+            while (time.compareTo(signal.getSamplingPeriod().multipliedBy(current)) < 0 && current != signal.getSamples().size() - 1) {
+                double a = (signal.getSamples().get(current + 1) - signal.getSamples().get(current)) / (signal.getSamplingPeriod().toNanos());
+                double b = signal.getSamples().get(current) - a * signal.getSamplingPeriod().multipliedBy(current).toNanos();
+                System.out.println(a + " " +  b);
+                double interpolatedValue = a * time.toNanos() + b;
+                samples.add(interpolatedValue);
+                time = time.plus(samplingPeriodInNs);
             }
-
-            double a = (signal.getSamples().get(previous + 1) - signal.getSamples().get(previous)) / (signal.getSamplingPeriod().toNanos());
-            double b = signal.getSamples().get(previous) - a * signal.getSamplingPeriod().multipliedBy(previous).toNanos();
-
-            double interpolatedValue = a * elapsedTime.toNanos() + b;
-
-            segmentInterpolation.add(interpolatedValue);
-            elapsedTime = elapsedTime.plus(samplingPeriodInNs);
         }
 
-        samples.add(signal.getSamples().get(signal.getSamples().size() - 1) );
+        samples.add(signal.getSamples().get(signal.getSamples().size() -1 ));
 
         return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
+
+        //TODO: Allocatie proper number of memory to make it faster
+//        List<Double> samples = new ArrayList<>();
+//        List<Double> segmentInterpolation = new ArrayList<>();
+//
+//        Duration elapsedTime = Duration.ZERO;
+//        final Duration duration = signal.getDurationInNs();
+//
+//        int previous = 0;
+//
+//        while (elapsedTime.compareTo(duration) < 0) {
+//            //TODO: array out of bounds
+//            if (elapsedTime.compareTo(signal.getSamplingPeriod().multipliedBy((previous + 1))) > 0) {
+//                samples.addAll(segmentInterpolation);
+//                segmentInterpolation.clear();
+//                previous++;
+//            }
+//
+//            double a = (signal.getSamples().get(previous + 1) - signal.getSamples().get(previous)) / (signal.getSamplingPeriod().toNanos());
+//            double b = signal.getSamples().get(previous) - a * signal.getSamplingPeriod().multipliedBy(previous).toNanos();
+//
+//            double interpolatedValue = a * elapsedTime.toNanos() + b;
+//
+//            segmentInterpolation.add(interpolatedValue);
+//            elapsedTime = elapsedTime.plus(samplingPeriodInNs);
+//        }
+//
+//        samples.add(signal.getSamples().get(signal.getSamples().size() - 1) );
+//
+//        return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
     public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
