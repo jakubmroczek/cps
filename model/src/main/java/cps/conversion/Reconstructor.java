@@ -16,32 +16,36 @@ import static java.lang.Math.sin;
 public class Reconstructor {
 
     public static Signal firstHoldInterpolation(final Signal signal, Duration samplingPeriodInNs) {
-        int current = 0;
+        assert samplingPeriodInNs.toNanos() % signal.getSamplingPeriod().toNanos() == 0;
 
         var time = Duration.ZERO;
+        var stopTime = signal.getDurationInNs();
         var samples = new ArrayList<Double>();
-        var timePointToSamples = new ArrayList<Duration>();
 
-        while (current != signal.getSamples().size() - 1) {
-            samples.add(signal.getSamples().get(current));
-            current++;
-            timePointToSamples.add(time);
-            time = time.plus(samplingPeriodInNs);
-            while (time.compareTo(signal.getSamplingPeriod().multipliedBy(current)) < 0 && current != signal.getSamples().size() - 1) {
-                double a = (signal.getSamples().get(current + 1) - signal.getSamples().get(current)) / (signal.getSamplingPeriod().toNanos());
-                double b = signal.getSamples().get(current) - a * signal.getSamplingPeriod().multipliedBy(current).toNanos();
-                double interpolatedValue = a * time.toNanos() + b;
-                samples.add(interpolatedValue);
-                timePointToSamples.add(time);
-                time = time.plus(samplingPeriodInNs);
+        if (signal.getSamples().size() > 1) {
+            for (int i = 0, j = 1; j < signal.getSamples().size(); i++, j++) {
+                double a = (signal.getSamples().get(j) - signal.getSamples().get(i)) / (signal.getSamplingPeriod().toNanos());
+                double b = signal.getSamples().get(j) - a * signal.getSamplingPeriod().multipliedBy(i).toNanos();
+
+                samples.add(signal.getSamples().get(i));
+//                time = time.plus(samplingPeriodInNs);
+
+                time =  signal.getSamplingPeriod().multipliedBy(i);
+
+                while (time.compareTo(signal.getSamplingPeriod().multipliedBy(j)) < 0) {
+//                    double interpolatedValue = a * time.toNanos() + b;
+//                    samples.add(interpolatedValue);
+                    samples.add(0.0);
+                    time = time.plus(samplingPeriodInNs);
+                }
             }
         }
 
-        samples.add(signal.getSamples().get(signal.getSamples().size() -1 ));
-
-        var result = new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
-
-        return new InterpolatedSignal(result, timePointToSamples);
+        if (!signal.getSamples().isEmpty()) {
+            int last = signal.getSamples().size() - 1;
+            samples.add(signal.getSamples().get(last));
+        }
+        return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
     public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {

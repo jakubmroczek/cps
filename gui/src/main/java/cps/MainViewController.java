@@ -54,49 +54,51 @@ public class MainViewController {
          sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
          sampledSignal.setType(Signal.Type.DISCRETE);
 
+         setCssSingleSignal(samplingValue.getScene());
+
         plotSignal(sampledSignal, true);
 
         drawHistogram(sampledSignal);
-        displaySignalsError(signal, sampledSignal);
+//        displaySignalsError(signal, sampledSignal);
     }
 
     @FXML public void quantize(){
         int bits = Integer.valueOf(bitsValue.getText());
 
-        if(sampledSignal == null){
-            sample();
-        }
-
         quantizedSignal = Quantizer.quantize(sampledSignal, bits);
 
         var scene = bitsValue.getScene();
 
-        plotSignal(signal, true);
+//        plotSignal(signal, true);
 
+//        setCssSamplingSignal(scene);
+        setCssSingleSignal(scene);
 
-        setCssSamplingSignal(scene);
-
+        chart.getData().clear();
         plotSignal(quantizedSignal, false);
 
         drawHistogram(quantizedSignal);
-        displaySignalsError(signal, quantizedSignal);
+//        displaySignalsError(signal, quantizedSignal);
     }
 
     @FXML public void interpolate(){
-
         double interpolationFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
         Duration interpolationPeriodInNs = Duration.ofNanos((long) ((1.0 / interpolationFrequencyInHz) * 1_000_000_000));
 
-        setCssLineSignals(interpolationFrequencyTextField.getScene());
-        plotSignal(signal, true);
+//        setCssLineSignals(interpolationFrequencyTextField.getScene());
+//        plotSignal(signal, true);
 
-        // TODO: Other name ?
+
+//        assert
         quantizedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
 
-        plotSignal((InterpolatedSignal) quantizedSignal);
+        chart.getData().clear();
+        plotSignal(quantizedSignal, false);
+
+
 
         drawHistogram(quantizedSignal);
-        displaySignalsError(signal, quantizedSignal);
+//        displaySignalsError(signal, quantizedSignal);
     }
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
