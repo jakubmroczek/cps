@@ -2,7 +2,6 @@ package cps;
 
 import cps.conversion.Quantizer;
 import cps.conversion.Reconstructor;
-import cps.conversion.Sampler;
 import cps.conversion.Error;
 import cps.model.*;
 import javafx.collections.FXCollections;
