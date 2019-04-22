@@ -1,6 +1,7 @@
 package cps.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class Signal {
         CONTINUOUS, DISCRETE
     }
 
+    @Setter
     @Getter private Type type;
     @Getter private Duration durationInNs;
     @Getter private Duration samplingPeriod;
@@ -41,7 +43,7 @@ public class Signal {
 
     }
 
-    private static Signal createContinousSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
+    public static Signal createContinousSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
         Duration time = Duration.ZERO;
 
         List<Double> samples = new ArrayList<>();
@@ -55,7 +57,7 @@ public class Signal {
         return new Signal(Type.CONTINUOUS, durationInNs, samplingPeriodInNs, samples);
     }
 
-    private static Signal createDiscreteSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
+    public static Signal createDiscreteSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
 
         long size = durationInNs.toNanos() / samplingPeriodInNs.toNanos();
         List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply((double) n)).collect(Collectors.toList());

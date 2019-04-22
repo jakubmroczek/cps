@@ -51,10 +51,11 @@ public class MainViewController {
         //TODO: Wrap is somewhere
         Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
-        sampledSignal = Sampler.sample(function, Duration.ZERO, durationInNs, samplingPeriodInNs);
-        plotSignal(signal, true);
-        setCssSamplingSignal(samplingValue.getScene());
-        plotSignal(sampledSignal, false);
+         sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
+         sampledSignal.setType(Signal.Type.DISCRETE);
+
+        plotSignal(sampledSignal, true);
+
         drawHistogram(sampledSignal);
         displaySignalsError(signal, sampledSignal);
     }
