@@ -20,6 +20,10 @@ public class Signal {
     @Getter private Duration samplingPeriod;
     @Getter private List<Double> samples;
 
+    //TODO: Investigate if can be protected
+    public Signal() {
+    }
+
     public Signal(Type type, Duration durationInNs, Duration samplingPeriod, List<Double> samples) {
         this.type = type;
         this.durationInNs = durationInNs;

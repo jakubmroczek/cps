@@ -93,7 +93,7 @@ public class MainViewController {
         // TODO: Other name ?
         quantizedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
 
-        plotSignal(quantizedSignal, false);
+        plotSignal((InterpolatedSignal) quantizedSignal);
 
         drawHistogram(quantizedSignal);
         displaySignalsError(signal, quantizedSignal);
@@ -167,6 +167,35 @@ public class MainViewController {
         }
 
         if(clearChart) chart.getData().clear();
+        chart.getData().add(series);
+    }
+
+    private void plotSignal(InterpolatedSignal signal) {
+        if (signal.getType() == Signal.Type.CONTINUOUS) {
+            prepareChartToDisplayContinousSignal();
+        } else {
+            prepareChartToDisplayDiscreteSignal();
+        }
+
+        XYChart.Series series = new XYChart.Series();
+
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
+        if (signal.getSamples().size() != 1) {
+            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
+        }
+
+        double step = 1.0;
+        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
+            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
+
+        double current = 0.0;
+        for (int j = 0; current < signal.getSamples().size(); current += step, j++) {
+            double y = signal.getSamples().get((int) current);
+            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
+        }
+
         chart.getData().add(series);
     }
 
