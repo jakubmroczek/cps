@@ -103,15 +103,16 @@ public class MainViewController {
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
         double freqInHz = Double.valueOf(interpolationFrequencyTextField.getText());
+
         Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
 
-        Signal reconstructed = Reconstructor.reconstruct(signal,frequencyInNs, probes);
+        Signal reconstructed = Reconstructor.reconstruct(quantizedSignal, frequencyInNs, probes);
 
-
-        plotSignal(signal, true);
+//        plotSignal(signal, true);
+        chart.getData().clear();
         setCssLineSignals(bitsValue.getScene());
         plotSignal(reconstructed, false);
-        displaySignalsError(signal, reconstructed);
+//        displaySignalsError(signal, reconstructed);
     }
 
     @FXML public void display() {

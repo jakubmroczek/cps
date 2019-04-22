@@ -48,6 +48,33 @@ public class Reconstructor {
         return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
+//    public static Signal sinc() {
+////        double startTime = signal.getStartTime();
+////        double endTime = signal.getEndTime();
+////        double oldTimeStep = 1.0 / signal.getSamplingFrequency();
+////        double newTimeStep = 1.0 / frequency;
+////        int n = (int) Math.ceil((endTime - startTime) * frequency);
+////        double[] oldValues = signal.getValues();
+////        double[] newValues = new double[n];
+////        double time = 0.0;
+////        maxProbes = (int) (Math.min(maxProbes, (endTime - startTime) * signal.getSamplingFrequency()));
+////        for (int i = 0; i < n; i++) {
+////            double sum = 0.0;
+////            int k = (int) (Math.max((time / oldTimeStep) - maxProbes, startTime / oldTimeStep));
+////            k = (int) (Math.max(k, (time / oldTimeStep) - maxProbes / 2));
+////            k = (int) (Math.min(k, (endTime / oldTimeStep) - maxProbes));
+////            int maxk = k + maxProbes;
+////            while (k < maxk) {
+////                sum += oldValues[k] * sinc(time / oldTimeStep - k);
+////                k++;
+////            }
+////            newValues[i] = sum;
+////            time += newTimeStep;
+////        }
+////        return new RealSignal(newValues, signal.getStartTime(), signal.getEndTime(), signal.getAmplitude(), frequency, false);
+////
+////    }
+
     public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
         Duration elapsedTime = Duration.ZERO;
         Duration duration = signal.getDurationInNs();
