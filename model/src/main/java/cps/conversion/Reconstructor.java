@@ -8,10 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.incrementExact;
-import static java.lang.Math.sin;
+import static java.lang.Math.*;
 
 public class Reconstructor {
 
@@ -48,38 +47,10 @@ public class Reconstructor {
         return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
-//    public static Signal sinc() {
-////        double startTime = signal.getStartTime();
-////        double endTime = signal.getEndTime();
-////        double oldTimeStep = 1.0 / signal.getSamplingFrequency();
-////        double newTimeStep = 1.0 / frequency;
-////        int n = (int) Math.ceil((endTime - startTime) * frequency);
-////        double[] oldValues = signal.getValues();
-////        double[] newValues = new double[n];
-////        double time = 0.0;
-////        maxProbes = (int) (Math.min(maxProbes, (endTime - startTime) * signal.getSamplingFrequency()));
-////        for (int i = 0; i < n; i++) {
-////            double sum = 0.0;
-////            int k = (int) (Math.max((time / oldTimeStep) - maxProbes, startTime / oldTimeStep));
-////            k = (int) (Math.max(k, (time / oldTimeStep) - maxProbes / 2));
-////            k = (int) (Math.min(k, (endTime / oldTimeStep) - maxProbes));
-////            int maxk = k + maxProbes;
-////            while (k < maxk) {
-////                sum += oldValues[k] * sinc(time / oldTimeStep - k);
-////                k++;
-////            }
-////            newValues[i] = sum;
-////            time += newTimeStep;
-////        }
-////        return new RealSignal(newValues, signal.getStartTime(), signal.getEndTime(), signal.getAmplitude(), frequency, false);
-////
-////    }
-
     public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
         Duration elapsedTime = Duration.ZERO;
         Duration duration = signal.getDurationInNs();
 
-        //TODO: Allocatie proper number of memory to make it faster
         List<Double> samples = new ArrayList<>();
 
         while (elapsedTime.compareTo(duration) < 0) {
@@ -97,9 +68,43 @@ public class Reconstructor {
         double sum = 0.0;
         double ratio = (double) x.toNanos() / (double) signal.getSamplingPeriod().toNanos();
 
-        for (int i =0; i < signal.getSamples().size(); i++) {
-            sum += signal.getSamples().get(i) * sinc(ratio - i);
+        //Mapping time to the sample index
+        double r = (double) x.toNanos() / (double) signal.getSamplingPeriod().toNanos();
+        int index = (int) round(r);
+
+        int leftN = maxProbes / 2;
+        int rightN = maxProbes - 1 - leftN;
+
+        int leftIndex = index - leftN;
+        leftIndex = max(0, leftIndex);
+
+        int rightIndex = index + rightN;
+
+        rightIndex = min(signal.getSamples().size() - 1, rightIndex);
+        rightIndex = max(0, rightIndex);
+
+        //Sprawdzamy brzegi
+        int numberOfSamples = rightIndex - leftIndex + 1;
+        if (numberOfSamples != maxProbes) {
+            int diff = maxProbes - numberOfSamples;
+
+            if (leftIndex == 0) {
+                rightIndex += diff;
+                rightIndex = min(signal.getSamples().size() - 1, rightIndex);
+            } else { //right index == max
+                leftIndex -= diff;
+                leftIndex = max(0, leftIndex);
+            }
+
         }
+        int c = 0;
+
+        for (int i = leftIndex; i <= rightIndex; i++) {
+            sum += signal.getSamples().get(i) * sinc(ratio - i);
+            c++;
+        }
+
+        System.out.println(c);
 
         return sum;
     }

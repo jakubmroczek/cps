@@ -103,6 +103,7 @@ public class MainViewController {
     }
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
+
         double freqInHz = Double.valueOf(interpolationFrequencyTextField.getText());
 
         Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
