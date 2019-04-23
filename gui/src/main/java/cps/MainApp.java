@@ -18,7 +18,7 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader();
         Parent rootNode = (Parent) loader.load(getClass().getResourceAsStream(fxmlFile));
 
-        Scene scene = new Scene(rootNode, 900, 700);
+        Scene scene = new Scene(rootNode, 1120, 700);
         scene.getStylesheets().add("/styles/styles.css");
         scene.getStylesheets().add("/styles/chartSingleSignal.css");
 
