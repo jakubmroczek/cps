@@ -59,7 +59,6 @@ public class MainViewController {
         plotSignal(sampledSignal, true);
 
         drawHistogram(sampledSignal);
-//        displaySignalsError(signal, sampledSignal);
     }
 
     @FXML public void quantize(){
@@ -78,7 +77,7 @@ public class MainViewController {
         plotSignal(quantizedSignal, false);
 
         drawHistogram(quantizedSignal);
-//        displaySignalsError(signal, quantizedSignal);
+        displaySignalsError(quantizedSignal, sampledSignal);
     }
 
     @FXML public void interpolate(){
