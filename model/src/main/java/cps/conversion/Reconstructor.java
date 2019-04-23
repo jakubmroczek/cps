@@ -97,14 +97,10 @@ public class Reconstructor {
             }
 
         }
-        int c = 0;
 
         for (int i = leftIndex; i <= rightIndex; i++) {
             sum += signal.getSamples().get(i) * sinc(ratio - i);
-            c++;
         }
-
-        System.out.println(c);
 
         return sum;
     }
