@@ -84,6 +84,14 @@ public class MainViewController {
         double interpolationFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
         Duration interpolationPeriodInNs = Duration.ofNanos((long) ((1.0 / interpolationFrequencyInHz) * 1_000_000_000));
 
+        // Byl problem np z czzestoliwosciami 5 i 15 bo jak sie dzieli je na okres,
+        // to jest blad przy zaokraglaniu
+//        long size = quantizedSignal.getDurationInNs().dividedBy(interpolationPeriodInNs);
+//        if ((size -1) % (quantizedSignal.getSamples().size() - 1) != 0) {
+//            onSignalCreationException(new IllegalArgumentException("Częstotliwość interpolacji powinna być wielokrotnością częstotliwości próbkowania"));
+//            return;
+//        }
+
 //        setCssLineSignals(interpolationFrequencyTextField.getScene());
 //        plotSignal(signal, true);
 
