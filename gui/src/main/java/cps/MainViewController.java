@@ -27,15 +27,15 @@ public class MainViewController {
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/");
     private Stage stage;
-    //TODO: Nullable?
-    private Signal signal;
-    private Signal sampledSignal;
-    private Signal quantizedSignal;
+
+    private Signal signal, sampledSignal, quantizedSignal, interpolatedSignal, reconstructedSignal;
+
     private Histogram histogram;
+
     @FXML private LineChart<Number, Number> chart;
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
-    @FXML private TextField samplingValue, bitsValue, interpolationFrequencyTextField, probesValue;
+    @FXML private TextField samplingValue, bitsValue, interpolationFrequencyTextField, probesValue, sincFq;
     @FXML private Label mseLabel, snrLabel, psnrLabel, mdLabel;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
@@ -51,13 +51,12 @@ public class MainViewController {
         //TODO: Wrap is somewhere
         Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
-         sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
-         sampledSignal.setType(Signal.Type.DISCRETE);
+        interpolatedSignal = quantizedSignal = sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
+        sampledSignal.setType(Signal.Type.DISCRETE);
 
-         setCssSingleSignal(samplingValue.getScene());
+        setCssSingleSignal(samplingValue.getScene());
 
         plotSignal(sampledSignal, true);
-
         drawHistogram(sampledSignal);
     }
 
@@ -66,12 +65,10 @@ public class MainViewController {
 
         quantizedSignal = Quantizer.quantize(sampledSignal, bits);
 
-        var scene = bitsValue.getScene();
-
 //        plotSignal(signal, true);
 
 //        setCssSamplingSignal(scene);
-        setCssSingleSignal(scene);
+        setCssSingleSignal(bitsValue.getScene());
 
         chart.getData().clear();
         plotSignal(quantizedSignal, false);
@@ -88,32 +85,29 @@ public class MainViewController {
 //        plotSignal(signal, true);
 
 
-//        assert
         setInterpolationCss(bitsValue.getScene());
 
-        quantizedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
+        interpolatedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
 
         chart.getData().clear();
-        plotSignal(quantizedSignal, false);
+        plotSignal(interpolatedSignal, false);
 
-
-
-        drawHistogram(quantizedSignal);
-//        displaySignalsError(signal, quantizedSignal);
+        drawHistogram(interpolatedSignal);
     }
     @FXML public void sinc(){
         int probes = Integer.valueOf(probesValue.getText());
 
-        double freqInHz = Double.valueOf(interpolationFrequencyTextField.getText());
+        double freqInHz = Double.valueOf(sincFq.getText());
 
         Duration frequencyInNs = Duration.ofNanos((long) ((1.0 / freqInHz) * 1_000_000_000));
 
-        Signal reconstructed = Reconstructor.reconstruct(quantizedSignal, frequencyInNs, probes);
+        reconstructedSignal = Reconstructor.reconstruct(quantizedSignal, frequencyInNs, probes);
 
 //        plotSignal(signal, true);
         chart.getData().clear();
         setCssLineSignals(bitsValue.getScene());
-        plotSignal(reconstructed, false);
+        plotSignal(reconstructedSignal, false);
+        drawHistogram(reconstructedSignal);
 //        displaySignalsError(signal, reconstructed);
     }
 

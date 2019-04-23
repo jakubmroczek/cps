@@ -103,7 +103,7 @@
         </HBox>
         <HBox layoutX="890.0" layoutY="146.0" prefHeight="25.0" prefWidth="200.0">
             <children>
-                <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sinc" prefHeight="26.0" prefWidth="111.0" text="Liczba próbek" />
+                <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="111.0" text="Liczba próbek" />
                 <TextField fx:id="probesValue" prefHeight="26.0" prefWidth="124.0" />
             </children>
         </HBox>
@@ -111,7 +111,7 @@
         <Button fx:id="sincButton1" layoutX="943.0" layoutY="224.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sinc" prefHeight="31.0" prefWidth="107.0" text="Zrekonstruuj" />
         <HBox layoutX="890.0" layoutY="181.0" prefHeight="25.0" prefWidth="200.0">
             <children>
-                <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sinc" prefHeight="26.0" prefWidth="111.0" text="Częstotliwość [Hz]" />
+                <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="111.0" text="Częstotliwość [Hz]" />
                 <TextField fx:id="sincFq" prefHeight="26.0" prefWidth="124.0" />
             </children>
         </HBox>
