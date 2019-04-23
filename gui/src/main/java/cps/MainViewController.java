@@ -36,7 +36,7 @@ public class MainViewController {
     @FXML private ComboBox signalOperationList;
     @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
     @FXML private TextField samplingValue, bitsValue, interpolationFrequencyTextField, probesValue, sincFq;
-    @FXML private Label mseLabel, snrLabel, psnrLabel, mdLabel;
+    @FXML private Label mseLabel, snrLabel, psnrLabel, mdLabel, enobLabel;
     @FXML private BarChart<Number, Number> histogramChart;
     @FXML private Slider histogramBinsSlider;
     @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
@@ -459,7 +459,7 @@ public class MainViewController {
         snrLabel.setText(String.format("%.2f", Error.snr(s1,s2)));
         psnrLabel.setText(String.format("%.2f", Error.psnr(s1,s2)));
         mdLabel.setText(String.format("%.2f", Error.md(s1,s2)));
-
+        enobLabel.setText(String.format("%.2f", Error.enob(s1,s2)));
     }
 
     private final String cssSingleSignal="/styles/chartSingleSignal.css";
@@ -505,6 +505,6 @@ public class MainViewController {
         snrLabel.setText("");
         psnrLabel.setText("");
         mdLabel.setText("");
-
+        enobLabel.setText("");
     }
 }

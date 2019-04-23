@@ -26,8 +26,8 @@ public class Error {
         double noiseSquaresSum = 0.0;
 
         for (int i = 0; i < size; i++) {
-            squaresSum += lhs.getSamples().get(i) * rhs.getSamples().get(i);
-            noiseSquaresSum += Math.pow(Math.abs(lhs.getSamples().get(i) - rhs.getSamples().get(i)), 2.0);
+            squaresSum += lhs.getSamples().get(i) * lhs.getSamples().get(i);
+            noiseSquaresSum += Math.pow(lhs.getSamples().get(i) - rhs.getSamples().get(i), 2.0);
         }
         return 10.0 * Math.log10(squaresSum / noiseSquaresSum);
     }
@@ -44,6 +44,10 @@ public class Error {
 
         int size = min(lhs.getSamples().size(), rhs.getSamples().size());
         return IntStream.range(0, size).mapToObj(i -> abs(lhs.getSamples().get(i) - rhs.getSamples().get(i))).max(Double::compareTo).orElseGet(() -> abs(lhs.getSamples().get(0) - rhs.getSamples().get(0)));
+    }
+
+    public static double enob(final Signal lhs, final Signal rhs) {
+        return (snr(lhs, rhs) - 1.76) / 6.02;
     }
 
 }
