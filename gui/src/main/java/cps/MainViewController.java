@@ -52,7 +52,6 @@ public class MainViewController {
         Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
 
         interpolatedSignal = quantizedSignal = sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
-        sampledSignal.setType(Signal.Type.DISCRETE);
 
         setCssSingleSignal(samplingValue.getScene());
 
@@ -133,6 +132,13 @@ public class MainViewController {
 
             //TODO: Sprawdz sampling frequency
             signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
+
+            if (signal.getType() == Signal.Type.CONTINUOUS) {
+                setCssContinous(bitsValue.getScene());
+            } else {
+                setCssDiscrete(bitsValue.getScene());
+            }
+
             plotSignal(signal, true);
             drawHistogram(signal);
             clearSignalMeasurements();
@@ -153,12 +159,6 @@ public class MainViewController {
     }
 
     private void plotSignal(Signal signal, boolean clearChart) {
-        if (signal.getType() == Signal.Type.CONTINUOUS) {
-            prepareChartToDisplayContinousSignal();
-        } else {
-            prepareChartToDisplayDiscreteSignal();
-        }
-
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
@@ -183,12 +183,6 @@ public class MainViewController {
     }
 
     private void plotSignal(InterpolatedSignal signal) {
-        if (signal.getType() == Signal.Type.CONTINUOUS) {
-            prepareChartToDisplayContinousSignal();
-        } else {
-            prepareChartToDisplayDiscreteSignal();
-        }
-
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
@@ -209,18 +203,6 @@ public class MainViewController {
         }
 
         chart.getData().add(series);
-    }
-
-    private void prepareChartToDisplayContinousSignal() {
-        chart.setCreateSymbols(false);
-        chart.getStyleClass().remove("discrete-signal");
-        chart.getStyleClass().add("continuous-signal");
-    }
-
-    private void prepareChartToDisplayDiscreteSignal() {
-        chart.setCreateSymbols(true);
-        chart.getStyleClass().remove("continuous-signal");
-        chart.getStyleClass().add("discrete-signal");
     }
 
     @FXML private void saveToFile() {
@@ -249,6 +231,12 @@ public class MainViewController {
     @FXML public void loadSignal() {
         try {
             signal = loadFromFile();
+
+            if (signal.getType() == Signal.Type.CONTINUOUS) {
+                setCssContinous(bitsValue.getScene());
+            } else {
+                setCssDiscrete(bitsValue.getScene());
+            }
 
             plotSignal(signal, true);
             drawHistogram(signal);
@@ -308,6 +296,12 @@ public class MainViewController {
                     Signal rhs = loadFromFile();
                     signal = operator.apply(lhs, rhs);
 
+                    if (signal.getType() == Signal.Type.CONTINUOUS) {
+                        setCssContinous(bitsValue.getScene());
+                    } else {
+                        setCssDiscrete(bitsValue.getScene());
+                    }
+
                     plotSignal(signal, true);
                     drawHistogram(signal);
                     //TODO: We do not have info about function so we must use for the discrete signal or maybe
@@ -362,6 +356,12 @@ public class MainViewController {
             Signal rhs = Signal.create(type, rhsFunction, durationInNs, USER_SAMPLING_RATE);
 
             signal = operator.apply(lhs, rhs);
+
+            if (signal.getType() == Signal.Type.CONTINUOUS) {
+                setCssContinous(bitsValue.getScene());
+            } else {
+                setCssDiscrete(bitsValue.getScene());
+            }
 
             plotSignal(signal, true);
             drawHistogram(signal);
@@ -474,6 +474,8 @@ public class MainViewController {
     private final String cssSamplingSignal="/styles/chartSampling.css";
     private final String cssLineSignals="/styles/chartLineSignals.css";
     private final String cssInterpolation = "/styles/interpolation.css";
+    private final String cssDiscrete = "/styles/discrete.css";
+    private final String cssContinous = "/styles/continous.css";
 
     private void setCssSingleSignal(Scene scene){
         removeChartCss(scene);
@@ -495,10 +497,22 @@ public class MainViewController {
         scene.getStylesheets().add(cssInterpolation);
     }
 
+    private void setCssContinous(Scene scene) {
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssContinous);
+    }
+
+    private void setCssDiscrete(Scene scene) {
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssDiscrete);
+    }
+
     private void removeChartCss(Scene scene){
         scene.getStylesheets().remove(cssSingleSignal);
         scene.getStylesheets().remove(cssSamplingSignal);
         scene.getStylesheets().remove(cssLineSignals);
+        scene.getStylesheets().remove(cssInterpolation);
+        scene.getStylesheets().remove(cssContinous);
         scene.getStylesheets().remove(cssInterpolation);
     }
 
