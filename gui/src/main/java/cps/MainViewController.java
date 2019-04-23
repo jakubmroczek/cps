@@ -89,6 +89,8 @@ public class MainViewController {
 
 
 //        assert
+        setInterpolationCss(bitsValue.getScene());
+
         quantizedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
 
         chart.getData().clear();
@@ -463,6 +465,7 @@ public class MainViewController {
     private final String cssSingleSignal="/styles/chartSingleSignal.css";
     private final String cssSamplingSignal="/styles/chartSampling.css";
     private final String cssLineSignals="/styles/chartLineSignals.css";
+    private final String cssInterpolation = "/styles/interpolation.css";
 
     private void setCssSingleSignal(Scene scene){
         removeChartCss(scene);
@@ -479,9 +482,15 @@ public class MainViewController {
         scene.getStylesheets().add(cssLineSignals);
     }
 
+    private void setInterpolationCss(Scene scene) {
+        removeChartCss(scene);
+        scene.getStylesheets().add(cssInterpolation);
+    }
+
     private void removeChartCss(Scene scene){
         scene.getStylesheets().remove(cssSingleSignal);
         scene.getStylesheets().remove(cssSamplingSignal);
         scene.getStylesheets().remove(cssLineSignals);
+        scene.getStylesheets().remove(cssInterpolation);
     }
 }
