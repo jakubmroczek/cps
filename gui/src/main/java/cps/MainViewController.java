@@ -58,6 +58,8 @@ public class MainViewController {
 
         plotSignal(sampledSignal, true);
         drawHistogram(sampledSignal);
+
+        clearSignalMeasurements();
     }
 
     @FXML public void quantize(){
@@ -74,6 +76,7 @@ public class MainViewController {
         plotSignal(quantizedSignal, false);
 
         drawHistogram(quantizedSignal);
+        clearSignalMeasurements();
         displaySignalsError(sampledSignal, quantizedSignal);
     }
 
@@ -91,7 +94,7 @@ public class MainViewController {
 
         chart.getData().clear();
         plotSignal(interpolatedSignal, false);
-
+        clearSignalMeasurements();
         drawHistogram(interpolatedSignal);
     }
     @FXML public void sinc(){
@@ -108,6 +111,7 @@ public class MainViewController {
         setCssLineSignals(bitsValue.getScene());
         plotSignal(reconstructedSignal, false);
         drawHistogram(reconstructedSignal);
+        clearSignalMeasurements();
 //        displaySignalsError(signal, reconstructed);
     }
 
@@ -123,6 +127,7 @@ public class MainViewController {
             signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
             plotSignal(signal, true);
             drawHistogram(signal);
+            clearSignalMeasurements();
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
             displaySignalMeasurement(signalMeasurement);
 
@@ -487,5 +492,19 @@ public class MainViewController {
         scene.getStylesheets().remove(cssSamplingSignal);
         scene.getStylesheets().remove(cssLineSignals);
         scene.getStylesheets().remove(cssInterpolation);
+    }
+
+    private void clearSignalMeasurements() {
+        averageValueLabel.setText("");
+        averageAbsoluteValueLabel.setText("");
+        averagePowerValueLabel.setText("");
+        varianceValueLabel.setText("");
+        effectivePowerValueLabel.setText("");
+
+        mseLabel.setText("");
+        snrLabel.setText("");
+        psnrLabel.setText("");
+        mdLabel.setText("");
+
     }
 }
