@@ -53,7 +53,8 @@ public class MainViewController {
 
         interpolatedSignal = quantizedSignal = sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
 
-        setCssSingleSignal(samplingValue.getScene());
+        setCssSamplingSignal(bitsValue.getScene());
+//        setCssSingleSignal(samplingValue.getScene());
 
         plotSignal(sampledSignal, true);
         drawHistogram(sampledSignal);
@@ -68,15 +69,16 @@ public class MainViewController {
 
 //        plotSignal(signal, true);
 
-//        setCssSamplingSignal(scene);
-        setCssSingleSignal(bitsValue.getScene());
+        setCssSamplingSignal(bitsValue.getScene());
+//        setCssSingleSignal(bitsValue.getScene());
 
         chart.getData().clear();
         plotSignal(quantizedSignal, false);
 
         drawHistogram(quantizedSignal);
         clearSignalMeasurements();
-        displaySignalsError(sampledSignal, quantizedSignal);
+//        displaySignalsError(sampledSignal, quantizedSignal);
+        displaySignalsError(quantizedSignal, sampledSignal);
     }
 
     @FXML public void interpolate(){
