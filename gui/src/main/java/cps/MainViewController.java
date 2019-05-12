@@ -3,6 +3,7 @@ package cps;
 import cps.conversion.Quantizer;
 import cps.conversion.Reconstructor;
 import cps.conversion.Error;
+import cps.filtering.Filters;
 import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +26,7 @@ import static java.lang.Math.min;
 
 public class MainViewController {
 
-    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/");
+    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute");
     private Stage stage;
 
     private Signal signal, sampledSignal, quantizedSignal, interpolatedSignal, reconstructedSignal;
@@ -150,6 +151,11 @@ public class MainViewController {
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
         }
+    }
+
+    @FXML
+    public void convolute() {
+
     }
 
     SignalMeasurement measure(Signal signal, Function<Double, Double> function, Duration durationInNs) {
@@ -336,6 +342,10 @@ public class MainViewController {
 
             case "/":
                 operator = SignalOperations::divide;
+                break;
+
+            case "Convolute":
+                operator = Filters::convolute;
                 break;
 
             default:
@@ -531,4 +541,5 @@ public class MainViewController {
         mdLabel.setText("");
         enobLabel.setText("");
     }
+
 }
