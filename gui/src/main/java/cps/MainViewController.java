@@ -26,7 +26,7 @@ import static java.lang.Math.min;
 
 public class MainViewController {
 
-    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute");
+    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute", "Correlate");
     private Stage stage;
 
     private Signal signal, sampledSignal, quantizedSignal, interpolatedSignal, reconstructedSignal;
@@ -151,11 +151,6 @@ public class MainViewController {
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
         }
-    }
-
-    @FXML
-    public void convolute() {
-
     }
 
     SignalMeasurement measure(Signal signal, Function<Double, Double> function, Duration durationInNs) {
@@ -346,6 +341,10 @@ public class MainViewController {
 
             case "Convolute":
                 operator = Filters::convolute;
+                break;
+
+            case "Correlate":
+                operator = Filters::correlate;
                 break;
 
             default:

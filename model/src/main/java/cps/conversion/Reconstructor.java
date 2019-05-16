@@ -47,62 +47,31 @@ public class Reconstructor {
         return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
-    public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
-        Duration elapsedTime = Duration.ZERO;
-        Duration duration = signal.getDurationInNs();
-
-        List<Double> samples = new ArrayList<>();
-
-        while (elapsedTime.compareTo(duration) < 0) {
-            double interpolatedValue = sincReconstruct(signal, elapsedTime, maxProbes);
-            samples.add(interpolatedValue);
-            elapsedTime = elapsedTime.plus(reconstructionFrequency);
-        }
-
-        return new Signal(signal.getType(), signal.getDurationInNs(), reconstructionFrequency, samples);
-    }
-
-    private static double sincReconstruct(Signal signal, Duration x, int maxProbes) {
-        assert !x.isNegative();
-
-        double sum = 0.0;
-        double ratio = (double) x.toNanos() / (double) signal.getSamplingPeriod().toNanos();
-
-        //Mapping time to the sample index
-        double r = (double) x.toNanos() / (double) signal.getSamplingPeriod().toNanos();
-        int index = (int) round(r);
-
-        int leftN = maxProbes / 2;
-        int rightN = maxProbes - 1 - leftN;
-
-        int leftIndex = index - leftN;
-        leftIndex = max(0, leftIndex);
-
-        int rightIndex = index + rightN;
-
-        rightIndex = min(signal.getSamples().size() - 1, rightIndex);
-        rightIndex = max(0, rightIndex);
-
-        //Sprawdzamy brzegi
-        int numberOfSamples = rightIndex - leftIndex + 1;
-        if (numberOfSamples != maxProbes) {
-            int diff = maxProbes - numberOfSamples;
-
-            if (leftIndex == 0) {
-                rightIndex += diff;
-                rightIndex = min(signal.getSamples().size() - 1, rightIndex);
-            } else { //right index == max
-                leftIndex -= diff;
-                leftIndex = max(0, leftIndex);
+    public static Signal reconstruct(Signal signal, Duration newSamplingPeriod, int maxProbes) {
+        double startTime = 0.0;
+        double endTime = signal.getDurationInNs().toNanos();
+        double oldTimeStep = signal.getSamplingPeriod().toNanos();
+        double newTimeStep = newSamplingPeriod.toNanos();
+        int n = (int) Math.ceil((endTime - startTime) / newTimeStep);
+        List<Double> oldValues = signal.getSamples();
+        List<Double> newValues = new ArrayList<>();
+        double time = 0.0;
+        maxProbes = (int) (Math.min(maxProbes, (endTime - startTime) * (1.0 / oldTimeStep)));
+        for (int i = 0; i < n; i++) {
+            double sum = 0.0;
+            int k = (int) (Math.max((time / oldTimeStep) - maxProbes, startTime / oldTimeStep));
+            k = (int) (Math.max(k, (time / oldTimeStep) - maxProbes / 2));
+            k = (int) (Math.min(k, (endTime / oldTimeStep) - maxProbes));
+            int maxk = k + maxProbes;
+            while (k < maxk) {
+                sum += oldValues.get(k) * sinc(time / oldTimeStep - k);
+                k++;
             }
-
+            newValues.add(sum);
+            time += newTimeStep;
         }
 
-        for (int i = leftIndex; i <= rightIndex; i++) {
-            sum += signal.getSamples().get(i) * sinc(ratio - i);
-        }
-
-        return sum;
+        return new Signal(signal.getType(), signal.getDurationInNs(), newSamplingPeriod, newValues);
     }
 
     private static double sinc(double x) {
