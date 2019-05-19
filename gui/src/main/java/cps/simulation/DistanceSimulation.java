@@ -2,6 +2,7 @@ package cps.simulation;
 
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -12,6 +13,7 @@ import javafx.scene.control.TextField;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 
 import static java.lang.Math.min;
@@ -55,17 +57,36 @@ public class DistanceSimulation {
         chart.getData().add(series);
     }
 
-    private void startTransmittingSignal(Function<Double, Double> function) {
-//        Duration timeUnit = getTimeUnit();
-//        Task task = null;
-//        transmittedSignalChart.dataProperty().bind(task.valueProperty());
-//        Thread t = new Thread(() -> {
-//            function.apply()
-//        });
-//        t.start();
+    private void startTransmittingSignal(Function<Duration, Double> function) {
+        //Adding empty data
+        transmittedSignalChart.getData().add(new XYChart.Series<>());
+
+        Duration timeUnit = getTimeUnit();
+        Transmitter transmitter = new Transmitter();
+        transmitter.setTimeUnit(timeUnit);
+        transmitter.setFunction(function);
+        transmitter.setTimeUnit(timeUnit);
+        transmitter.setCallback(this::updateChart);
+
+        //Nie jest to zapewne sposob najbardziej optymalny
+
+        Thread t = new Thread(transmitter);
+        t.start();
     }
 
     private void stopTransmittingSignal() {
+    }
+
+    private int i =0;
+
+    //TODO: Troche glupi
+    private Void updateChart(Double value) {
+        i++;
+        Platform.runLater(() -> {
+            XYChart.Data chunk = new XYChart.Data(i, value);
+            transmittedSignalChart.getData().get(0).getData().add(chunk);
+        });
+        return null;
     }
 
     @FXML
@@ -73,9 +94,8 @@ public class DistanceSimulation {
         var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(500_000_000).initialTimeInNs(0).build();
         var sineFunction = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, args);
 
-        Signal signal = Signal.createContinousSignal(sineFunction, Duration.ofMillis(1000), Duration.ofMillis(1));
+        Function<Duration, Double> wrapper = (Duration x) -> sineFunction.apply((double) x.toNanos());
 
-        plot(signal, transmittedSignalChart);
-        plot(signal, receivedSignalChart);
+        startTransmittingSignal(wrapper);
     }
 }

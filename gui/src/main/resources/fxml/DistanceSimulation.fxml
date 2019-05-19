@@ -35,7 +35,7 @@
       <javafx.scene.layout.HBox layoutX="706.0" layoutY="14.0" prefHeight="34.0" prefWidth="200.0">
          <children>
             <Label prefHeight="34.0" prefWidth="176.0" text="Jednostka symulacji [s]" />
-            <TextField fx:id="timeUnitTextField" prefHeight="60.0" prefWidth="125.0" promptText="0.5" />
+            <TextField fx:id="timeUnitTextField" prefHeight="60.0" prefWidth="125.0" text="0.5" />
          </children>
       </javafx.scene.layout.HBox>
    </children>
