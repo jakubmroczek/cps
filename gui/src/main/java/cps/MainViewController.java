@@ -75,7 +75,6 @@ public class MainViewController {
 
         drawHistogram(quantizedSignal);
         clearSignalMeasurements();
-//        displaySignalsError(sampledSignal, quantizedSignal);
         displaySignalsError(quantizedSignal, sampledSignal);
     }
 
@@ -85,15 +84,6 @@ public class MainViewController {
 
         // Byl problem np z czzestoliwosciami 5 i 15 bo jak sie dzieli je na okres,
         // to jest blad przy zaokraglaniu
-//        long size = quantizedSignal.getDurationInNs().dividedBy(interpolationPeriodInNs);
-//        if ((size -1) % (quantizedSignal.getSamples().size() - 1) != 0) {
-//            onSignalCreationException(new IllegalArgumentException("Częstotliwość interpolacji powinna być wielokrotnością częstotliwości próbkowania"));
-//            return;
-//        }
-
-//        setCssLineSignals(interpolationFrequencyTextField.getScene());
-//        plotSignal(signal, true);
-
 
         setInterpolationCss(bitsValue.getScene());
 
@@ -113,13 +103,11 @@ public class MainViewController {
 
         reconstructedSignal = Reconstructor.reconstruct(quantizedSignal, frequencyInNs, probes);
 
-//        plotSignal(signal, true);
         chart.getData().clear();
         setCssLineSignals(bitsValue.getScene());
         plotSignal(reconstructedSignal, false);
         drawHistogram(reconstructedSignal);
         clearSignalMeasurements();
-//        displaySignalsError(signal, reconstructed);
     }
 
     @FXML public void display() {

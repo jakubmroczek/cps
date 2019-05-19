@@ -1,11 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Text?>
-
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="506.0" prefWidth="705.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.simulation.DistanceSimulation">
    <children>
-      <Text layoutX="209.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hello simulation!" wrappingWidth="341.336669921875" />
+      <VBox prefHeight="425.0" prefWidth="706.0">
+         <children>
+            <LineChart fx:id="transmittedSignalChart" prefHeight="218.0" prefWidth="706.0">
+              <xAxis>
+                <NumberAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </LineChart>
+            <LineChart fx:id="receivedSignalChart" prefHeight="205.0" prefWidth="706.0">
+               <xAxis>
+                  <NumberAxis side="BOTTOM" />
+               </xAxis>
+               <yAxis>
+                  <NumberAxis side="LEFT" />
+               </yAxis>
+            </LineChart>
+         </children>
+      </VBox>
+      <Button fx:id="startSimulationButton" layoutX="301.0" layoutY="445.0" mnemonicParsing="false" onAction="#start" text="Button" />
    </children>
 </AnchorPane>
