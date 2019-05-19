@@ -11,7 +11,9 @@ import cps.model.Signal;
 import javafx.scene.control.TextField;
 
 import java.time.Duration;
+import java.util.Timer;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.min;
 
@@ -22,6 +24,12 @@ public class DistanceSimulation {
 
     @FXML
     private TextField timeUnitTextField;
+
+    private Timer timer = new Timer();
+    private Transmitter transmitter;
+
+    private Duration timeUnit;
+
 
     private Duration getTimeUnit() {
         int MILLIS_TO_SECONDS = 1000;
@@ -54,29 +62,44 @@ public class DistanceSimulation {
     }
 
     private void startTransmittingSignal(Function<Duration, Double> function) {
+        timeUnit = getTimeUnit();
+
         //Adding empty data
-        transmittedSignalChart.getData().add(new XYChart.Series<>());
 
-        Duration timeUnit = getTimeUnit();
-        Transmitter transmitter = new Transmitter();
-        transmitter.setTransmmisionPeriod(timeUnit);
-        transmitter.setFunction(function);
-        transmitter.setTransmmisionPeriod(timeUnit);
-        transmitter.setCallback(this::updateChart);
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        final int NUMBER_OF_PIXELS_IN_CHART = (int) transmittedSignalChart.getXAxis().getWidth();
+        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART).forEach(x -> series.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
+        transmittedSignalChart.getData().add(series);
 
-        //Nie jest to zapewne sposob najbardziej optymalny
+        XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
+        final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
+        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
+        receivedSignalChart.getData().add(series2);
 
-        Thread t = new Thread(transmitter);
-        t.start();
+        transmitter = new Transmitter(function, this::updateChart, timeUnit);
+
+        timer.scheduleAtFixedRate(transmitter, 0, timeUnit.toMillis());
     }
 
     private void stopTransmittingSignal() {
+
     }
 
     //TODO: Sprawdzic czy nie ma buga z czasem
     private Void updateChart(Duration duration, Double value) {
         Platform.runLater(() -> {
             XYChart.Data chunk = new XYChart.Data(duration.toMillis(), value);
+
+            var data = transmittedSignalChart.getData().get(0).getData();
+            var size = data.size();
+
+            for (int i = 1; i < size -1; i++) {
+                transmittedSignalChart.getData().get(0).getData()
+                        .set(i, new XYChart.Data<>(timeUnit.multipliedBy(i -1 ).toMillis(), i - 1));
+            }
+            transmittedSignalChart.getData().get(0).getData().remove(0);
             transmittedSignalChart.getData().get(0).getData().add(chunk);
         });
         return null;
