@@ -3,7 +3,6 @@ package cps.simulation;
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -12,12 +11,9 @@ import cps.model.Signal;
 import javafx.scene.control.TextField;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 
 import static java.lang.Math.min;
-import static org.apache.commons.lang.time.DateUtils.MILLIS_IN_SECOND;
 
 public class DistanceSimulation {
 
@@ -63,9 +59,9 @@ public class DistanceSimulation {
 
         Duration timeUnit = getTimeUnit();
         Transmitter transmitter = new Transmitter();
-        transmitter.setTimeUnit(timeUnit);
+        transmitter.setTransmmisionPeriod(timeUnit);
         transmitter.setFunction(function);
-        transmitter.setTimeUnit(timeUnit);
+        transmitter.setTransmmisionPeriod(timeUnit);
         transmitter.setCallback(this::updateChart);
 
         //Nie jest to zapewne sposob najbardziej optymalny
@@ -77,13 +73,10 @@ public class DistanceSimulation {
     private void stopTransmittingSignal() {
     }
 
-    private int i =0;
-
-    //TODO: Troche glupi
-    private Void updateChart(Double value) {
-        i++;
+    //TODO: Sprawdzic czy nie ma buga z czasem
+    private Void updateChart(Duration duration, Double value) {
         Platform.runLater(() -> {
-            XYChart.Data chunk = new XYChart.Data(i, value);
+            XYChart.Data chunk = new XYChart.Data(duration.toMillis(), value);
             transmittedSignalChart.getData().get(0).getData().add(chunk);
         });
         return null;
@@ -91,11 +84,31 @@ public class DistanceSimulation {
 
     @FXML
     public  void start() {
+        loadCSS();
+
         var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(500_000_000).initialTimeInNs(0).build();
         var sineFunction = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, args);
 
         Function<Duration, Double> wrapper = (Duration x) -> sineFunction.apply((double) x.toNanos());
 
         startTransmittingSignal(wrapper);
+    }
+
+    //Cannot be done in initialize method, cause chart's do not have associated scene
+    //Where it can be moved?
+    private void loadCSS() {
+        final String style = "/styles/DistanceSimulation.css";
+
+        var scene = transmittedSignalChart.getScene();
+        scene.getStylesheets().add(style);
+    }
+
+    @FXML
+    public void initialize() {
+        transmittedSignalChart.setAnimated(false);
+        transmittedSignalChart.setLegendVisible(false);
+
+        receivedSignalChart.setAnimated(false);
+        receivedSignalChart.setLegendVisible(false);
     }
 }
