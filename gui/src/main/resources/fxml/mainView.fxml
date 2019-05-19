@@ -149,5 +149,6 @@
             </HBox>
             </children>
         </VBox>
+      <Button layoutX="779.0" layoutY="462.0" mnemonicParsing="false" onAction="#loadDistanceSimulation" text="Symulacja korelacyjnego czujnika odległości" />
     </children>
 </AnchorPane>

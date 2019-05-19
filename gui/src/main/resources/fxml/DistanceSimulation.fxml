@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="506.0" prefWidth="705.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.simulation.DistanceSimulation">
+   <children>
+      <Text layoutX="209.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hello simulation!" wrappingWidth="341.336669921875" />
+   </children>
+</AnchorPane>

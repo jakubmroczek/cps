@@ -8,6 +8,8 @@ import cps.model.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.LineChart;
@@ -55,8 +57,6 @@ public class MainViewController {
         interpolatedSignal = quantizedSignal = sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
 
         setCssSamplingSignal(bitsValue.getScene());
-//        setCssSingleSignal(samplingValue.getScene());
-
         plotSignal(sampledSignal, true);
         drawHistogram(sampledSignal);
 
@@ -68,10 +68,7 @@ public class MainViewController {
 
         quantizedSignal = Quantizer.quantize(sampledSignal, bits);
 
-//        plotSignal(signal, true);
-
         setCssSamplingSignal(bitsValue.getScene());
-//        setCssSingleSignal(bitsValue.getScene());
 
         chart.getData().clear();
         plotSignal(quantizedSignal, false);
@@ -156,6 +153,24 @@ public class MainViewController {
     @FXML
     public void convolute() {
 
+    }
+
+    //TODO: Open in the same stage/window
+    @FXML
+    public void loadDistanceSimulation() {
+        final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/DistanceSimulation.fxml"));
+        Parent root = null;
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Scene nscene = new Scene(root);
+        Stage tStatge = new Stage();
+        tStatge.setTitle("Symulacja korelacyjnego czujnika odległości");
+        tStatge.setScene(nscene);
+        tStatge.show();
     }
 
     SignalMeasurement measure(Signal signal, Function<Double, Double> function, Duration durationInNs) {
