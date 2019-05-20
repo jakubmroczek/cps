@@ -2,6 +2,8 @@ package cps.simulation;
 
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -12,6 +14,7 @@ import javafx.scene.control.TextField;
 
 import java.time.Duration;
 import java.util.Timer;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -25,8 +28,14 @@ public class DistanceSimulation {
     @FXML
     private TextField timeUnitTextField;
 
+    private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
+
+    private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
+
     private Timer timer = new Timer();
     private Transmitter transmitter;
+
+    private AnimationTimer animationTimer;
 
     private Duration timeUnit;
 
@@ -39,11 +48,26 @@ public class DistanceSimulation {
 //        var timePoint = (oldSeries.getData().size() -1) *1000;
 //        newSeries.getData().add(new XYChart.Data<>(timePoint, value));
 //        return newSeries;
-        XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
-        final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
-        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series2.getData().
-                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), value)));
-        return series2;
+
+
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
+        if (bufferedSeries.getData().isEmpty())
+        {
+            return series;
+        }
+
+        final int size = bufferedSeries.getData().size();
+        IntStream.range(1, size).forEach(x -> series.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(),
+                bufferedSeries.getData().get(x).getYValue())));
+
+
+        series.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(size - 1).toMillis(),
+                        value));
+
+        return series;
     }
 
     private Duration getTimeUnit() {
@@ -64,6 +88,9 @@ public class DistanceSimulation {
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
         transmittedSignalChart.getData().add(series);
 
+        //TODO: Use only me
+        bufferedSeries = series;
+
         XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
         final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
         IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series.getData().
@@ -73,6 +100,18 @@ public class DistanceSimulation {
         transmitter = new Transmitter(function, this::updateChart, timeUnit);
 
         timer.scheduleAtFixedRate(transmitter, 0, timeUnit.toMillis());
+
+        animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (!seriesConcurrentLinkedQueue.isEmpty()) {
+                    var series = seriesConcurrentLinkedQueue.remove();
+                    transmittedSignalChart.getData().set(0, series);
+
+                }
+            }
+        };
+        animationTimer.start();
     }
 
     private void stopTransmittingSignal() {
@@ -82,9 +121,12 @@ public class DistanceSimulation {
     //TODO: Sprawdzic czy nie ma buga z czasem
     private Void updateChart(Duration duration, Double value) {
         var newSeries = shiftSeries(value);
-        Platform.runLater(() -> {
-            transmittedSignalChart.getData().set(0, newSeries);
-        });
+//        Platform.runLater(() -> {
+//            transmittedSignalChart.getData().set(0, newSeries);
+//        });
+//        bufferedSeries = newSeries;
+        seriesConcurrentLinkedQueue.add(newSeries);
+        bufferedSeries = newSeries;
         return null;
     }
 
@@ -92,7 +134,7 @@ public class DistanceSimulation {
     public  void start() {
         loadCSS();
 
-        var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(500_000_000).initialTimeInNs(0).build();
+        var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(2_000_000_000).initialTimeInNs(0).build();
         var sineFunction = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, args);
 
         Function<Duration, Double> wrapper = (Duration x) -> sineFunction.apply((double) x.toNanos());
