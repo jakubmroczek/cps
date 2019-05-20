@@ -30,35 +30,27 @@ public class DistanceSimulation {
 
     private Duration timeUnit;
 
+    private XYChart.Series<Number, Number> shiftSeries(double value) {
+//        var oldSeries = transmittedSignalChart.getData().get(0);
+//        XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
+//        for (int i = 1; i < oldSeries.getData().size(); i++) {
+//            newSeries.getData().add(oldSeries.getData().get(i));
+//        }
+//        var timePoint = (oldSeries.getData().size() -1) *1000;
+//        newSeries.getData().add(new XYChart.Data<>(timePoint, value));
+//        return newSeries;
+        XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
+        final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
+        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series2.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), value)));
+        return series2;
+    }
 
     private Duration getTimeUnit() {
         int MILLIS_TO_SECONDS = 1000;
         var text = timeUnitTextField.getText();
         //TODO: Exception handling
         return Duration.ofMillis((long)(Double.valueOf(text) * MILLIS_TO_SECONDS));
-    }
-
-    private void plot(Signal signal, LineChart<Number, Number> chart) {
-        XYChart.Series series = new XYChart.Series();
-
-        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-
-        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-        if (signal.getSamples().size() != 1) {
-            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-        }
-
-        double step = 1.0;
-        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
-            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-
-        double current = 0.0;
-        for (int j = 0; current < signal.getSamples().size(); current += step, j++) {
-            double y = signal.getSamples().get((int) current);
-            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
-        }
-
-        chart.getData().add(series);
     }
 
     private void startTransmittingSignal(Function<Duration, Double> function) {
@@ -89,18 +81,9 @@ public class DistanceSimulation {
 
     //TODO: Sprawdzic czy nie ma buga z czasem
     private Void updateChart(Duration duration, Double value) {
+        var newSeries = shiftSeries(value);
         Platform.runLater(() -> {
-            XYChart.Data chunk = new XYChart.Data(duration.toMillis(), value);
-
-            var data = transmittedSignalChart.getData().get(0).getData();
-            var size = data.size();
-
-            for (int i = 1; i < size -1; i++) {
-                transmittedSignalChart.getData().get(0).getData()
-                        .set(i, new XYChart.Data<>(timeUnit.multipliedBy(i -1 ).toMillis(), i - 1));
-            }
-            transmittedSignalChart.getData().get(0).getData().remove(0);
-            transmittedSignalChart.getData().get(0).getData().add(chunk);
+            transmittedSignalChart.getData().set(0, newSeries);
         });
         return null;
     }
