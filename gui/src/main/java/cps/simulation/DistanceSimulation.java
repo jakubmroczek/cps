@@ -3,6 +3,7 @@ package cps.simulation;
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
 import javafx.animation.AnimationTimer;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
@@ -21,13 +22,17 @@ public class DistanceSimulation {
     private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
 
     @FXML
-    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField, objectSpeedInMetersPerSecond;
+    private TextField timeUnitTextField,
+            probingSignalFrequencyTextField,
+            bufferSizeTextField,
+            objectSpeedInMetersPerSecond,
+            realDistanceInMetersTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
 
-    private double initialDistanceInMeters = 1.0;
+    private SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
 
     private TrackedObject trackedObject;
 
@@ -88,8 +93,11 @@ public class DistanceSimulation {
 //                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
 //        receivedSignalChart.getData().add(series2);
 
+        //TODO: Fajny bylby obserwator z mapowaniem
+        realDistanceInMetersTextField.textProperty().bind(realDistanceToTrackedObjectInMeters.asString());
+
         trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
-                getInitialDistanceInMeters());
+                getRealDistanceToTrackedObjectInMeters());
 
         transmitter = new Transmitter(function, this::updateChart, timeUnit);
 
@@ -116,12 +124,11 @@ public class DistanceSimulation {
 
     private Void updateChart(Duration duration, Double value) {
         var newSeries = shiftSeries(value);
-//        Platform.runLater(() -> {
-//            transmittedSignalChart.getData().set(0, newSeries);
-//        });
-//        bufferedSeries = newSeries;
         seriesConcurrentLinkedQueue.add(newSeries);
         bufferedSeries = newSeries;
+
+        realDistanceToTrackedObjectInMeters.set(trackedObject.getDistanceSinceStart(duration));
+
         return null;
     }
     @FXML
@@ -177,7 +184,7 @@ public class DistanceSimulation {
         return Double.valueOf(objectSpeedInMetersPerSecond.getText());
     }
 
-    private double getInitialDistanceInMeters() {
-        return initialDistanceInMeters;
+    private double getRealDistanceToTrackedObjectInMeters() {
+        return realDistanceToTrackedObjectInMeters.get();
     }
 }
