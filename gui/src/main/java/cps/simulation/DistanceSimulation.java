@@ -3,6 +3,7 @@ package cps.simulation;
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -32,7 +33,7 @@ public class DistanceSimulation {
 
     private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
 
-    private SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
+    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
 
     private TrackedObject trackedObject;
 
@@ -126,8 +127,9 @@ public class DistanceSimulation {
         var newSeries = shiftSeries(value);
         seriesConcurrentLinkedQueue.add(newSeries);
         bufferedSeries = newSeries;
-
-        realDistanceToTrackedObjectInMeters.set(trackedObject.getDistanceSinceStart(duration));
+        
+        double val = trackedObject.getDistanceSinceStart(duration);
+        Platform.runLater(() -> realDistanceToTrackedObjectInMeters.set(val));
 
         return null;
     }
