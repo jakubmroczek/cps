@@ -7,16 +7,16 @@ import java.time.Duration;
 public class TrackedObject {
 
     @Getter
-    private int constantSpeedInMetersPerSecond;
+    private double constantSpeedInMetersPerSecond;
 
-    private int distanceInMetersFromObserver;
+    private double distanceInMetersFromObserver;
 
-    public TrackedObject(int constantSpeedInMetersPerSecond, int initialDistanceInMetersFromObserver) {
+    public TrackedObject(double constantSpeedInMetersPerSecond, double initialDistanceInMetersFromObserver) {
         this.constantSpeedInMetersPerSecond = constantSpeedInMetersPerSecond;
         distanceInMetersFromObserver = initialDistanceInMetersFromObserver;
     }
 
-    public long getDistanceSinceStart(Duration elapsedTimeSinceStart) {
+    public double getDistanceSinceStart(Duration elapsedTimeSinceStart) {
         assert !elapsedTimeSinceStart.isNegative();
 
         return distanceInMetersFromObserver + constantSpeedInMetersPerSecond * elapsedTimeSinceStart.toSeconds();

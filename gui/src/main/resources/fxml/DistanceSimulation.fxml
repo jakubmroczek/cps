@@ -42,8 +42,8 @@
             </javafx.scene.layout.HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="241.0">
                <children>
-                  <Label prefHeight="34.0" prefWidth="189.0" text="Prędkość śledzonego obiektu" />
-                  <TextField fx:id="timeUnitTextField1" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+                  <Label prefHeight="34.0" prefWidth="189.0" text="Prędkość śledzonego obiektu [m/s]" />
+                  <TextField fx:id="objectSpeedInMetersPerSecond" prefHeight="34.0" prefWidth="54.0" text="0.1" />
                </children>
             </HBox>
             <javafx.scene.layout.HBox prefHeight="33.0" prefWidth="242.0">

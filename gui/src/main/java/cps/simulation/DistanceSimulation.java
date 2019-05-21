@@ -2,14 +2,11 @@ package cps.simulation;
 
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 
-import cps.model.Signal;
 import javafx.scene.control.TextField;
 
 import java.time.Duration;
@@ -18,19 +15,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.min;
-
 public class DistanceSimulation {
 
     @FXML
     private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
 
     @FXML
-    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField, objectSpeedTextField;
+    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField, objectSpeedInMetersPerSecond;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
     private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
+
+    private double initialDistanceInMeters = 1.0;
+
+    private TrackedObject trackedObject;
 
     private Timer timer = new Timer();
     private Transmitter transmitter;
@@ -75,8 +74,6 @@ public class DistanceSimulation {
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         final int NUMBER_OF_PIXELS_IN_CHART = (int) transmittedSignalChart.getXAxis().getWidth();
-//        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART).forEach(x -> series.getData().
-//                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
         IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
         transmittedSignalChart.getData().add(series);
@@ -90,6 +87,9 @@ public class DistanceSimulation {
 //        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series.getData().
 //                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
 //        receivedSignalChart.getData().add(series2);
+
+        trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
+                getInitialDistanceInMeters());
 
         transmitter = new Transmitter(function, this::updateChart, timeUnit);
 
@@ -113,6 +113,7 @@ public class DistanceSimulation {
     }
 
     //TODO: Sprawdzic czy nie ma buga z czasem
+
     private Void updateChart(Duration duration, Double value) {
         var newSeries = shiftSeries(value);
 //        Platform.runLater(() -> {
@@ -123,7 +124,6 @@ public class DistanceSimulation {
         bufferedSeries = newSeries;
         return null;
     }
-
     @FXML
     public  void start() {
         loadCSS();
@@ -145,13 +145,13 @@ public class DistanceSimulation {
 
     //Cannot be done in initialize method, cause chart's do not have associated scene
     //Where it can be moved?
+
     private void loadCSS() {
         final String style = "/styles/DistanceSimulation.css";
 
         var scene = transmittedSignalChart.getScene();
         scene.getStylesheets().add(style);
     }
-
     @FXML
     public void initialize() {
         transmittedSignalChart.setAnimated(false);
@@ -173,7 +173,11 @@ public class DistanceSimulation {
     }
 
     //TODO: Encapsulate speed in object
-    private int getObjectSpeedInMetersPerSecond() {
-        return Integer.valueOf(objectSpeedTextField.getText());
+    private double getObjectSpeedInMetersPerSecond() {
+        return Double.valueOf(objectSpeedInMetersPerSecond.getText());
+    }
+
+    private double getInitialDistanceInMeters() {
+        return initialDistanceInMeters;
     }
 }
