@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="506.0" prefWidth="917.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.simulation.DistanceSimulation">
+<AnchorPane prefHeight="506.0" prefWidth="955.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.simulation.DistanceSimulation">
    <children>
       <VBox prefHeight="425.0" prefWidth="706.0">
          <children>
@@ -32,10 +32,16 @@
          </children>
       </VBox>
       <Button fx:id="startSimulationButton" layoutX="301.0" layoutY="445.0" mnemonicParsing="false" onAction="#start" text="Button" />
-      <javafx.scene.layout.HBox layoutX="706.0" layoutY="14.0" prefHeight="34.0" prefWidth="200.0">
+      <javafx.scene.layout.HBox layoutX="706.0" layoutY="14.0" prefHeight="34.0" prefWidth="241.0">
          <children>
-            <Label prefHeight="34.0" prefWidth="176.0" text="Jednostka symulacji [s]" />
-            <TextField fx:id="timeUnitTextField" prefHeight="60.0" prefWidth="125.0" text="0.5" />
+            <Label prefHeight="34.0" prefWidth="189.0" text="Jednostka symulacji [s]" />
+            <TextField fx:id="timeUnitTextField" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+         </children>
+      </javafx.scene.layout.HBox>
+      <javafx.scene.layout.HBox layoutX="706.0" layoutY="56.0" prefHeight="34.0" prefWidth="242.0">
+         <children>
+            <Label prefHeight="34.0" prefWidth="246.0" text="Okres sygnału sondującego [Hz]" />
+            <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="10" />
          </children>
       </javafx.scene.layout.HBox>
    </children>

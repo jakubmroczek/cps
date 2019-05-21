@@ -26,7 +26,7 @@ public class DistanceSimulation {
     private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
 
     @FXML
-    private TextField timeUnitTextField;
+    private TextField timeUnitTextField, probingSignalFrequencyTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
@@ -40,16 +40,6 @@ public class DistanceSimulation {
     private Duration timeUnit;
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
-//        var oldSeries = transmittedSignalChart.getData().get(0);
-//        XYChart.Series<Number, Number> newSeries = new XYChart.Series<>();
-//        for (int i = 1; i < oldSeries.getData().size(); i++) {
-//            newSeries.getData().add(oldSeries.getData().get(i));
-//        }
-//        var timePoint = (oldSeries.getData().size() -1) *1000;
-//        newSeries.getData().add(new XYChart.Data<>(timePoint, value));
-//        return newSeries;
-
-
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
         if (bufferedSeries.getData().isEmpty())
@@ -134,10 +124,17 @@ public class DistanceSimulation {
     public  void start() {
         loadCSS();
 
-        var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(2_000_000_000).initialTimeInNs(0).build();
+        var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(getProbingSignalPeriodInNs()).initialTimeInNs(0).build();
         var sineFunction = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, args);
 
-        Function<Duration, Double> wrapper = (Duration x) -> sineFunction.apply((double) x.toNanos());
+        var secondSignalArgs = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(getProbingSignalPeriodInNs() / 10).initialTimeInNs(0).build();
+        var secondSineFunction = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, secondSignalArgs);
+
+
+        Function<Duration, Double> wrapper = (Duration x) -> {
+            double timeInNanos = (double) x.toNanos();
+            return sineFunction.apply(timeInNanos) * secondSineFunction.apply(timeInNanos);
+        };
 
         startTransmittingSignal(wrapper);
     }
@@ -158,5 +155,12 @@ public class DistanceSimulation {
 
         receivedSignalChart.setAnimated(false);
         receivedSignalChart.setLegendVisible(false);
+    }
+
+    private double getProbingSignalPeriodInNs() {
+        double frequency = Double.valueOf(probingSignalFrequencyTextField.getText());
+        var period = 1.0 / frequency;
+        //TODO: Do not use magick numbers
+        return period * 1_000_000_000;
     }
 }
