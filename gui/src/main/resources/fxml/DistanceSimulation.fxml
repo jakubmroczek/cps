@@ -32,23 +32,33 @@
          </children>
       </VBox>
       <Button fx:id="startSimulationButton" layoutX="301.0" layoutY="445.0" mnemonicParsing="false" onAction="#start" text="Button" />
-      <javafx.scene.layout.HBox layoutX="706.0" layoutY="14.0" prefHeight="34.0" prefWidth="241.0">
+      <VBox layoutX="706.0" layoutY="14.0" prefHeight="233.0" prefWidth="242.0">
          <children>
-            <Label prefHeight="34.0" prefWidth="189.0" text="Jednostka symulacji [s]" />
-            <TextField fx:id="timeUnitTextField" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+            <javafx.scene.layout.HBox prefHeight="34.0" prefWidth="241.0">
+               <children>
+                  <Label prefHeight="34.0" prefWidth="189.0" text="Jednostka symulacji [s]" />
+                  <TextField fx:id="timeUnitTextField" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+               </children>
+            </javafx.scene.layout.HBox>
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="241.0">
+               <children>
+                  <Label prefHeight="34.0" prefWidth="189.0" text="Prędkość śledzonego obiektu" />
+                  <TextField fx:id="timeUnitTextField1" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+               </children>
+            </HBox>
+            <javafx.scene.layout.HBox prefHeight="33.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="34.0" prefWidth="246.0" text="Okres sygnału sondującego [Hz]" />
+                  <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="10" />
+               </children>
+            </javafx.scene.layout.HBox>
+            <HBox prefHeight="34.0" prefWidth="242.0">
+               <children>
+                  <Label prefHeight="34.0" prefWidth="246.0" text="Rozmiar bufora" />
+                  <TextField fx:id="bufferSizeTextField" prefHeight="34.0" prefWidth="112.0" text="100" />
+               </children>
+            </HBox>
          </children>
-      </javafx.scene.layout.HBox>
-      <javafx.scene.layout.HBox layoutX="706.0" layoutY="56.0" prefHeight="34.0" prefWidth="242.0">
-         <children>
-            <Label prefHeight="34.0" prefWidth="246.0" text="Okres sygnału sondującego [Hz]" />
-            <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="10" />
-         </children>
-      </javafx.scene.layout.HBox>
-      <HBox layoutX="705.0" layoutY="98.0" prefHeight="34.0" prefWidth="242.0">
-         <children>
-            <Label prefHeight="34.0" prefWidth="246.0" text="Rozmiar bufora" />
-            <TextField fx:id="bufferSizeTextField" prefHeight="34.0" prefWidth="112.0" text="100" />
-         </children>
-      </HBox>
+      </VBox>
    </children>
 </AnchorPane>

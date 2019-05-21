@@ -26,7 +26,7 @@ public class DistanceSimulation {
     private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
 
     @FXML
-    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField;
+    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField, objectSpeedTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
@@ -170,5 +170,10 @@ public class DistanceSimulation {
 
     private int getBufferSize() {
         return Integer.valueOf(bufferSizeTextField.getText());
+    }
+
+    //TODO: Encapsulate speed in object
+    private int getObjectSpeedInMetersPerSecond() {
+        return Integer.valueOf(objectSpeedTextField.getText());
     }
 }
