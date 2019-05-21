@@ -26,7 +26,7 @@ public class DistanceSimulation {
     private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
 
     @FXML
-    private TextField timeUnitTextField, probingSignalFrequencyTextField;
+    private TextField timeUnitTextField, probingSignalFrequencyTextField, bufferSizeTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
@@ -41,6 +41,7 @@ public class DistanceSimulation {
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
+
 
         if (bufferedSeries.getData().isEmpty())
         {
@@ -74,18 +75,21 @@ public class DistanceSimulation {
 
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         final int NUMBER_OF_PIXELS_IN_CHART = (int) transmittedSignalChart.getXAxis().getWidth();
-        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART).forEach(x -> series.getData().
+//        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART).forEach(x -> series.getData().
+//                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
+        IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
         transmittedSignalChart.getData().add(series);
 
         //TODO: Use only me
         bufferedSeries = series;
 
-        XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
-        final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
-        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series.getData().
-                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
-        receivedSignalChart.getData().add(series2);
+        //TODO: Uwaga bug! zmienia rozmiar popzredniej seri series
+//        XYChart.Series<Number, Number> series2 = new XYChart.Series<>();
+//        final int NUMBER_OF_PIXELS_IN_CHART2 = (int) receivedSignalChart.getXAxis().getWidth();
+//        IntStream.range(0, NUMBER_OF_PIXELS_IN_CHART2).forEach(x -> series.getData().
+//                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
+//        receivedSignalChart.getData().add(series2);
 
         transmitter = new Transmitter(function, this::updateChart, timeUnit);
 
@@ -162,5 +166,9 @@ public class DistanceSimulation {
         var period = 1.0 / frequency;
         //TODO: Do not use magick numbers
         return period * 1_000_000_000;
+    }
+
+    private int getBufferSize() {
+        return Integer.valueOf(bufferSizeTextField.getText());
     }
 }

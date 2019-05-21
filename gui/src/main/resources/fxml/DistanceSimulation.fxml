@@ -44,5 +44,11 @@
             <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="10" />
          </children>
       </javafx.scene.layout.HBox>
+      <HBox layoutX="705.0" layoutY="98.0" prefHeight="34.0" prefWidth="242.0">
+         <children>
+            <Label prefHeight="34.0" prefWidth="246.0" text="Rozmiar bufora" />
+            <TextField fx:id="bufferSizeTextField" prefHeight="34.0" prefWidth="112.0" text="100" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>
