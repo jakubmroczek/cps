@@ -41,8 +41,8 @@ public class DistanceSimulation {
 
     private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
 
-    private double initialDistanceInMeters = 10.0;
-    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(10.0);
+    private double initialDistanceInMeters = 100.0;
+    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(100.0);
 
     private TrackedObject trackedObject;
 
@@ -216,9 +216,18 @@ public class DistanceSimulation {
 
     private void listen(Duration duration) {
         // Przygotwanie danych dla drugiego wykresu
-         double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
-//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+//         double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
+        // Czy kolejny blad  czasem
+
+        double index = duration.toMillis() - ((2 * initialDistanceInMeters) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1000.0);
+
+        //TMP
+        index *= 100;
+
+        index /= (getProbingSignalPeriodInNs() / 1_000_000);
         index = min(index, samples.size() - 1);
+        index = max(0, index);
+        System.out.println(index);
 
         // Dlaczego puste
         if (index >= 0) {
