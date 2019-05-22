@@ -92,16 +92,16 @@ public class DistanceSimulation {
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
         transmittedSignalChart.getData().add(series);
 
-        //TODO: Use only me
         bufferedSeries = series;
 
         //TODO: Uwaga bug! zmienia rozmiar popzredniej seri series
-        XYChart.Series<Number, Number> receivedSignalQueue = new XYChart.Series<>();
+        XYChart.Series<Number, Number> receivedSignalSeries = new XYChart.Series<>();
         IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
-        receivedSignalChart.getData().add(receivedSignalQueue);
+        receivedSignalChart.getData().add(receivedSignalSeries);
 
-        //TODO: Fajny bylby obserwator z mapowaniem
+
+
         realDistanceInMetersTextField.textProperty().bind(realDistanceToTrackedObjectInMeters.asString());
 
         trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
@@ -149,30 +149,7 @@ public class DistanceSimulation {
 
         samples.add(value);
 
-        // Przygotwanie danych dla drugiego wykresu
-        System.out.println(duration.toMillis());
-//        double index = duration.toMillis() - ( (2 * trackedObject.getDistanceSinceStart(duration)) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1_000);
-//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
-
-        double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
-//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
-
-
-        index = min(index, samples.size() - 1);
-
-        if (index >= 0) {
-            int i = (int)index - 99;
-            i = max(0, i);
-
-            XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
-            // O jezu zrefaktoryzuj to
-            for (int j = 0; i <= (int) index; i++, j++) {
-                receivedSeries.getData().add(new XYChart.Data<>(j * timeUnit.toMillis(),
-                        samples.get(i)));
-            }
-
-            receivedSignaSeriesQueue.add(receivedSeries);
-        }
+        listen(duration);
 
         return null;
     }
@@ -234,5 +211,28 @@ public class DistanceSimulation {
 
     private double getRealDistanceToTrackedObjectInMeters() {
         return realDistanceToTrackedObjectInMeters.get();
+    }
+
+    private void listen(Duration duration) {
+        // Przygotwanie danych dla drugiego wykresu
+         double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
+//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+        index = min(index, samples.size() - 1);
+
+        // Dlaczego puste
+        if (index >= 0 && !receivedSignalChart.getData().isEmpty()) {
+            // Dodaj to jako bufor
+            XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
+
+
+            var oldReceivedSeries = receivedSignalChart.getData().get(0).getData();
+            IntStream.range(1, getBufferSize()).forEach(x -> receivedSeries.getData().add(
+                    new XYChart.Data<>(x * timeUnit.toMillis(), oldReceivedSeries.get(x).getYValue())
+            ));
+
+            receivedSeries.getData().add(new XYChart.Data((getBufferSize() - 1) * timeUnit.toMillis(), samples.get((int) index)));
+
+            receivedSignaSeriesQueue.add(receivedSeries);
+        }
     }
 }
