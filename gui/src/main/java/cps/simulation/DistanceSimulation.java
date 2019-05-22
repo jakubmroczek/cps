@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class DistanceSimulation {
@@ -40,7 +41,8 @@ public class DistanceSimulation {
 
     private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
 
-    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
+    private double initialDistanceInMeters = 10.0;
+    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(10.0);
 
     private TrackedObject trackedObject;
 
@@ -149,15 +151,23 @@ public class DistanceSimulation {
 
         // Przygotwanie danych dla drugiego wykresu
         System.out.println(duration.toMillis());
-        double index = duration.toMillis() - ( (2 * trackedObject.getDistanceSinceStart(duration)) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1_000);
-        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+//        double index = duration.toMillis() - ( (2 * trackedObject.getDistanceSinceStart(duration)) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1_000);
+//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+
+        double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
+//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+
 
         index = min(index, samples.size() - 1);
 
         if (index >= 0) {
+            int i = (int)index - 99;
+            i = max(0, i);
+
             XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
-            for (int i = 0; i < (int) index; i++) {
-                receivedSeries.getData().add(new XYChart.Data<>(i * timeUnit.toMillis(),
+            // O jezu zrefaktoryzuj to
+            for (int j = 0; i <= (int) index; i++, j++) {
+                receivedSeries.getData().add(new XYChart.Data<>(j * timeUnit.toMillis(),
                         samples.get(i)));
             }
 
