@@ -52,6 +52,7 @@ public class DistanceSimulation {
     private AnimationTimer animationTimer;
 
     private Duration timeUnit;
+    private XYChart.Series<Number, Number> bufferReceivedSignalSeries = new XYChart.Series<>();
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -94,18 +95,18 @@ public class DistanceSimulation {
 
         bufferedSeries = series;
 
-        //TODO: Uwaga bug! zmienia rozmiar popzredniej seri series
-        XYChart.Series<Number, Number> receivedSignalSeries = new XYChart.Series<>();
-        IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
+        XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
+        IntStream.range(0, getBufferSize()).forEach(x -> receivedSeries.getData().
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
-        receivedSignalChart.getData().add(receivedSignalSeries);
+        receivedSignalChart.getData().add(receivedSeries);
 
-
+        bufferReceivedSignalSeries = receivedSeries;
 
         realDistanceInMetersTextField.textProperty().bind(realDistanceToTrackedObjectInMeters.asString());
 
         trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
                 getRealDistanceToTrackedObjectInMeters());
+
 
         // Obsluga wiekszych od 1
         var seconds = Duration.ofSeconds(1).dividedBy(timeUnit);
@@ -220,17 +221,21 @@ public class DistanceSimulation {
         index = min(index, samples.size() - 1);
 
         // Dlaczego puste
-        if (index >= 0 && !receivedSignalChart.getData().isEmpty()) {
-            // Dodaj to jako bufor
+        if (index >= 0) {
             XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
 
+            if (bufferReceivedSignalSeries.getData().isEmpty())
+            {
+                return;
+            }
 
-            var oldReceivedSeries = receivedSignalChart.getData().get(0).getData();
             IntStream.range(1, getBufferSize()).forEach(x -> receivedSeries.getData().add(
-                    new XYChart.Data<>(x * timeUnit.toMillis(), oldReceivedSeries.get(x).getYValue())
+                    new XYChart.Data<>(x * timeUnit.toMillis(), bufferReceivedSignalSeries.getData().get(x).getYValue())
             ));
 
             receivedSeries.getData().add(new XYChart.Data((getBufferSize() - 1) * timeUnit.toMillis(), samples.get((int) index)));
+
+            bufferReceivedSignalSeries = receivedSeries;
 
             receivedSignaSeriesQueue.add(receivedSeries);
         }
