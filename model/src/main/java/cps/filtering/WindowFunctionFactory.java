@@ -5,6 +5,7 @@ import static java.lang.Math.cos;
 
 public class WindowFunctionFactory {
 
+    public static final String RECTANGUIAR_WINDOW = "RECTANGULAR_WINDOW";
     public static final String HAMMING_WINDOW = "HAMMING_WINDOW";
     public static final String HANNING_WINDOW = "HANNING_WINDOW";
     public static final String BLACKMAN_WINDOW = "BLACKMAN_WINDOW";
@@ -12,6 +13,9 @@ public class WindowFunctionFactory {
     public static WindowFunction create(String windowFunction) {
         switch (windowFunction)
         {
+            case RECTANGUIAR_WINDOW:
+                return createRectangularWindow();
+
             case HAMMING_WINDOW:
                 return createHammingWindow();
 
@@ -26,6 +30,10 @@ public class WindowFunctionFactory {
                         windowFunction + " does not exist");
         }
 
+    }
+
+    private static WindowFunction createRectangularWindow() {
+        return (n, M) -> 1.0;
     }
 
     private static WindowFunction createHammingWindow() {
