@@ -5,8 +5,7 @@ import sun.misc.Signal;
 
 import java.util.List;
 
-@Builder
-public class FRFilter {
+public abstract class FRFilter {
 
     private int M;
     private double frequency;
@@ -17,4 +16,8 @@ public class FRFilter {
         return null;
     }
 
+    //TODO: Jakie konkretne argumenty
+    protected abstract double modulate(double sample);
+
+    protected abstract double getK(final double sampleFrequency, final double frequency);
 }

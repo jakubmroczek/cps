@@ -1,7 +1,7 @@
 .chart .chart-series-line {
-    -fx-stroke-width: 1px;
-    -fx-stroke: red;
-}
+     -fx-stroke-width: 1px;
+     -fx-stroke: red;
+ }
 
 .chart .chart-series-line {
     -fx-stroke: transparent;
