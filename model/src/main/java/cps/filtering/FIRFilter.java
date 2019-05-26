@@ -10,7 +10,7 @@ import java.util.List;
 import static cps.util.Conversions.toFrequency;
 import static java.lang.Math.sin;
 
-public abstract class FRFilter {
+public abstract class FIRFilter {
 
     private int M;
     private double frequency;
@@ -35,7 +35,7 @@ public abstract class FRFilter {
             newValues.add(newSample);
         }
 
-        Signal filterH = new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues)
+        Signal filterH = new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues);
         Signal convolution = Filters.convolute(filterH, signal);
 
         List<Double> newConvolutionValues = new ArrayList<>();
@@ -43,7 +43,7 @@ public abstract class FRFilter {
         var size = convolution.getSamples().size() - M + 1;
 
         for (int i = 0; i < size; i++) {
-            newConvolutionValues.add(convolution.getSamples().get(i + (M - 1) / 2);
+            newConvolutionValues.add(convolution.getSamples().get(i + (M - 1) / 2));
         }
 
         ArrayList<Signal> res = new ArrayList<>();

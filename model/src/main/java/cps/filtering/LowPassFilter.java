@@ -1,6 +1,6 @@
 package cps.filtering;
 
-public class LowPassFilter extends FRFilter {
+public class LowPassFilter extends FIRFilter {
     @Override
     protected double modulate(int index) {
         return 1.0;
