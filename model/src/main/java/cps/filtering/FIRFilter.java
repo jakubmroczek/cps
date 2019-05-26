@@ -14,23 +14,7 @@ public abstract class FIRFilter {
 
     // TODO: The last three arguments are not elegant, maybe a DTO should be introduced
     public List<Signal> filter(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
-        double signalSamplingFrequency = toFrequency(signal.getSamplingPeriod());
-        final int K = getK(signalSamplingFrequency, frequency);
 
-        List<Double> newValues = new ArrayList<>();
-        for (int i = 0; i < M; i++) {
-            double newSample = 0.0;
-
-            if (i == (M - 1) / 2) {
-                newSample = 2.0 / K;
-            } else {
-                newSample = sin((2.0 * Math.PI * (i - (M - 1) / 2)) / K) / (Math.PI * (i - (M - 1) / 2));
-            }
-            newSample *= windowFunction.apply(i, M);
-            newSample *= modulate(i - (M - 1) / 2);
-
-            newValues.add(newSample);
-        }
 
         Signal filterH = new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues);
         Signal convolution = Filters.convolute(filterH, signal);
@@ -52,6 +36,28 @@ public abstract class FIRFilter {
         res.add(filteredSignal);
 
         return res;
+    }
+
+    private Signal createFilterImpulseResponse(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
+        double signalSamplingFrequency = toFrequency(signal.getSamplingPeriod());
+        final int K = getK(signalSamplingFrequency, frequency);
+
+        List<Double> newValues = new ArrayList<>();
+        for (int i = 0; i < M; i++) {
+            double newSample = 0.0;
+
+            if (i == (M - 1) / 2) {
+                newSample = 2.0 / K;
+            } else {
+                newSample = sin((2.0 * Math.PI * (i - (M - 1) / 2)) / K) / (Math.PI * (i - (M - 1) / 2));
+            }
+            newSample *= windowFunction.apply(i, M);
+            newSample *= modulate(i - (M - 1) / 2);
+
+            newValues.add(newSample);
+        }
+
+        return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
     protected abstract double modulate(int index);
