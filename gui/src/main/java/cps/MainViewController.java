@@ -29,6 +29,16 @@ import static java.lang.Math.min;
 public class MainViewController {
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute");
+    public static final ObservableList<String> FILTER_TYPES = FXCollections.observableArrayList("Low pas",
+            "Band pass",
+            "High pass");
+    public static final ObservableList<String> WINDOW_TYPES = FXCollections.observableArrayList(
+            "Rectangle",
+            "Hamming",
+            "Hanning",
+            "Blackman"
+    );
+
     private Stage stage;
 
     private Signal signal, sampledSignal, quantizedSignal, interpolatedSignal, reconstructedSignal;
@@ -424,9 +434,8 @@ public class MainViewController {
 
     @FXML
     public void initialize() {
-        //Combo box
-        signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
-        signalOperationList.setValue(AVAILABLE_SIGNAL_OPERATIONS.get(0));
+        initializeAllComboBox();
+
         // We need to hide duration and sampling frequency fields in extraSignalChooser from the client,
         // because those values will be provided by querying basicSignalChooser.
         removeDurationAndSamplingFrequencyFieldsFromExtraSignalChooser();
@@ -442,6 +451,17 @@ public class MainViewController {
         //Reareane layout
         basicSignalChooser.onSignalChosen();
         extraSignalChooser.onSignalChosen();
+    }
+
+    private void initializeAllComboBox() {
+        initializeComboBox(signalOperationList, AVAILABLE_SIGNAL_OPERATIONS);
+        initializeComboBox(filterTypeComboBox, FILTER_TYPES);
+        initializeComboBox(windowTypeComboBox, WINDOW_TYPES);
+    }
+
+    private void initializeComboBox(ComboBox comboBox, ObservableList<String> content) {
+        comboBox.getItems().addAll(content);
+        comboBox.setValue(content.get(0));
     }
 
     //Moze byc tylko wykonywane na watku GUI (wewnatrz metody z annotacja @FXML lub Platform.runLater), w przeciwnym razie crashe
