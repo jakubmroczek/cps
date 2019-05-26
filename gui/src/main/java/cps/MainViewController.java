@@ -35,18 +35,38 @@ public class MainViewController {
 
     private Histogram histogram;
 
-    @FXML private LineChart<Number, Number> chart;
-    @FXML private ComboBox signalOperationList;
-    @FXML private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
-    @FXML private TextField samplingValue, bitsValue, interpolationFrequencyTextField, probesValue, sincFq;
-    @FXML private Label mseLabel, snrLabel, psnrLabel, mdLabel, enobLabel;
-    @FXML private BarChart<Number, Number> histogramChart;
-    @FXML private Slider histogramBinsSlider;
-    @FXML private SignalChooser basicSignalChooser, extraSignalChooser;
+    @FXML
+    private LineChart<Number, Number> chart;
+    @FXML
+    private ComboBox signalOperationList, filterTypeComboBox, windowTypeComboBox;
+    @FXML
+    private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
+    @FXML
+    private TextField samplingValue,
+            bitsValue,
+            interpolationFrequencyTextField,
+            probesValue,
+            sincFq,
+            mTextField,
+            foTextField;
+    @FXML
+    private Label mseLabel, snrLabel, psnrLabel, mdLabel, enobLabel;
+    @FXML
+    private BarChart<Number, Number> histogramChart;
+    @FXML
+    private Slider histogramBinsSlider;
+    @FXML
+    private SignalChooser basicSignalChooser, extraSignalChooser;
 
     private int histogramBins = 10;
 
-    @FXML public void sample() {
+    @FXML
+    public void filter() {
+        throw new UnsupportedOperationException("not implemneted");
+    }
+
+    @FXML
+    public void sample() {
         double samplingFrequencyInHz = Double.valueOf(samplingValue.getText());
         Duration samplingPeriodInNs = Duration.ofNanos((long) ((1.0 / samplingFrequencyInHz) * 1_000_000_000));
 
@@ -63,7 +83,8 @@ public class MainViewController {
         clearSignalMeasurements();
     }
 
-    @FXML public void quantize(){
+    @FXML
+    public void quantize() {
         int bits = Integer.valueOf(bitsValue.getText());
 
         quantizedSignal = Quantizer.quantize(sampledSignal, bits);
@@ -78,7 +99,8 @@ public class MainViewController {
         displaySignalsError(quantizedSignal, sampledSignal);
     }
 
-    @FXML public void interpolate(){
+    @FXML
+    public void interpolate() {
         double interpolationFrequencyInHz = Double.valueOf(interpolationFrequencyTextField.getText());
         Duration interpolationPeriodInNs = Duration.ofNanos((long) ((1.0 / interpolationFrequencyInHz) * 1_000_000_000));
 
@@ -94,7 +116,9 @@ public class MainViewController {
         clearSignalMeasurements();
         drawHistogram(interpolatedSignal);
     }
-    @FXML public void sinc(){
+
+    @FXML
+    public void sinc() {
         int probes = Integer.valueOf(probesValue.getText());
 
         double freqInHz = Double.valueOf(sincFq.getText());
@@ -110,7 +134,8 @@ public class MainViewController {
         clearSignalMeasurements();
     }
 
-    @FXML public void display() {
+    @FXML
+    public void display() {
         try {
             setCssSingleSignal(bitsValue.getScene());
             Function<Double, Double> function = basicSignalChooser.creatFunction();
@@ -189,7 +214,7 @@ public class MainViewController {
             series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
         }
 
-        if(clearChart) chart.getData().clear();
+        if (clearChart) chart.getData().clear();
         chart.getData().add(series);
     }
 
@@ -216,7 +241,8 @@ public class MainViewController {
         chart.getData().add(series);
     }
 
-    @FXML private void saveToFile() {
+    @FXML
+    private void saveToFile() {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON File", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
 
@@ -239,7 +265,8 @@ public class MainViewController {
         }
     }
 
-    @FXML public void loadSignal() {
+    @FXML
+    public void loadSignal() {
         try {
             signal = loadFromFile();
 
@@ -285,48 +312,53 @@ public class MainViewController {
         }
     }
 
-    @FXML void add() {
+    @FXML
+    void add() {
         loadSignalsAndApplyOperator(SignalOperations::add);
     }
 
-    @FXML void subtract() {
+    @FXML
+    void subtract() {
         loadSignalsAndApplyOperator(SignalOperations::subtract);
     }
 
-    @FXML void multiply() {
+    @FXML
+    void multiply() {
         loadSignalsAndApplyOperator(SignalOperations::multiply);
     }
 
-    @FXML void divide() {
+    @FXML
+    void divide() {
         loadSignalsAndApplyOperator(SignalOperations::divide);
     }
 
     private void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
-                try {
-                    Signal lhs = loadFromFile();
-                    Signal rhs = loadFromFile();
-                    signal = operator.apply(lhs, rhs);
+        try {
+            Signal lhs = loadFromFile();
+            Signal rhs = loadFromFile();
+            signal = operator.apply(lhs, rhs);
 
-                    if (signal.getType() == Signal.Type.CONTINUOUS) {
-                        setCssContinous(bitsValue.getScene());
-                    } else {
-                        setCssDiscrete(bitsValue.getScene());
-                    }
+            if (signal.getType() == Signal.Type.CONTINUOUS) {
+                setCssContinous(bitsValue.getScene());
+            } else {
+                setCssDiscrete(bitsValue.getScene());
+            }
 
-                    plotSignal(signal, true);
-                    drawHistogram(signal);
-                    //TODO: We do not have info about function so we must use for the discrete signal or maybe
-                    //TODO: Or functions can be merged together
-                    SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
-                    displaySignalMeasurement(signalMeasurement);
+            plotSignal(signal, true);
+            drawHistogram(signal);
+            //TODO: We do not have info about function so we must use for the discrete signal or maybe
+            //TODO: Or functions can be merged together
+            SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
+            displaySignalMeasurement(signalMeasurement);
 
-                    basicSignalChooser.displaySignal(signal, "Zaladowane z pliku");
-                } catch (IOException e) {
-                    onSignalCreationException(e);
-                }
+            basicSignalChooser.displaySignal(signal, "Zaladowane z pliku");
+        } catch (IOException e) {
+            onSignalCreationException(e);
+        }
     }
 
-    @FXML public void onExecuteButton() {
+    @FXML
+    public void onExecuteButton() {
         String operation = (String) signalOperationList.getSelectionModel().getSelectedItem();
         BiFunction<Signal, Signal, Signal> operator;
 
@@ -390,7 +422,8 @@ public class MainViewController {
         }
     }
 
-    @FXML public void initialize() {
+    @FXML
+    public void initialize() {
         //Combo box
         signalOperationList.getItems().addAll(AVAILABLE_SIGNAL_OPERATIONS);
         signalOperationList.setValue(AVAILABLE_SIGNAL_OPERATIONS.get(0));
@@ -430,7 +463,8 @@ public class MainViewController {
         histogramChart.getData().add(series1);
     }
 
-    @FXML public void onHistogramBinsChanged() {
+    @FXML
+    public void onHistogramBinsChanged() {
         int newHistogramBins = (int) histogramBinsSlider.getValue();
         if (newHistogramBins != histogramBins) {
             histogramBins = newHistogramBins;
@@ -477,32 +511,32 @@ public class MainViewController {
         effectivePowerValueLabel.setText(String.format("%.2f", signalMeasurement.getEffectivePower()));
     }
 
-    private void displaySignalsError(Signal s1, Signal s2){
-        mseLabel.setText(String.format("%.2f", Error.mse(s1,s2)));
-        snrLabel.setText(String.format("%.2f", Error.snr(s1,s2)));
-        psnrLabel.setText(String.format("%.2f", Error.psnr(s1,s2)));
-        mdLabel.setText(String.format("%.2f", Error.md(s1,s2)));
-        enobLabel.setText(String.format("%.2f", Error.enob(s1,s2)));
+    private void displaySignalsError(Signal s1, Signal s2) {
+        mseLabel.setText(String.format("%.2f", Error.mse(s1, s2)));
+        snrLabel.setText(String.format("%.2f", Error.snr(s1, s2)));
+        psnrLabel.setText(String.format("%.2f", Error.psnr(s1, s2)));
+        mdLabel.setText(String.format("%.2f", Error.md(s1, s2)));
+        enobLabel.setText(String.format("%.2f", Error.enob(s1, s2)));
     }
 
-    private final String cssSingleSignal="/styles/chartSingleSignal.css";
-    private final String cssSamplingSignal="/styles/chartSampling.css";
-    private final String cssLineSignals="/styles/chartLineSignals.css";
+    private final String cssSingleSignal = "/styles/chartSingleSignal.css";
+    private final String cssSamplingSignal = "/styles/chartSampling.css";
+    private final String cssLineSignals = "/styles/chartLineSignals.css";
     private final String cssInterpolation = "/styles/interpolation.css";
     private final String cssDiscrete = "/styles/discrete.css";
     private final String cssContinous = "/styles/continous.css";
 
-    private void setCssSingleSignal(Scene scene){
+    private void setCssSingleSignal(Scene scene) {
         removeChartCss(scene);
         scene.getStylesheets().add(cssSingleSignal);
     }
 
-    private void setCssSamplingSignal(Scene scene){
+    private void setCssSamplingSignal(Scene scene) {
         removeChartCss(scene);
         scene.getStylesheets().add(cssSamplingSignal);
     }
 
-    private void setCssLineSignals(Scene scene){
+    private void setCssLineSignals(Scene scene) {
         removeChartCss(scene);
         scene.getStylesheets().add(cssLineSignals);
     }
@@ -522,7 +556,7 @@ public class MainViewController {
         scene.getStylesheets().add(cssDiscrete);
     }
 
-    private void removeChartCss(Scene scene){
+    private void removeChartCss(Scene scene) {
         scene.getStylesheets().remove(cssSingleSignal);
         scene.getStylesheets().remove(cssSamplingSignal);
         scene.getStylesheets().remove(cssLineSignals);

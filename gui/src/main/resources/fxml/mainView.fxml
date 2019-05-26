@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--<?import cps.SignalChooser?>-->
+<?import cps.SignalChooser?>
 
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
 <AnchorPane prefHeight="713.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
@@ -74,8 +75,8 @@
         </VBox>
         <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
         <Button fx:id="displayButton" layoutX="685.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
-        <!--<SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />-->
-        <!--<SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />-->
+        <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+        <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
         <Button fx:id="executeButton" layoutX="787.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="30.0" prefWidth="80.0" text="Funkcja" />
         <Button fx:id="saveButton" layoutX="684.0" layoutY="11.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
         <Button fx:id="multiplyButton" layoutX="787.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#divide" prefHeight="30.0" prefWidth="80.0" text="/" />
@@ -150,5 +151,31 @@
             </children>
         </VBox>
       <Button layoutX="779.0" layoutY="462.0" mnemonicParsing="false" onAction="#loadDistanceSimulation" text="Symulacja korelacyjnego czujnika odległości" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="4.0" layoutX="693.0" layoutY="496.0" stroke="BLACK" strokeType="INSIDE" width="409.0" />
+      <javafx.scene.layout.HBox layoutX="690.0" layoutY="514.0" prefHeight="34.0" prefWidth="200.0" />
+      <HBox layoutX="690.0" layoutY="548.0" prefHeight="34.0" prefWidth="200.0" />
+      <VBox layoutX="693.0" layoutY="514.0" prefHeight="84.0" prefWidth="200.0">
+         <children>
+            <ComboBox fx:id="filterTypeComboBox" prefHeight="26.0" prefWidth="203.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="2.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <ComboBox fx:id="windowTypeComboBox" layoutX="10.0" layoutY="10.0" prefHeight="26.0" prefWidth="203.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="2.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <HBox prefHeight="25.0" prefWidth="200.0">
+               <children>
+                  <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="107.0" text="M" />
+                  <TextField fx:id="mTextField" prefHeight="26.0" prefWidth="93.0" text="5" />
+               </children>
+            </HBox>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="67.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="200.0">
+               <children>
+                  <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="26.0" prefWidth="107.0" text="Fo" />
+                  <TextField fx:id="foTextField" prefHeight="26.0" prefWidth="93.0" text="5" />
+               </children>
+            </HBox>
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="98.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#filter" prefHeight="31.0" prefWidth="198.0" text="Filtruj" />
+         </children>
+      </VBox>
     </children>
 </AnchorPane>
