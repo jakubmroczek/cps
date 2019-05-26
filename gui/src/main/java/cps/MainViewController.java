@@ -21,23 +21,32 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
+
+import cps.filtering.*;
 
 public class MainViewController {
 
     public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute");
+
     public static final ObservableList<String> FILTER_TYPES = FXCollections.observableArrayList("Low pas",
             "Band pass",
             "High pass");
+
     public static final ObservableList<String> WINDOW_TYPES = FXCollections.observableArrayList(
             "Rectangle",
             "Hamming",
             "Hanning",
             "Blackman"
     );
+
+    public static final Map<String, String> WINDOW_TYPES_TO_FACTORY_MAP = new HashMap<>();
 
     private Stage stage;
 
@@ -72,7 +81,63 @@ public class MainViewController {
 
     @FXML
     public void filter() {
-        throw new UnsupportedOperationException("not implemneted");
+        try {
+            final int filterM = getFilterM();
+            final double filterFrequency =  getFilterFrequency();
+            final  WindowFunction filterWindowFunction = getFilterWindowFunction();
+            final Signal signal = getFilteredSignal();
+
+            FIRFilter filter = createFIRFilter();
+            var signals = filter.filter(signal, filterM, filterFrequency, filterWindowFunction);
+
+            var filteredSignal = signals.get(1);
+
+            //TODO: Maybe it shoudl be a different function?
+            //TODO: Maybe more charts wil be plotted
+            plotSignal(filteredSignal, true);
+
+        } catch (IllegalArgumentException e ) {
+            //TODO: Generalize this method, it handles all exception not only thrown during signal creation
+            onSignalCreationException(e);
+        }
+    }
+
+    private FIRFilter createFIRFilter() throws IllegalArgumentException {
+        //TODO: Maybe add map for an ellegance, because right now i am too lay to do that
+        String type = (String) filterTypeComboBox.getSelectionModel().getSelectedItem();
+        FIRFilter firFilter = null;
+
+        if (type.equals(FILTER_TYPES.get(0))) {
+            firFilter = new LowPassFilter();
+        } else if (type.equals(FILTER_TYPES.get(1))) {
+            firFilter = new BandpassFilter();
+        } else if (type.equals(FILTER_TYPES.get(2))) {
+            firFilter = new HighPassFilter();
+        } else {
+            throw new IllegalArgumentException("Provided FIRFilter type is not supported " + type);
+        }
+
+        return firFilter;
+    }
+
+    private Signal getFilteredSignal() {
+        return signal;
+    }
+
+    private WindowFunction getFilterWindowFunction() {
+        String type = (String) windowTypeComboBox.getSelectionModel().getSelectedItem();
+        String correspondingNameInFactory = WINDOW_TYPES_TO_FACTORY_MAP.get(type);
+        return WindowFunctionFactory.create(correspondingNameInFactory);
+    }
+
+    private double getFilterFrequency() throws IllegalArgumentException {
+        var frequency = foTextField.getText();
+        return Double.parseDouble(frequency);
+    }
+
+    private int getFilterM() throws IllegalArgumentException{
+        var m = mTextField.getText();
+        return Integer.parseInt(m);
     }
 
     @FXML
@@ -451,6 +516,12 @@ public class MainViewController {
         //Reareane layout
         basicSignalChooser.onSignalChosen();
         extraSignalChooser.onSignalChosen();
+
+        // Maps
+        WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(0), WindowFunctionFactory.RECTANGUIAR_WINDOW);
+        WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(1), WindowFunctionFactory.HAMMING_WINDOW);
+        WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(2), WindowFunctionFactory.HANNING_WINDOW);
+        WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(3), WindowFunctionFactory.BLACKMAN_WINDOW);
     }
 
     private void initializeAllComboBox() {
