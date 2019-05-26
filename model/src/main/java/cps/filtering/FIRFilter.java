@@ -12,11 +12,8 @@ import static java.lang.Math.sin;
 
 public abstract class FIRFilter {
 
-    private int M;
-    private double frequency;
-    private WindowFunction windowFunction;
-
-    public List<Signal> filter(final Signal signal) {
+    // TODO: The last three arguments are not elegant, maybe a DTO should be introduced
+    public List<Signal> filter(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
         double signalSamplingFrequency = toFrequency(signal.getSamplingPeriod());
         final int K = getK(signalSamplingFrequency, frequency);
 
