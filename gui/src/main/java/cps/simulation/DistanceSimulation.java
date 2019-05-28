@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
@@ -56,6 +57,8 @@ public class DistanceSimulation {
     private AnimationTimer animationTimer;
 
     private Duration timeUnit;
+    private Duration reportPeriod;
+    private Duration previousUpdateTime;
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -171,10 +174,25 @@ public class DistanceSimulation {
     }
 
     private void tryCalculateDistanceByCorrelation(Duration duration) {
-        var series = new XYChart.Series<Number, Number>();
-        IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
-                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), x)));
-        correlationChartSeriesQueue.add(series);
+        if (isDistanceUpdateTime()) {
+            int value = new Random().nextInt(20);
+            var series = new XYChart.Series<Number, Number>();
+            IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
+                    add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), value)));
+            correlationChartSeriesQueue.add(series);
+        }
+    }
+
+    private boolean isDistanceUpdateTime() {
+        //TODO: Not good idea cause using system calls slows down a lot i guess
+        Duration now = Duration.ofMillis(System.currentTimeMillis());
+
+        if (now.minus(previousUpdateTime).compareTo(reportPeriod) > 0) {
+            previousUpdateTime = now;
+            return true;
+        }
+
+        return false;
     }
 
     @FXML
@@ -192,6 +210,10 @@ public class DistanceSimulation {
             double timeInNanos = (double) x.toNanos();
             return sineFunction.apply(timeInNanos) * secondSineFunction.apply(timeInNanos);
         };
+
+        // Intializing vairables!!
+        reportPeriod = getReportPeriodInTextField();
+        previousUpdateTime = Duration.ofMillis(System.currentTimeMillis());
 
         startTransmittingSignal(wrapper);
     }
