@@ -61,5 +61,16 @@ public class Filters {
         return new Signal(lhs.getType(), duration, lhs.getSamplingPeriod(), newValues);
     }
 
+    public static Signal correlateByConvolution(Signal lhs, Signal rhs) {
+        return reverse(convolute(lhs, reverse(rhs)));
+    }
 
+    private static Signal reverse(Signal signal) {
+        var list = signal.getSamples();
+        var result = new ArrayList<Double>();
+        for (int i = list.size() - 1; i>= 0; i--) {
+            result.add(list.get(i));
+        }
+        return new Signal(signal.getType(), signal.getDurationInNs(), signal.getSamplingPeriod(), result);
+    }
 }

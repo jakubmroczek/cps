@@ -38,7 +38,8 @@ public class MainViewController {
             "*",
             "/",
             "Splot"
-            , "Korelacja");
+            , "Korelacja",
+            "Korelacja przez splot");
 
     public static final ObservableList<String> FILTER_TYPES = FXCollections.observableArrayList("Low pas",
             "Band pass",
@@ -469,6 +470,10 @@ public class MainViewController {
 
             case "Korelacja":
                 operator = Filters::correlate;
+                break;
+
+            case "Korelacja przez splot":
+                operator = Filters::correlateByConvolution;
                 break;
 
             default:
