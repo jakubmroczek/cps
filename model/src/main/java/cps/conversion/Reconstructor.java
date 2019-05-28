@@ -71,22 +71,13 @@ public class Reconstructor {
         int leftIndex = (int) floor(ratio);
         int rightIndex = (int) ceil(ratio);
 
-        System.out.println("Przed mapowaniem");
-
-        System.out.println("L = " + leftIndex);
-
         // Shifting samples
         leftIndex -= (maxProbes - 1);
         leftIndex = max(leftIndex, 0);
-//
-//        System.out.println("R = " + rightIndex);
-//
+
         rightIndex += (maxProbes - 1);
         rightIndex = min(rightIndex, signal.getSamples().size() - 1);
 
-        System.out.println("Po mapowaniu");
-
-        System.out.println("L = " + leftIndex + "; R = " + rightIndex + "; Point = " + x + "; maxProbes = " + maxProbes);
         for (int i = leftIndex; i <= rightIndex; i++) {
             sum += signal.getSamples().get(i) * sinc(ratio - i);
         }

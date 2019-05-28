@@ -65,7 +65,7 @@ public class SignalChooser extends VBox {
         initializeLayout();
 
         //Default value
-        signalList.setValue(AVAILABLE_SIGNALS.get(3));
+        signalList.setValue(AVAILABLE_SIGNALS.get(2));
 
     }
 
