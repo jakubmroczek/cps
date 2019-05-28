@@ -78,6 +78,7 @@ public class MainViewController {
     private SignalChooser basicSignalChooser, extraSignalChooser;
 
     private int histogramBins = 10;
+    private Signal filteredSignal;
 
     @FXML
     public void filter() {
@@ -90,11 +91,17 @@ public class MainViewController {
             FIRFilter filter = createFIRFilter();
             var signals = filter.filter(signal, filterM, filterFrequency, filterWindowFunction);
 
-            var filteredSignal = signals.get(1);
+            filteredSignal = signals.get(1);
 
             //TODO: Maybe it shoudl be a different function?
             //TODO: Maybe more charts wil be plotted
-            plotSignal(filteredSignal, true);
+            // Checking if was previously generated
+            if (chart.getData().size() == 2) {
+                chart.getData().clear();
+                plotSignal(signal, false);
+            }
+
+            plotSignal(filteredSignal, false);
 
         } catch (IllegalArgumentException e ) {
             //TODO: Generalize this method, it handles all exception not only thrown during signal creation

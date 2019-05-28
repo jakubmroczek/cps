@@ -177,16 +177,16 @@ public class SignalChooser extends VBox {
 
     private void initializeSignalParameters() {
         amplitudeSignalParameter.getParameterName().setText("Amplituda: ");
-        amplitudeSignalParameter.getParameterValue().setText("10.0");
+        amplitudeSignalParameter.getParameterValue().setText("1.0");
 
         periodSignalParameter.getParameterName().setText("Okres: ");
-        periodSignalParameter.getParameterValue().setText("1");
+        periodSignalParameter.getParameterValue().setText("0.05");
 
         t1SignalParameter.getParameterName().setText("t1: ");
         t1SignalParameter.getParameterValue().setText("0");
 
         durationSignalParameter.getParameterName().setText("Czas: ");
-        durationSignalParameter.getParameterValue().setText("1");
+        durationSignalParameter.getParameterValue().setText("0.1");
 
         kwSignalParameter.getParameterName().setText("kw: ");
         kwSignalParameter.getParameterValue().setText("0.5");
@@ -195,7 +195,7 @@ public class SignalChooser extends VBox {
         nsSignalParameter.getParameterValue().setText("5");
 
         samplingFrequencySignalParameter.getParameterName().setText("Czs. prb [Hz]");
-        samplingFrequencySignalParameter.getParameterValue().setText("400");
+        samplingFrequencySignalParameter.getParameterValue().setText("1200");
 
         probabilitySignalParameter.getParameterName().setText("Prawd.");
         probabilitySignalParameter.getParameterValue().setText("0.5");
