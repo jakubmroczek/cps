@@ -27,14 +27,16 @@ public class DistanceSimulation {
     private List<Double> samples = new ArrayList();
 
     @FXML
-    private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart;
+    private LineChart<Number, Number> transmittedSignalChart, receivedSignalChart, correlationChart;
 
     @FXML
     private TextField timeUnitTextField,
             probingSignalFrequencyTextField,
             bufferSizeTextField,
             objectSpeedInMetersPerSecond,
-            realDistanceInMetersTextField;
+            realDistanceInMetersTextField,
+            estimatedlDistanceInMetersTextField,
+            reportPeriodTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> receivedSignaSeriesQueue = new ConcurrentLinkedQueue<>();
@@ -187,9 +189,24 @@ public class DistanceSimulation {
     public void initialize() {
         transmittedSignalChart.setAnimated(false);
         transmittedSignalChart.setLegendVisible(false);
+        transmittedSignalChart.getYAxis().setTickLabelsVisible(false);
+        transmittedSignalChart.getYAxis().setOpacity(0);
+        transmittedSignalChart.getXAxis().setTickLabelsVisible(false);
+        transmittedSignalChart.getXAxis().setOpacity(0);
 
         receivedSignalChart.setAnimated(false);
         receivedSignalChart.setLegendVisible(false);
+        receivedSignalChart.getYAxis().setTickLabelsVisible(false);
+        receivedSignalChart.getYAxis().setOpacity(0);
+        receivedSignalChart.getXAxis().setTickLabelsVisible(false);
+        receivedSignalChart.getXAxis().setOpacity(0);
+
+        correlationChart.setAnimated(false);
+        correlationChart.setLegendVisible(false);
+        correlationChart.getYAxis().setTickLabelsVisible(false);
+        correlationChart.getYAxis().setOpacity(0);
+        correlationChart.getXAxis().setTickLabelsVisible(false);
+        correlationChart.getXAxis().setOpacity(0);
     }
 
     private double getProbingSignalPeriodInNs() {
@@ -248,5 +265,13 @@ public class DistanceSimulation {
 
             receivedSignaSeriesQueue.add(receivedSeries);
         }
+    }
+
+    //TODO: Remove code duplication
+    Duration getReportPeriodInTextField() {
+        int MILLIS_TO_SECONDS = 1000;
+        var text = reportPeriodTextField.getText();
+        //TODO: Exception handling
+        return Duration.ofMillis((long)(Double.valueOf(text) * MILLIS_TO_SECONDS));
     }
 }
