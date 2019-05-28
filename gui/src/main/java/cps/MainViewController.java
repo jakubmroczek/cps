@@ -83,6 +83,8 @@ public class MainViewController {
     @FXML
     public void filter() {
         try {
+            setCssFiltering(chart.getScene());
+
             final int filterM = getFilterM();
             final double filterFrequency =  getFilterFrequency();
             final  WindowFunction filterWindowFunction = getFilterWindowFunction();
@@ -623,6 +625,7 @@ public class MainViewController {
     private final String cssInterpolation = "/styles/interpolation.css";
     private final String cssDiscrete = "/styles/discrete.css";
     private final String cssContinous = "/styles/continous.css";
+    private final String cssFiltering = "/styles/FilterSignal.css";
 
     private void setCssSingleSignal(Scene scene) {
         removeChartCss(scene);
@@ -654,6 +657,11 @@ public class MainViewController {
         scene.getStylesheets().add(cssDiscrete);
     }
 
+    private void setCssFiltering(Scene scene) {
+        removeChartCss(scene);
+        scene.getStylesheets().addAll(cssFiltering);
+    }
+
     private void removeChartCss(Scene scene) {
         scene.getStylesheets().remove(cssSingleSignal);
         scene.getStylesheets().remove(cssSamplingSignal);
@@ -661,6 +669,7 @@ public class MainViewController {
         scene.getStylesheets().remove(cssInterpolation);
         scene.getStylesheets().remove(cssContinous);
         scene.getStylesheets().remove(cssInterpolation);
+        scene.getStylesheets().remove(cssFiltering);
     }
 
     private void clearSignalMeasurements() {
