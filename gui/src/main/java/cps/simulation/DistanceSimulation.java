@@ -5,7 +5,6 @@ import cps.model.Signal;
 
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
-import cps.model.SignalOperations;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -18,7 +17,6 @@ import javafx.scene.control.TextField;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
@@ -52,6 +50,7 @@ public class DistanceSimulation {
 
     private double initialDistanceInMeters = 100.0;
     private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(100.0);
+    private SimpleDoubleProperty estimatedDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(0.0);
 
     private TrackedObject trackedObject;
 
@@ -118,6 +117,7 @@ public class DistanceSimulation {
         correlationChart.getData().add(correlationSeries);
 
         realDistanceInMetersTextField.textProperty().bind(realDistanceToTrackedObjectInMeters.asString());
+        estimatedlDistanceInMetersTextField.textProperty().bind(estimatedDistanceToTrackedObjectInMeters.asString());
 
         trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
                 getRealDistanceToTrackedObjectInMeters());
@@ -206,7 +206,25 @@ public class DistanceSimulation {
             IntStream.range(0, correlation.getSamples().size()).forEach(x -> series.getData().
                     add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), correlation.getSamples().get(x))));
             correlationChartSeriesQueue.add(series);
+
+            var estimatedDistancneInMeters =calculateEstimatedDistanceInMeters(correlation.getSamples());
+            estimatedDistanceToTrackedObjectInMeters.set(estimatedDistancneInMeters);
         }
+    }
+
+    private double calculateEstimatedDistanceInMeters(List<Double> samples) {
+        int middleSampleIndex = samples.size() / 2;
+        int indexOfMaxValue = 0;
+        for (int i = 0; i < middleSampleIndex; i++) {
+            if (samples.get(i) > samples.get(indexOfMaxValue)) {
+                indexOfMaxValue = i;
+            }
+        }
+
+        double deltaTime = (indexOfMaxValue - middleSampleIndex) * getSamplingPeriod().toMillis() * 1_000;
+        double estimatedDistance = (getSignalPropagationSpeedInMetersPerSecond() * deltaTime) / 2.0;
+
+        return estimatedDistance;
     }
 
     //TODO: Change to distinct parameter
