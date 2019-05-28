@@ -5,6 +5,7 @@ import cps.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Filters {
 
@@ -37,6 +38,28 @@ public class Filters {
     }
 
     public static Signal correlate(final Signal lhs, final Signal rhs)  {
-        return null;
+        assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
+        final List<Double> values1 = lhs.getSamples();
+        final List<Double> values2 = rhs.getSamples();
+
+        List<Double> newValues = new ArrayList<>();
+        var size = values1.size() + values2.size() - 1;
+        IntStream.range(0, size).forEach(x -> newValues.add(0.0));
+
+
+        for (int i = -newValues.size() / 2; i < newValues.size() / 2; i++) {
+            for (int k = 0; k < values1.size(); k++) {
+                if (i + k >= 0 && i + k < values2.size()) {
+                    var value = newValues.get(i + newValues.size() / 2);
+                    value += values1.get(k) * values2.get(i + k);
+                    newValues.set(i + newValues.size() / 2, value);
+                }
+            }
+        }
+
+        var duration = lhs.getSamplingPeriod().multipliedBy(newValues.size());
+        return new Signal(lhs.getType(), duration, lhs.getSamplingPeriod(), newValues);
     }
+
+
 }
