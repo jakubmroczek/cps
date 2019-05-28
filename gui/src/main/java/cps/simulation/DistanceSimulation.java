@@ -40,8 +40,10 @@ public class DistanceSimulation {
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> receivedSignaSeriesQueue = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> correlationChartSeriesQueue = new ConcurrentLinkedQueue<>();
 
-    private volatile XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
+    private XYChart.Series<Number, Number> bufferReceivedSignalSeries = new XYChart.Series<>();
 
     private double initialDistanceInMeters = 100.0;
     private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(100.0);
@@ -54,7 +56,6 @@ public class DistanceSimulation {
     private AnimationTimer animationTimer;
 
     private Duration timeUnit;
-    private XYChart.Series<Number, Number> bufferReceivedSignalSeries = new XYChart.Series<>();
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -104,6 +105,11 @@ public class DistanceSimulation {
 
         bufferReceivedSignalSeries = receivedSeries;
 
+        XYChart.Series<Number, Number> correlationSeries = new XYChart.Series<>();
+        IntStream.range(0, getBufferSize()).forEach(x -> correlationSeries.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), 0)));
+        correlationChart.getData().add(correlationSeries);
+
         realDistanceInMetersTextField.textProperty().bind(realDistanceToTrackedObjectInMeters.asString());
 
         trackedObject = new TrackedObject(getObjectSpeedInMetersPerSecond(),
@@ -130,6 +136,11 @@ public class DistanceSimulation {
                     var series = receivedSignaSeriesQueue.remove();
                     receivedSignalChart.getData().set(0, series);
                 }
+
+                if (!correlationChartSeriesQueue.isEmpty()) {
+                    var series = correlationChartSeriesQueue.remove();
+                    correlationChart.getData().set(0 ,series);
+                }
             }
         };
         animationTimer.start();
@@ -154,7 +165,16 @@ public class DistanceSimulation {
 
         listen(duration);
 
+        tryCalculateDistanceByCorrelation(duration);
+
         return null;
+    }
+
+    private void tryCalculateDistanceByCorrelation(Duration duration) {
+        var series = new XYChart.Series<Number, Number>();
+        IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
+                add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), x)));
+        correlationChartSeriesQueue.add(series);
     }
 
     @FXML
@@ -232,10 +252,6 @@ public class DistanceSimulation {
     }
 
     private void listen(Duration duration) {
-        // Przygotwanie danych dla drugiego wykresu
-//         double index = (2 * initialDistanceInMeters + (duration.toMillis() * getSignalPropagationSpeedInMetersPerSecond()) / 1000.0) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond());
-        // Czy kolejny blad  czasem
-
         double index = duration.toMillis() - ((2 * initialDistanceInMeters) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1000.0);
 
         //TMP
