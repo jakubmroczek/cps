@@ -33,7 +33,12 @@ import cps.filtering.*;
 
 public class MainViewController {
 
-    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+", "-", "*", "/", "Convolute");
+    public static final ObservableList<String> AVAILABLE_SIGNAL_OPERATIONS = FXCollections.observableArrayList("+",
+            "-",
+            "*",
+            "/",
+            "Splot"
+            , "Korelacja");
 
     public static final ObservableList<String> FILTER_TYPES = FXCollections.observableArrayList("Low pas",
             "Band pass",
@@ -247,11 +252,6 @@ public class MainViewController {
         }
     }
 
-    @FXML
-    public void convolute() {
-
-    }
-
     //TODO: Open in the same stage/window
     @FXML
     public void loadDistanceSimulation() {
@@ -463,8 +463,12 @@ public class MainViewController {
                 operator = SignalOperations::divide;
                 break;
 
-            case "Convolute":
+            case "Splot":
                 operator = Filters::convolute;
+                break;
+
+            case "Korelacja":
+                operator = Filters::correlate;
                 break;
 
             default:

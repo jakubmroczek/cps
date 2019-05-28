@@ -36,7 +36,7 @@ public class Filters {
         return new Signal(lhs.getType(), duration, lhs.getSamplingPeriod(), results);
     }
 
-    public static Signal correleate(final Signal lhs, final Signal rhs)  {
+    public static Signal correlate(final Signal lhs, final Signal rhs)  {
         return null;
     }
 }
