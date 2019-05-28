@@ -1,7 +1,11 @@
 package cps.simulation;
 
+import cps.filtering.Filters;
+import cps.model.Signal;
+
 import cps.model.FunctionFactory;
 import cps.model.SignalArgs;
+import cps.model.SignalOperations;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -175,12 +179,39 @@ public class DistanceSimulation {
 
     private void tryCalculateDistanceByCorrelation(Duration duration) {
         if (isDistanceUpdateTime()) {
-            int value = new Random().nextInt(20);
+            List<Double> transmitedValues = new ArrayList<>();
+            List<Double> receivedValues = new ArrayList<>();
+
+            //TODO: Can it be copied here
+            transmittedSignalChart.getData().get(0).getData().forEach(x -> transmitedValues.add(x.getYValue().doubleValue()));
+            receivedSignalChart.getData().get(0).getData().forEach(
+                    x -> receivedValues.add(x.getYValue().doubleValue())
+            );
+
+
+            //Strasznie glupie
+            Signal lhs = new Signal(Signal.Type.DISCRETE,
+                    null,
+                    getSamplingPeriod(),
+                    transmitedValues);
+
+            Signal rhs = new Signal(Signal.Type.DISCRETE,
+                    null,
+                    getSamplingPeriod(),
+                    receivedValues
+            );
+
+            var correlation = Filters.correlate(lhs, rhs);
             var series = new XYChart.Series<Number, Number>();
-            IntStream.range(0, getBufferSize()).forEach(x -> series.getData().
-                    add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), value)));
+            IntStream.range(0, correlation.getSamples().size()).forEach(x -> series.getData().
+                    add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), correlation.getSamples().get(x))));
             correlationChartSeriesQueue.add(series);
         }
+    }
+
+    //TODO: Change to distinct parameter
+    private Duration getSamplingPeriod() {
+        return timeUnit;
     }
 
     private boolean isDistanceUpdateTime() {
