@@ -331,22 +331,13 @@ public class DistanceSimulation {
     }
 
     private void listen(Duration duration) {
-//        int lastReceivedSampleIndex = (int) ((currentTime - 2 * objectDistance / signalPropagationVelocity) / samplingPeriod);
 //        int lastReceivedSampleIndex = (int) ((
-//                (duration.multipliedBy(timeUnit.toMillis() / 1000.0).toMillis() / 1000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
-//
+//                (duration.toMillis() / 1000000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
 
-        int lastReceivedSampleIndex = (int) ((
-                (duration.toMillis() / 1000000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
+        int lastReceivedSampleIndex = (int) (
+                (duration.toMillis() / 1000.0 - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) /
+                        (samplingPeriod.toMillis() / 1000.0));
 
-// double index = duration.toMillis() - ((2 * initialDistanceInMeters) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1000.0);
-
-        //TMP
-//        index *= 100;
-//
-//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
-//        index = min(index, samples.size() - 1);
-//        index = max(0, index);
         System.out.println(lastReceivedSampleIndex);
 
         // Dlaczego puste
