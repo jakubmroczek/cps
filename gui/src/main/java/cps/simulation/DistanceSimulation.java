@@ -221,7 +221,7 @@ public class DistanceSimulation {
             }
         }
 
-        double deltaTime = (indexOfMaxValue - middleSampleIndex) * getSamplingPeriod().toMillis() * 1_000;
+        double deltaTime = (indexOfMaxValue - middleSampleIndex) * (getSamplingPeriod().toMillis() / 1_000.0);
         double estimatedDistance = (getSignalPropagationSpeedInMetersPerSecond() * deltaTime) / 2.0;
 
         return estimatedDistance;
