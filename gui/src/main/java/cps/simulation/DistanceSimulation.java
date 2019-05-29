@@ -41,7 +41,7 @@ public class DistanceSimulation {
             estimatedlDistanceInMetersTextField,
             reportPeriodTextField,
             samplingPeriodTextField,
-    signalSpeedInMetersPerSecondTextField;
+            signalSpeedInMetersPerSecondTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> receivedSignaSeriesQueue = new ConcurrentLinkedQueue<>();
@@ -50,7 +50,6 @@ public class DistanceSimulation {
     private XYChart.Series<Number, Number> bufferedSeries = new XYChart.Series<>();
     private XYChart.Series<Number, Number> bufferReceivedSignalSeries = new XYChart.Series<>();
 
-    private double initialDistanceInMeters = 100.0;
     private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
     private SimpleDoubleProperty estimatedDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(0.0);
 
@@ -70,15 +69,14 @@ public class DistanceSimulation {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
 
-        if (bufferedSeries.getData().isEmpty())
-        {
+        if (bufferedSeries.getData().isEmpty()) {
             return series;
         }
 
         final int size = bufferedSeries.getData().size();
         IntStream.range(1, size).forEach(x -> series.getData().
                 add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(),
-                bufferedSeries.getData().get(x).getYValue())));
+                        bufferedSeries.getData().get(x).getYValue())));
 
 
         series.getData().
@@ -92,7 +90,7 @@ public class DistanceSimulation {
         int MILLIS_TO_SECONDS = 1000;
         var text = timeUnitTextField.getText();
         //TODO: Exception handling
-        return Duration.ofMillis((long)(Double.valueOf(text) * MILLIS_TO_SECONDS));
+        return Duration.ofMillis((long) (Double.valueOf(text) * MILLIS_TO_SECONDS));
     }
 
     private void startTransmittingSignal(Function<Duration, Double> function) {
@@ -149,7 +147,7 @@ public class DistanceSimulation {
 
                 if (!correlationChartSeriesQueue.isEmpty()) {
                     var series = correlationChartSeriesQueue.remove();
-                    correlationChart.getData().set(0 ,series);
+                    correlationChart.getData().set(0, series);
                 }
             }
         };
@@ -167,7 +165,7 @@ public class DistanceSimulation {
         var newSeries = shiftSeries(value);
         seriesConcurrentLinkedQueue.add(newSeries);
         bufferedSeries = newSeries;
-        
+
         double val = trackedObject.getDistanceSinceStart(duration);
         Platform.runLater(() -> realDistanceToTrackedObjectInMeters.set(val));
 
@@ -210,7 +208,7 @@ public class DistanceSimulation {
                     add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), correlation.getSamples().get(x))));
             correlationChartSeriesQueue.add(series);
 
-            var estimatedDistancneInMeters =calculateEstimatedDistanceInMeters(correlation.getSamples());
+            var estimatedDistancneInMeters = calculateEstimatedDistanceInMeters(correlation.getSamples());
             estimatedDistanceToTrackedObjectInMeters.set(estimatedDistancneInMeters);
         }
     }
@@ -235,7 +233,7 @@ public class DistanceSimulation {
         double frequency = Double.valueOf(samplingPeriodTextField.getText());
         var period = 1.0 / frequency;
         //TODO: Do not use magick numbers
-        return Duration.ofMillis((long)(period * 1000));
+        return Duration.ofMillis((long) (period * 1000));
     }
 
     private boolean isDistanceUpdateTime() {
@@ -256,7 +254,7 @@ public class DistanceSimulation {
     }
 
     @FXML
-    public  void start() {
+    public void start() {
         loadCSS();
 
         var args = SignalArgs.builder().amplitude(1).initialTimeInNs(0).periodInNs(getProbingSignalPeriodInNs()).initialTimeInNs(0).build();
@@ -287,6 +285,7 @@ public class DistanceSimulation {
         var scene = transmittedSignalChart.getScene();
         scene.getStylesheets().add(style);
     }
+
     @FXML
     public void initialize() {
         transmittedSignalChart.setAnimated(false);
@@ -327,7 +326,9 @@ public class DistanceSimulation {
         return Double.valueOf(objectSpeedInMetersPerSecond.getText());
     }
 
-    private double getSignalPropagationSpeedInMetersPerSecond() {return 5;}
+    private double getSignalPropagationSpeedInMetersPerSecond() {
+        return 5;
+    }
 
     private double getRealDistanceToTrackedObjectInMeters() {
         return realDistanceToTrackedObjectInMeters.get();
@@ -356,8 +357,7 @@ public class DistanceSimulation {
         if (lastReceivedSampleIndex >= 0 && lastReceivedSampleIndex < samples.size()) {
             XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
 
-            if (bufferReceivedSignalSeries.getData().isEmpty())
-            {
+            if (bufferReceivedSignalSeries.getData().isEmpty()) {
                 return;
             }
 
@@ -378,6 +378,6 @@ public class DistanceSimulation {
         int MILLIS_TO_SECONDS = 1000;
         var text = reportPeriodTextField.getText();
         //TODO: Exception handling
-        return Duration.ofMillis((long)(Double.valueOf(text) * MILLIS_TO_SECONDS));
+        return Duration.ofMillis((long) (Double.valueOf(text) * MILLIS_TO_SECONDS));
     }
 }
