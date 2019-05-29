@@ -69,7 +69,7 @@
             <HBox layoutX="10.0" layoutY="113.0" prefHeight="33.0" prefWidth="242.0">
                <children>
                   <Label prefHeight="34.0" prefWidth="246.0" text="Częstotliwość próbkowania [Hz]" />
-                  <TextField fx:id="probingSignalFrequencyTextField1" prefHeight="34.0" prefWidth="112.0" promptText="samplingPeriodTextField" text="10" />
+                  <TextField fx:id="samplingPeriodTextField" prefHeight="34.0" prefWidth="112.0" promptText="samplingPeriodTextField" text="10" />
                </children>
             </HBox>
             <HBox prefHeight="34.0" prefWidth="242.0">

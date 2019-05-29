@@ -125,11 +125,7 @@ public class DistanceSimulation {
                 getRealDistanceToTrackedObjectInMeters());
 
 
-        // Obsluga wiekszych od 1
-        var seconds = Duration.ofSeconds(1).dividedBy(timeUnit);
-        Duration result = Duration.ofSeconds(seconds);
-
-        transmitter = new Transmitter(function, this::updateChart, result);
+        transmitter = new Transmitter(function, this::updateChart, samplingPeriod);
         timer.scheduleAtFixedRate(transmitter, 0, timeUnit.toMillis());
 
         animationTimer = new AnimationTimer() {
