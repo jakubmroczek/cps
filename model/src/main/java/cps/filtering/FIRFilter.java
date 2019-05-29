@@ -46,7 +46,6 @@ public abstract class FIRFilter {
         return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
-    //TODO: Can be M transpored by a filterImpulseResponse
     private Signal filter(final Signal signal, final Signal filterImpulseResponse, final int M) {
         Signal convolution = Filters.convolute(filterImpulseResponse, signal);
 
@@ -58,7 +57,7 @@ public abstract class FIRFilter {
             newConvolutionValues.add(convolution.getSamples().get(i + (M - 1) / 2));
         }
 
-        var duration  = signal.getDurationInNs().minus(convolution.getSamplingPeriod().multipliedBy(M - 1));
+        var duration  = convolution.getDurationInNs().minus(convolution.getSamplingPeriod().multipliedBy(M - 1));
         return new Signal(signal.getType(), duration, signal.getSamplingPeriod(), newConvolutionValues);
     }
 
