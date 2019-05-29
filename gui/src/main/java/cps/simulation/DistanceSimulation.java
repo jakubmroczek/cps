@@ -247,6 +247,11 @@ public class DistanceSimulation {
     }
 
     @FXML
+    public void stop() {
+
+    }
+
+    @FXML
     public  void start() {
         loadCSS();
 
