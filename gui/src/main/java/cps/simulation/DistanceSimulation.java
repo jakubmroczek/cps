@@ -64,6 +64,7 @@ public class DistanceSimulation {
     private Duration timeUnit;
     private Duration reportPeriod;
     private Duration previousUpdateTime;
+    private Duration samplingPeriod;
 
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -96,6 +97,7 @@ public class DistanceSimulation {
 
     private void startTransmittingSignal(Function<Duration, Double> function) {
         timeUnit = getTimeUnit();
+        samplingPeriod = getSamplingPeriod();
 
         //Adding empty data
 
@@ -130,7 +132,6 @@ public class DistanceSimulation {
         Duration result = Duration.ofSeconds(seconds);
 
         transmitter = new Transmitter(function, this::updateChart, result);
-
         timer.scheduleAtFixedRate(transmitter, 0, timeUnit.toMillis());
 
         animationTimer = new AnimationTimer() {
@@ -194,12 +195,12 @@ public class DistanceSimulation {
             //Strasznie glupie
             Signal lhs = new Signal(Signal.Type.DISCRETE,
                     null,
-                    getSamplingPeriod(),
+                    samplingPeriod,
                     transmitedValues);
 
             Signal rhs = new Signal(Signal.Type.DISCRETE,
                     null,
-                    getSamplingPeriod(),
+                    samplingPeriod,
                     receivedValues
             );
 
@@ -223,7 +224,7 @@ public class DistanceSimulation {
             }
         }
 
-        double deltaTime = (indexOfMaxValue - middleSampleIndex) * (getSamplingPeriod().toMillis() / 1_000.0);
+        double deltaTime = (indexOfMaxValue - middleSampleIndex) * (samplingPeriod.toMillis() / 1_000.0);
         double estimatedDistance = (getSignalPropagationSpeedInMetersPerSecond() * deltaTime) / 2.0;
 
         return estimatedDistance;
@@ -231,7 +232,10 @@ public class DistanceSimulation {
 
     //TODO: Change to distinct parameter
     private Duration getSamplingPeriod() {
-        return timeUnit;
+        double frequency = Double.valueOf(samplingPeriodTextField.getText());
+        var period = 1.0 / frequency;
+        //TODO: Do not use magick numbers
+        return Duration.ofMillis((long)(period * 1000));
     }
 
     private boolean isDistanceUpdateTime() {
