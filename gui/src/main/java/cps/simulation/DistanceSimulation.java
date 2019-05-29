@@ -39,7 +39,9 @@ public class DistanceSimulation {
             objectSpeedInMetersPerSecond,
             realDistanceInMetersTextField,
             estimatedlDistanceInMetersTextField,
-            reportPeriodTextField;
+            reportPeriodTextField,
+            samplingPeriodTextField,
+    signalSpeedInMetersPerSecondTextField;
 
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> seriesConcurrentLinkedQueue = new ConcurrentLinkedQueue<>();
     private ConcurrentLinkedQueue<XYChart.Series<Number, Number>> receivedSignaSeriesQueue = new ConcurrentLinkedQueue<>();
@@ -49,7 +51,7 @@ public class DistanceSimulation {
     private XYChart.Series<Number, Number> bufferReceivedSignalSeries = new XYChart.Series<>();
 
     private double initialDistanceInMeters = 100.0;
-    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(100.0);
+    private volatile SimpleDoubleProperty realDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(1.0);
     private SimpleDoubleProperty estimatedDistanceToTrackedObjectInMeters = new SimpleDoubleProperty(0.0);
 
     private TrackedObject trackedObject;
@@ -323,18 +325,26 @@ public class DistanceSimulation {
     }
 
     private void listen(Duration duration) {
-        double index = duration.toMillis() - ((2 * initialDistanceInMeters) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1000.0);
+//        int lastReceivedSampleIndex = (int) ((currentTime - 2 * objectDistance / signalPropagationVelocity) / samplingPeriod);
+//        int lastReceivedSampleIndex = (int) ((
+//                (duration.multipliedBy(timeUnit.toMillis() / 1000.0).toMillis() / 1000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
+//
+
+        int lastReceivedSampleIndex = (int) ((
+                (duration.toMillis() / 1000000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
+
+// double index = duration.toMillis() - ((2 * initialDistanceInMeters) / (getSignalPropagationSpeedInMetersPerSecond() - getObjectSpeedInMetersPerSecond()) * 1000.0);
 
         //TMP
-        index *= 100;
-
-        index /= (getProbingSignalPeriodInNs() / 1_000_000);
-        index = min(index, samples.size() - 1);
-        index = max(0, index);
-        System.out.println(index);
+//        index *= 100;
+//
+//        index /= (getProbingSignalPeriodInNs() / 1_000_000);
+//        index = min(index, samples.size() - 1);
+//        index = max(0, index);
+        System.out.println(lastReceivedSampleIndex);
 
         // Dlaczego puste
-        if (index >= 0) {
+        if (lastReceivedSampleIndex >= 0 && lastReceivedSampleIndex < samples.size()) {
             XYChart.Series<Number, Number> receivedSeries = new XYChart.Series<>();
 
             if (bufferReceivedSignalSeries.getData().isEmpty())
@@ -346,7 +356,7 @@ public class DistanceSimulation {
                     new XYChart.Data<>(x * timeUnit.toMillis(), bufferReceivedSignalSeries.getData().get(x).getYValue())
             ));
 
-            receivedSeries.getData().add(new XYChart.Data((getBufferSize() - 1) * timeUnit.toMillis(), samples.get((int) index)));
+            receivedSeries.getData().add(new XYChart.Data((getBufferSize() - 1) * timeUnit.toMillis(), samples.get(lastReceivedSampleIndex)));
 
             bufferReceivedSignalSeries = receivedSeries;
 
