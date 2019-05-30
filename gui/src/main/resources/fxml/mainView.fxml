@@ -179,5 +179,7 @@
             <Button layoutX="10.0" layoutY="128.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#showH" prefHeight="31.0" prefWidth="198.0" text="Odpowiedź impulsowa filtra" />
          </children>
       </VBox>
+      <Button layoutX="684.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
+      <Button layoutX="787.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#correlate" prefHeight="30.0" prefWidth="80.0" text="Korelacja" />
     </children>
 </AnchorPane>

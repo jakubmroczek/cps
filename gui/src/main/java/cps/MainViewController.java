@@ -423,6 +423,12 @@ public class MainViewController {
         loadSignalsAndApplyOperator(SignalOperations::divide);
     }
 
+    @FXML
+    void convolute() {loadSignalsAndApplyOperator(Filters::convolute);}
+
+    @FXML
+    void correlate() {loadSignalsAndApplyOperator(Filters::correlate);}
+
     private void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
         try {
             Signal lhs = loadFromFile();
