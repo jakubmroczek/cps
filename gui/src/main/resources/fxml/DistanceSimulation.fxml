@@ -45,25 +45,25 @@
             <javafx.scene.layout.HBox prefHeight="34.0" prefWidth="241.0">
                <children>
                   <Label prefHeight="34.0" prefWidth="189.0" text="Jednostka symulacji [s]" />
-                  <TextField fx:id="timeUnitTextField" prefHeight="34.0" prefWidth="54.0" text="0.5" />
+                  <TextField fx:id="timeUnitTextField" prefHeight="34.0" prefWidth="54.0" text="0.1" />
                </children>
             </javafx.scene.layout.HBox>
             <HBox layoutX="10.0" layoutY="10.0" prefHeight="34.0" prefWidth="241.0">
                <children>
                   <Label prefHeight="34.0" prefWidth="189.0" text="Prędkość śledzonego obiektu [m/s]" />
-                  <TextField fx:id="objectSpeedInMetersPerSecond" prefHeight="34.0" prefWidth="54.0" text="0.1" />
+                  <TextField fx:id="objectSpeedInMetersPerSecond" prefHeight="34.0" prefWidth="54.0" text="0.001" />
                </children>
             </HBox>
             <HBox layoutX="10.0" layoutY="44.0" prefHeight="34.0" prefWidth="241.0">
                <children>
                   <Label prefHeight="34.0" prefWidth="189.0" text="Prędkość propagacji sygnału [m/s]" />
-                  <TextField fx:id="signalSpeedInMetersPerSecondTextField" prefHeight="34.0" prefWidth="54.0" text="0.1" />
+                  <TextField fx:id="signalSpeedInMetersPerSecondTextField" prefHeight="34.0" prefWidth="54.0" text="1" />
                </children>
             </HBox>
             <javafx.scene.layout.HBox prefHeight="33.0" prefWidth="242.0">
                <children>
                   <Label prefHeight="34.0" prefWidth="246.0" text="Okres sygnału sondującego [Hz]" />
-                  <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="10" />
+                  <TextField fx:id="probingSignalFrequencyTextField" prefHeight="34.0" prefWidth="112.0" text="0.1" />
                </children>
             </javafx.scene.layout.HBox>
             <HBox layoutX="10.0" layoutY="113.0" prefHeight="33.0" prefWidth="242.0">

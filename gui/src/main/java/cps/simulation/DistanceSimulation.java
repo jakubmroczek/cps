@@ -175,9 +175,11 @@ public class DistanceSimulation {
 
         double val = trackedObject.getDistanceSinceStart(duration);
 
-        System.out.println("dystans" + val);
-
         Platform.runLater(() -> realDistanceToTrackedObjectInMeters.set(val));
+
+
+        System.out.println("Czas " + duration);
+        System.out.println("Próbka " + value);
 
         samples.add(value);
 
