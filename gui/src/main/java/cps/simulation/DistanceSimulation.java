@@ -27,6 +27,8 @@ import static java.lang.Math.min;
 
 public class DistanceSimulation {
 
+    public static final double INITIAL_DISTANCE_IN_METERS = 1.0;
+
     private List<Double> samples = new ArrayList();
 
     @FXML
@@ -96,6 +98,15 @@ public class DistanceSimulation {
     }
 
     private void startTransmittingSignal(Function<Duration, Double> function) {
+        //GENERAL CLEAN UP
+        realDistanceToTrackedObjectInMeters.set(INITIAL_DISTANCE_IN_METERS);
+        transmittedSignalChart.getData().clear();
+        receivedSignalChart.getData().clear();
+        correlationChart.getData().clear();
+        seriesConcurrentLinkedQueue.clear();
+        receivedSignaSeriesQueue.clear();
+        correlationChartSeriesQueue.clear();
+
         timeUnit = getTimeUnit();
         samplingPeriod = getSamplingPeriod();
         signalPropagationSpeedInMeters = getSignalPropagationSpeedInMetersPerSecond();
@@ -129,6 +140,7 @@ public class DistanceSimulation {
 
 
         transmitter = new Transmitter(function, this::updateChart, samplingPeriod);
+        timer = new Timer();
         timer.scheduleAtFixedRate(transmitter, 0, timeUnit.toMillis());
 
         animationTimer = new AnimationTimer() {
@@ -151,10 +163,6 @@ public class DistanceSimulation {
             }
         };
         animationTimer.start();
-    }
-
-    private void stopTransmittingSignal() {
-
     }
 
     //TODO: Sprawdzic czy nie ma buga z czasem
@@ -257,7 +265,8 @@ public class DistanceSimulation {
 
     @FXML
     public void stop() {
-
+        timer.cancel();
+        animationTimer.stop();
     }
 
     @FXML
