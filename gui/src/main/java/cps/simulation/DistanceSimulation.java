@@ -65,6 +65,8 @@ public class DistanceSimulation {
     private Duration previousUpdateTime;
     private Duration samplingPeriod;
 
+    double signalPropagationSpeedInMeters = 0.0;
+
     private XYChart.Series<Number, Number> shiftSeries(double value) {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
 
@@ -96,6 +98,7 @@ public class DistanceSimulation {
     private void startTransmittingSignal(Function<Duration, Double> function) {
         timeUnit = getTimeUnit();
         samplingPeriod = getSamplingPeriod();
+        signalPropagationSpeedInMeters = getSignalPropagationSpeedInMetersPerSecond();
 
         //Adding empty data
 
@@ -163,6 +166,9 @@ public class DistanceSimulation {
         bufferedSeries = newSeries;
 
         double val = trackedObject.getDistanceSinceStart(duration);
+
+        System.out.println("dystans" + val);
+
         Platform.runLater(() -> realDistanceToTrackedObjectInMeters.set(val));
 
         samples.add(value);
@@ -218,8 +224,10 @@ public class DistanceSimulation {
             }
         }
 
+        System.out.println("Index probki " + indexOfMaxValue);
+
         double deltaTime = (indexOfMaxValue - middleSampleIndex) * (samplingPeriod.toMillis() / 1_000.0);
-        double estimatedDistance = (getSignalPropagationSpeedInMetersPerSecond() * deltaTime) / 2.0;
+        double estimatedDistance = (signalPropagationSpeedInMeters * deltaTime) / 2.0;
 
         return estimatedDistance;
     }
@@ -323,7 +331,7 @@ public class DistanceSimulation {
     }
 
     private double getSignalPropagationSpeedInMetersPerSecond() {
-        return 5;
+        return Double.valueOf(signalSpeedInMetersPerSecondTextField.getText());
     }
 
     private double getRealDistanceToTrackedObjectInMeters() {
@@ -335,7 +343,7 @@ public class DistanceSimulation {
 //                (duration.toMillis() / 1000000.0) - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) / (timeUnit.toMillis() / 1000.0));
 
         int lastReceivedSampleIndex = (int) (
-                (duration.toMillis() / 1000.0 - 2 * getRealDistanceToTrackedObjectInMeters() / getSignalPropagationSpeedInMetersPerSecond()) /
+                (duration.toMillis() / 1000.0 - 2 * trackedObject.getDistanceSinceStart(duration) / signalPropagationSpeedInMeters) /
                         (samplingPeriod.toMillis() / 1000.0));
 
         System.out.println(lastReceivedSampleIndex);
