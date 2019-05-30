@@ -110,12 +110,12 @@ public class MainViewController {
             //TODO: Maybe it shoudl be a different function?
             //TODO: Maybe more charts wil be plotted
             // Checking if was previously generated
-//            if (chart.getData().size() == 2) {
-//                chart.getData().clear();
-//                plotSignal(signal, false);
-//            }
+            if (chart.getData().size() == 2) {
+                chart.getData().clear();
+                plotSignal(signal, true);
+            }
 
-            plotSignal(filteredSignal, true);
+            plotSignal(filteredSignal, false);
 
         } catch (IllegalArgumentException e ) {
             //TODO: Generalize this method, it handles all exception not only thrown during signal creation
