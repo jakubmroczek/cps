@@ -20,6 +20,16 @@ public class ImpulseResponseController {
     }
 
     public void plot(Signal signal) {
+        //Nie najlepsze miejsce
+        impulseResponseChart
+                .getScene()
+                .getStylesheets()
+                .clear();
+
+        impulseResponseChart.getScene()
+                .getStylesheets()
+                .add("/styles/ImpulseResponse.css");
+
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = impulseResponseChart.getXAxis().getWidth();
