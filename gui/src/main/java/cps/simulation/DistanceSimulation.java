@@ -217,8 +217,8 @@ public class DistanceSimulation {
 
     private double calculateEstimatedDistanceInMeters(List<Double> samples) {
         int middleSampleIndex = samples.size() / 2;
-        int indexOfMaxValue = 0;
-        for (int i = 0; i < middleSampleIndex; i++) {
+        int indexOfMaxValue = middleSampleIndex + 1;
+        for (int i = middleSampleIndex; i < samples.size(); i++) {
             if (samples.get(i) > samples.get(indexOfMaxValue)) {
                 indexOfMaxValue = i;
             }
@@ -227,6 +227,9 @@ public class DistanceSimulation {
         System.out.println("Index probki " + indexOfMaxValue);
 
         double deltaTime = (indexOfMaxValue - middleSampleIndex) * (samplingPeriod.toMillis() / 1_000.0);
+
+        System.out.println("Czas jaki uplynal " + deltaTime);
+
         double estimatedDistance = (signalPropagationSpeedInMeters * deltaTime) / 2.0;
 
         return estimatedDistance;
