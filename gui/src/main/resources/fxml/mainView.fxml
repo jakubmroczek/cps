@@ -175,6 +175,8 @@
             </HBox>
             <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="98.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
             <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#filter" prefHeight="31.0" prefWidth="198.0" text="Filtruj" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="123.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <Button layoutX="10.0" layoutY="128.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#showH" prefHeight="31.0" prefWidth="198.0" text="Odpowiedź impulsowa filtra" />
          </children>
       </VBox>
     </children>

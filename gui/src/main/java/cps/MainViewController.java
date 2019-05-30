@@ -3,6 +3,7 @@ package cps;
 import cps.conversion.Quantizer;
 import cps.conversion.Reconstructor;
 import cps.conversion.Error;
+import cps.filter.ImpulseResponseController;
 import cps.filtering.Filters;
 import cps.model.*;
 import javafx.collections.FXCollections;
@@ -11,9 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -56,7 +55,13 @@ public class MainViewController {
 
     private Stage stage;
 
-    private Signal signal, sampledSignal, quantizedSignal, interpolatedSignal, reconstructedSignal;
+    private Signal
+            signal,
+            sampledSignal,
+            quantizedSignal,
+            interpolatedSignal,
+            reconstructedSignal,
+            filterHResponse;
 
     private Histogram histogram;
 
@@ -99,6 +104,7 @@ public class MainViewController {
             FIRFilter filter = createFIRFilter();
             var signals = filter.filter(signal, filterM, filterFrequency, filterWindowFunction);
 
+            filterHResponse = signals.get(0);
             filteredSignal = signals.get(1);
 
             //TODO: Maybe it shoudl be a different function?
@@ -570,6 +576,28 @@ public class MainViewController {
 
         histogramChart.getData().clear();
         histogramChart.getData().add(series1);
+    }
+
+    @FXML
+    public void showH() {
+        if (filterHResponse != null) {
+            final FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/ImpulseResponse.fxml"));
+            Parent root = null;
+            try {
+                root = fxmlLoader.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Scene nscene = new Scene(root);
+            Stage tStatge = new Stage();
+            tStatge.setTitle("Odpowiedź impulsowa");
+            tStatge.setScene(nscene);
+            tStatge.show();
+
+            var controller = (ImpulseResponseController)fxmlLoader.getController();
+            controller.plot(filterHResponse);
+        }
     }
 
     @FXML
