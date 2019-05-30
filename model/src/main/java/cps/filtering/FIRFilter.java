@@ -43,7 +43,7 @@ public abstract class FIRFilter {
             newValues.add(newSample);
         }
 
-        return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().dividedBy(M), signal.getSamplingPeriod(),  newValues);
+        return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().multipliedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
     private Signal filter(final Signal signal, final Signal filterImpulseResponse, final int M) {
