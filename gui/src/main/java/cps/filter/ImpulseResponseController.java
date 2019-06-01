@@ -19,7 +19,7 @@ public class ImpulseResponseController {
         impulseResponseChart.setLegendVisible(false);
     }
 
-    public void plot(Signal signal) {
+    public void plot(Signal<Double> signal) {
         //Nie najlepsze miejsce
         impulseResponseChart
                 .getScene()

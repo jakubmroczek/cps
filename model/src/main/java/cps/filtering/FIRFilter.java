@@ -13,18 +13,18 @@ import static java.lang.Math.sin;
 public abstract class FIRFilter {
 
     // TODO: The last three arguments are not elegant, maybe a DTO should be introduced
-    public List<Signal> filter(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
-        Signal filterImpulseResponse = createFilterImpulseResponse(signal, M, frequency, windowFunction);
-        Signal filteredSignal = filter(signal, filterImpulseResponse, M);
+    public List<Signal<Double>> filter(final Signal<Double> signal, final int M, final double frequency, final WindowFunction windowFunction) {
+        Signal<Double> filterImpulseResponse = createFilterImpulseResponse(signal, M, frequency, windowFunction);
+        Signal<Double> filteredSignal = filter(signal, filterImpulseResponse, M);
 
-        ArrayList<Signal> signals = new ArrayList<>();
+        ArrayList<Signal<Double>> signals = new ArrayList<>();
         signals.add(filterImpulseResponse);
         signals.add(filteredSignal);
 
         return signals;
     }
 
-    private Signal createFilterImpulseResponse(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
+    private Signal<Double> createFilterImpulseResponse(final Signal<Double> signal, final int M, final double frequency, final WindowFunction windowFunction) {
         double signalSamplingFrequency = toFrequency(signal.getSamplingPeriod());
         var K = getK(signalSamplingFrequency, frequency);
 
@@ -43,11 +43,11 @@ public abstract class FIRFilter {
             newValues.add(newSample);
         }
 
-        return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().multipliedBy(M), signal.getSamplingPeriod(),  newValues);
+        return new Signal<>(Signal.Type.DISCRETE, signal.getSamplingPeriod().multipliedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
     private Signal<Double> filter(final Signal<Double> signal, final Signal<Double> filterImpulseResponse, final int M) {
-        Signal convolution = Filters.convolute(filterImpulseResponse, signal);
+        Signal<Double> convolution = Filters.convolute(filterImpulseResponse, signal);
 
         List<Double> newConvolutionValues = new ArrayList<>();
 
@@ -58,7 +58,7 @@ public abstract class FIRFilter {
         }
 
         var duration  = convolution.getDurationInNs().minus(convolution.getSamplingPeriod().multipliedBy(M - 1));
-        return new Signal(signal.getType(), duration, signal.getSamplingPeriod(), newConvolutionValues);
+        return new Signal<>(signal.getType(), duration, signal.getSamplingPeriod(), newConvolutionValues);
     }
 
     protected abstract double modulate(int index);

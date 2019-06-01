@@ -86,7 +86,7 @@ public class SignalWriter {
     //signal type C(ontinous) D(iscrete)
     //probes[]
     //
-    public static void writeBinary(File file, float t1, long fq, Signal signal) {
+    public static void writeBinary(File file, float t1, long fq, Signal<Double> signal) {
         prepareToSave(signal);
         try (FileOutputStream fos = new FileOutputStream(file)) {
 
@@ -109,7 +109,7 @@ public class SignalWriter {
         return byteBuffer;
     }
 
-    private static void prepareToSave(Signal signal) {
+    private static void prepareToSave(Signal<Double> signal) {
         //TODO: Do we really need this?
         for (int i = 0; i < signal.getSamples().size(); i++) {
             double rounded = signal.getSamples().get(i);

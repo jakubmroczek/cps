@@ -16,7 +16,7 @@ public class Filters {
     }
 
 
-    public static Signal convolute(final Signal lhs, final Signal rhs) {
+    public static Signal<Double> convolute(final Signal<Double> lhs, final Signal<Double> rhs) {
         List<Double> results = new ArrayList<>();
 
         //TODO: What if both equal to 0?
@@ -34,10 +34,10 @@ public class Filters {
 
        //TODO: Is the resulting duration correct?
        var duration = lhs.getSamplingPeriod().multipliedBy(results.size());
-        return new Signal(lhs.getType(), duration, lhs.getSamplingPeriod(), results);
+        return new Signal<>(lhs.getType(), duration, lhs.getSamplingPeriod(), results);
     }
 
-    public static Signal correlate(final Signal lhs, final Signal rhs)  {
+    public static Signal<Double> correlate(final Signal<Double> lhs, final Signal<Double> rhs)  {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
         final List<Double> values1 = lhs.getSamples();
         final List<Double> values2 = rhs.getSamples();
@@ -61,16 +61,16 @@ public class Filters {
         return new Signal(lhs.getType(), duration, lhs.getSamplingPeriod(), newValues);
     }
 
-    public static Signal correlateByConvolution(Signal lhs, Signal rhs) {
+    public static Signal<Double> correlateByConvolution(Signal<Double> lhs, Signal<Double> rhs) {
         return reverse(convolute(lhs, reverse(rhs)));
     }
 
-    private static Signal reverse(Signal signal) {
+    private static<T> Signal<T> reverse(Signal<T> signal) {
         var list = signal.getSamples();
-        var result = new ArrayList<Double>();
+        var result = new ArrayList<T>();
         for (int i = list.size() - 1; i>= 0; i--) {
             result.add(list.get(i));
         }
-        return new Signal(signal.getType(), signal.getDurationInNs(), signal.getSamplingPeriod(), result);
+        return new Signal<>(signal.getType(), signal.getDurationInNs(), signal.getSamplingPeriod(), result);
     }
 }

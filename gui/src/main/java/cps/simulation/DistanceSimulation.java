@@ -203,18 +203,18 @@ public class DistanceSimulation {
 
 
             //Strasznie glupie
-            Signal lhs = new Signal(Signal.Type.DISCRETE,
+            Signal<Double> lhs = new Signal(Signal.Type.DISCRETE,
                     null,
                     samplingPeriod,
                     transmitedValues);
 
-            Signal rhs = new Signal(Signal.Type.DISCRETE,
+            Signal<Double> rhs = new Signal(Signal.Type.DISCRETE,
                     null,
                     samplingPeriod,
                     receivedValues
             );
 
-            var correlation = Filters.correlate(lhs, rhs);
+            Signal<Double> correlation = Filters.correlate(lhs, rhs);
             var series = new XYChart.Series<Number, Number>();
             IntStream.range(0, correlation.getSamples().size()).forEach(x -> series.getData().
                     add(new XYChart.Data<>(timeUnit.multipliedBy(x).toMillis(), correlation.getSamples().get(x))));

@@ -17,7 +17,7 @@ public class Math {
         return integral / duration;
     }
 
-    public static double averageValue(Signal signal) {
+    public static double averageValue(Signal<Double> signal) {
         return signal.getSamples().stream().mapToDouble(Double::doubleValue).sum() / (double) signal.getSamples().size();
     }
 
@@ -28,7 +28,7 @@ public class Math {
         return integral / duration;
     }
 
-    public static double averageAbsoluteValue(Signal signal) {
+    public static double averageAbsoluteValue(Signal<Double> signal) {
         return signal.getSamples().stream().mapToDouble(Double::doubleValue).map(java.lang.Math::abs).sum() /
                 (double) signal.getSamples().size();
     }
@@ -40,7 +40,7 @@ public class Math {
         return integral / duration;
     }
 
-    public static double averagePower(Signal signal) {
+    public static double averagePower(Signal<Double> signal) {
         return signal.getSamples().stream().mapToDouble(Double::doubleValue).map(i -> pow(i, 2)).sum() /
                 (double) signal.getSamples().size();
     }
@@ -53,7 +53,7 @@ public class Math {
         return integral / duration;
     }
 
-    public static double variance(Signal signal) {
+    public static double variance(Signal<Double> signal) {
         double average = averageValue(signal);
         return signal.getSamples().stream().mapToDouble(Double::doubleValue).map(i -> pow(i - average, 2)).sum() /
                 (double) signal.getSamples().size();
@@ -64,7 +64,7 @@ public class Math {
         return sqrt(averagePower(function, startInNs, endInNs));
     }
 
-    public static double effectivePower(Signal signal) {
+    public static double effectivePower(Signal<Double> signal) {
         return sqrt(averagePower(signal));
     }
 

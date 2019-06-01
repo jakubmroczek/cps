@@ -10,14 +10,14 @@ import static java.lang.Math.pow;
 
 public class Error {
 
-    public static double mse(final Signal lhs, final Signal rhs) {
+    public static double mse(final Signal<Double> lhs, final Signal<Double> rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
         int size = min(lhs.getSamples().size(), rhs.getSamples().size());
         double sum = IntStream.range(0, size).mapToDouble(i -> pow(lhs.getSamples().get(i) - rhs.getSamples().get(i), 2)).sum();
         return sum / (size * 1.0);
     }
 
-    public static double snr(final Signal lhs, final Signal rhs) {
+    public static double snr(final Signal<Double> lhs, final Signal<Double> rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
 
         int size = min(lhs.getSamples().size(), rhs.getSamples().size());
@@ -32,14 +32,14 @@ public class Error {
         return 10.0 * Math.log10(squaresSum / noiseSquaresSum);
     }
 
-    public static double psnr(final Signal lhs, final Signal rhs) {
+    public static double psnr(final Signal<Double> lhs, final Signal<Double> rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
 
         double maxLhs = lhs.getSamples().stream().max(Double::compareTo).orElseGet(() ->lhs.getSamples().get(0));
         return 10.0 * Math.log10(maxLhs / mse(lhs, rhs));
     }
 
-    public static double md(final Signal lhs, final Signal rhs) {
+    public static double md(final Signal<Double> lhs, final Signal<Double> rhs) {
         assert lhs.getSamplingPeriod().equals(rhs.getSamplingPeriod());
 
         int size = min(lhs.getSamples().size(), rhs.getSamples().size());

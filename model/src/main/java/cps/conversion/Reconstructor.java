@@ -14,7 +14,7 @@ import static java.lang.Math.*;
 
 public class Reconstructor {
 
-    public static Signal firstHoldInterpolation(final Signal signal, Duration samplingPeriodInNs) {
+    public static Signal<Double> firstHoldInterpolation(final Signal<Double> signal, Duration samplingPeriodInNs) {
         assert samplingPeriodInNs.toNanos() % signal.getSamplingPeriod().toNanos() == 0;
 
         var time = Duration.ZERO;
@@ -44,7 +44,7 @@ public class Reconstructor {
             int last = signal.getSamples().size() - 1;
             samples.add(signal.getSamples().get(last));
         }
-        return new Signal(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
+        return new Signal<>(signal.getType(), signal.getDurationInNs(), samplingPeriodInNs, samples);
     }
 
     public static Signal reconstruct(Signal signal, Duration reconstructionFrequency, int maxProbes) {
@@ -62,7 +62,7 @@ public class Reconstructor {
         return new Signal(signal.getType(), signal.getDurationInNs(), reconstructionFrequency, samples);
     }
 
-    private static double sincReconstruct(Signal signal, Duration x, int maxProbes) {
+    private static double sincReconstruct(Signal<Double> signal, Duration x, int maxProbes) {
         assert !x.isNegative();
 
         double sum = 0.0;

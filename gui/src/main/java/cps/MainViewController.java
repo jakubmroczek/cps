@@ -55,7 +55,7 @@ public class MainViewController {
 
     private Stage stage;
 
-    private Signal
+    private Signal<Double>
             signal,
             sampledSignal,
             quantizedSignal,
@@ -99,7 +99,7 @@ public class MainViewController {
             final int filterM = getFilterM();
             final double filterFrequency =  getFilterFrequency();
             final  WindowFunction filterWindowFunction = getFilterWindowFunction();
-            final Signal signal = getFilteredSignal();
+            final Signal<Double> signal = getFilteredSignal();
 
             FIRFilter filter = createFIRFilter();
             var signals = filter.filter(signal, filterM, filterFrequency, filterWindowFunction);
@@ -285,7 +285,7 @@ public class MainViewController {
         }
     }
 
-    private void plotSignal(Signal signal, boolean clearChart) {
+    private void plotSignal(Signal<Double> signal, boolean clearChart) {
         XYChart.Series series = new XYChart.Series();
 
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
