@@ -26,7 +26,7 @@ public abstract class FIRFilter {
 
     private Signal createFilterImpulseResponse(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
         double signalSamplingFrequency = toFrequency(signal.getSamplingPeriod());
-        final int K = getK(signalSamplingFrequency, frequency);
+        var K = getK(signalSamplingFrequency, frequency);
 
         List<Double> newValues = new ArrayList<>();
         for (int i = 0; i < M; i++) {
@@ -46,7 +46,7 @@ public abstract class FIRFilter {
         return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().multipliedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
-    private Signal filter(final Signal signal, final Signal filterImpulseResponse, final int M) {
+    private Signal<Double> filter(final Signal<Double> signal, final Signal<Double> filterImpulseResponse, final int M) {
         Signal convolution = Filters.convolute(filterImpulseResponse, signal);
 
         List<Double> newConvolutionValues = new ArrayList<>();
@@ -63,5 +63,5 @@ public abstract class FIRFilter {
 
     protected abstract double modulate(int index);
 
-    protected abstract int getK(final double sampleFrequency, final double frequency);
+    protected abstract double getK(final double sampleFrequency, final double frequency);
 }

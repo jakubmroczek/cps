@@ -179,7 +179,7 @@ public class DistanceSimulation {
 
 
         System.out.println("Czas " + duration);
-        System.out.println("Próbka " + value);
+        System.out.println("Próbka " + value    );
 
         samples.add(value);
 

@@ -7,7 +7,7 @@ public class LowPassFilter extends FIRFilter {
     }
 
     @Override
-    protected int getK(double sampleFrequency, double frequency)  {
-        return (int) (sampleFrequency / frequency);
+    protected double getK(double sampleFrequency, double frequency)  {
+        return  (sampleFrequency / frequency);
     }
 }

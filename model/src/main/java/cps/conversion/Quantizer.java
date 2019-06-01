@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Quantizer {
-    public static Signal quantize(final Signal signal, final int bits) {
+    public static Signal<Double> quantize(final Signal<Double> signal, final int bits) {
 
         List<Double> values = signal.getSamples();
         int levels = (int) (Math.pow(2, bits)) - 1;
@@ -16,10 +16,10 @@ public class Quantizer {
 
         double span = (maxValue - minValue) / levels;
         List<Double> newValues = new ArrayList<>();
-        for (int i = 0; i < values.size(); i++) {
-            newValues.add(minValue + Math.round((values.get(i) - minValue) / span) * span);
+        for (Double value : values) {
+            newValues.add(minValue + Math.round((value - minValue) / span) * span);
         }
-        return new Signal(signal.getType(), signal.getDurationInNs(), signal.getSamplingPeriod(), newValues);
+        return new Signal<>(signal.getType(), signal.getDurationInNs(), signal.getSamplingPeriod(), newValues);
     }
 
 }

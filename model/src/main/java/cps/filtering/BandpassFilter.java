@@ -7,7 +7,7 @@ public class BandpassFilter extends FIRFilter {
     }
 
     @Override
-    protected int getK(double sampleFrequency, double frequency) {
-        return (int) ((4 * sampleFrequency) / (sampleFrequency - 4 * frequency));
+    protected double getK(double sampleFrequency, double frequency) {
+        return  ((4 * sampleFrequency) / (sampleFrequency - 4 * frequency));
     }
 }

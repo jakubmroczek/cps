@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-public class Signal {
+public class Signal<T> {
 
     public enum Type {
         CONTINUOUS, DISCRETE
@@ -20,20 +20,20 @@ public class Signal {
     @Getter private Type type;
     @Getter private Duration durationInNs;
     @Getter private Duration samplingPeriod;
-    @Getter private List<Double> samples;
+    @Getter private List<T> samples;
 
     //TODO: Investigate if can be protected
     public Signal() {
     }
 
-    public Signal(Type type, Duration durationInNs, Duration samplingPeriod, List<Double> samples) {
+    public Signal(Type type, Duration durationInNs, Duration samplingPeriod, List<T> samples) {
         this.type = type;
         this.durationInNs = durationInNs;
         this.samplingPeriod = samplingPeriod;
         this.samples = samples;
     }
 
-    public static Signal create(Type type, Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
+    public static<T> Signal create(Type type, Function<Double, T> function, Duration durationInNs, Duration samplingPeriodInNs) {
 
         if (type == Type.CONTINUOUS) {
             return createContinousSignal(function, durationInNs, samplingPeriodInNs);
@@ -43,10 +43,10 @@ public class Signal {
 
     }
 
-    public static Signal createContinousSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
+    public static<T> Signal createContinousSignal(Function<Double, T> function, Duration durationInNs, Duration samplingPeriodInNs) {
         Duration time = Duration.ZERO;
 
-        List<Double> samples = new ArrayList<>();
+        List<T> samples = new ArrayList<>();
 
         while (time.compareTo(durationInNs) <= 0) {
             double timeInNs = time.toNanos();
@@ -54,14 +54,14 @@ public class Signal {
             time = time.plus(samplingPeriodInNs);
         }
 
-        return new Signal(Type.CONTINUOUS, durationInNs, samplingPeriodInNs, samples);
+        return new Signal<T>(Type.CONTINUOUS, durationInNs, samplingPeriodInNs, samples);
     }
 
-    public static Signal createDiscreteSignal(Function<Double, Double> function, Duration durationInNs, Duration samplingPeriodInNs) {
+    public static<T> Signal createDiscreteSignal(Function<Double, T> function, Duration durationInNs, Duration samplingPeriodInNs) {
 
         long size = durationInNs.toNanos() / samplingPeriodInNs.toNanos();
-        List<Double> samples = LongStream.range(0, size).mapToObj(n -> function.apply((double) n)).collect(Collectors.toList());
-        return new Signal(Type.DISCRETE, durationInNs, samplingPeriodInNs, samples);
+        List<T> samples = LongStream.range(0, size).mapToObj(n -> function.apply((double) n)).collect(Collectors.toList());
+        return new Signal<T>(Type.DISCRETE, durationInNs, samplingPeriodInNs, samples);
     }
 
 }
