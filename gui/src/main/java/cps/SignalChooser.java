@@ -3,6 +3,7 @@ package cps;
 import cps.model.FunctionFactory;
 import cps.model.Signal;
 import cps.model.SignalArgs;
+import cps.util.Conversions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -176,8 +178,12 @@ public class SignalChooser extends VBox {
         removeAllSignalParameters();
         getChildren().add(durationSignalParameter);
         getChildren().add(samplingFrequencySignalParameter);
-        durationSignalParameter.getParameterValue().setText(signal.getDurationInNs().toString());
-        samplingFrequencySignalParameter.getParameterValue().setText(signal.getSamplingPeriod().toString());
+
+        double durationInSeconds = (signal.getDurationInNs().toNanos() / 1_000_000_000.0);
+        double samplingFrequency = Conversions.toFrequency(signal.getSamplingPeriod());
+        durationSignalParameter.getParameterValue().setText(String.format(Locale.US, "%.2f", durationInSeconds));
+        samplingFrequencySignalParameter.getParameterValue().setText(String.format(Locale.US, "%.2f", samplingFrequency));
+
         signalList.setValue(title);
     }
 
