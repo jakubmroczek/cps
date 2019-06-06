@@ -137,7 +137,7 @@ public class MainViewController {
     }
 
     private Signal getFilteredSignal() {
-        return signal;
+        return new Signal(signal);
     }
 
     private WindowFunction getFilterWindowFunction() {
@@ -229,7 +229,17 @@ public class MainViewController {
     public void display() {
         try {
             setCssSingleSignal(bitsValue.getScene());
+
             Function<Double, Double> function = basicSignalChooser.creatFunction();
+            //Workaround na sygnal zaladowny z pliku
+            if (function == null) {
+                setCssSingleSignal(bitsValue.getScene());
+                plotSignal(signal, true);
+                drawHistogram(signal);
+                setCssSingleSignal(bitsValue.getScene());
+                return;
+            }
+
             SignalArgs args = basicSignalChooser.getSignalArgs();
 
             Duration durationInNs = Duration.ofNanos((long) (basicSignalChooser.getDurationInSeconds() * 1_000_000_000));
@@ -301,29 +311,6 @@ public class MainViewController {
         }
 
         if (clearChart) chart.getData().clear();
-        chart.getData().add(series);
-    }
-
-    private void plotSignal(InterpolatedSignal signal) {
-        XYChart.Series series = new XYChart.Series();
-
-        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-
-        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-        if (signal.getSamples().size() != 1) {
-            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-        }
-
-        double step = 1.0;
-        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
-            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-
-        double current = 0.0;
-        for (int j = 0; current < signal.getSamples().size(); current += step, j++) {
-            double y = signal.getSamples().get((int) current);
-            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
-        }
-
         chart.getData().add(series);
     }
 

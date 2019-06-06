@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +25,14 @@ public class Signal {
 
     //TODO: Investigate if can be protected
     public Signal() {
+    }
+
+    public Signal(Signal other) {
+        this.type = other.type;
+        this.durationInNs = other.durationInNs;
+        this.samplingPeriod = other.samplingPeriod;
+        this.samples = new ArrayList<>();
+        other.samples.forEach(x -> this.samples.add(x));
     }
 
     public Signal(Type type, Duration durationInNs, Duration samplingPeriod, List<Double> samples) {

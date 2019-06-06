@@ -86,6 +86,12 @@ public class SignalChooser extends VBox {
             SignalArgs args = getSignalArgs();
             String selection = signalList.getSelectionModel().getSelectedItem();
             String function = LABEL_TO_SIGNAL_MAP.get(selection);
+
+            //Chamski workaround
+            if (function == null) {
+                return null;
+            }
+
             return FunctionFactory.createFunction(function, args);
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception);
