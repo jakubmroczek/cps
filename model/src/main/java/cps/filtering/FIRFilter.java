@@ -15,10 +15,16 @@ public abstract class FIRFilter {
     // TODO: The last three arguments are not elegant, maybe a DTO should be introduced
     public List<Signal> filter(final Signal signal, final int M, final double frequency, final WindowFunction windowFunction) {
         Signal filterImpulseResponse = createFilterImpulseResponse(signal, M, frequency, windowFunction);
+        System.out.println("start");
+        filterImpulseResponse.getSamples().forEach(System.out::println);
+        System.out.println("koniec");
+
+
         Signal filteredSignal = filter(signal, filterImpulseResponse, M);
 
         ArrayList<Signal> signals = new ArrayList<>();
         signals.add(filterImpulseResponse);
+
         signals.add(filteredSignal);
 
         return signals;
@@ -38,7 +44,10 @@ public abstract class FIRFilter {
                 newSample = sin((2.0 * Math.PI * (i - (M - 1) / 2)) / K) / (Math.PI * (i - (M - 1) / 2));
             }
             newSample *= windowFunction.apply(i, M);
-            newSample *= modulate(i - (M - 1) / 2);
+            var multiplicant = modulate(i - (M - 1) / 2);
+            System.out.println(multiplicant);
+             newSample *= multiplicant;
+
 
             newValues.add(newSample);
         }
