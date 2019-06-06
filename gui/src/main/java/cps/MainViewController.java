@@ -228,17 +228,15 @@ public class MainViewController {
     @FXML
     public void display() {
         try {
-            setCssSingleSignal(bitsValue.getScene());
-
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             //Workaround na sygnal zaladowny z pliku
             if (function == null) {
-                setCssSingleSignal(bitsValue.getScene());
                 plotSignal(signal, true);
                 drawHistogram(signal);
-                setCssSingleSignal(bitsValue.getScene());
                 return;
             }
+
+            setCssSingleSignal(bitsValue.getScene());
 
             SignalArgs args = basicSignalChooser.getSignalArgs();
 
