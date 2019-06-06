@@ -46,7 +46,7 @@ public abstract class FIRFilter {
         return new Signal(Signal.Type.DISCRETE, signal.getSamplingPeriod().multipliedBy(M), signal.getSamplingPeriod(),  newValues);
     }
 
-    private Signal<Double> filter(final Signal<Double> signal, final Signal<Double> filterImpulseResponse, final int M) {
+    private Signal filter(final Signal signal, final Signal filterImpulseResponse, final int M) {
         Signal convolution = Filters.convolute(filterImpulseResponse, signal);
 
         List<Double> newConvolutionValues = new ArrayList<>();
