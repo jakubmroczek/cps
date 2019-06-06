@@ -368,7 +368,7 @@ public class MainViewController {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Wczytaj sygnał");
-        fileChooser.getExtensionFilters().addAll(jsonExtension, binaryExtension);
+        fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
 
         File file = fileChooser.showOpenDialog(this.stage);
 
