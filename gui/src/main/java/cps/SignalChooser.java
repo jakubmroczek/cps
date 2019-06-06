@@ -180,9 +180,9 @@ public class SignalChooser extends VBox {
         getChildren().add(samplingFrequencySignalParameter);
 
         double durationInSeconds = (signal.getDurationInNs().toNanos() / 1_000_000_000.0);
-        double samplingFrequency = Conversions.toFrequency(signal.getSamplingPeriod());
+        long samplingFrequency = (long)Conversions.toFrequency(signal.getSamplingPeriod());
         durationSignalParameter.getParameterValue().setText(String.format(Locale.US, "%.2f", durationInSeconds));
-        samplingFrequencySignalParameter.getParameterValue().setText(String.format(Locale.US, "%.2f", samplingFrequency));
+        samplingFrequencySignalParameter.getParameterValue().setText(String.format(Locale.US, "%d", samplingFrequency));
 
         signalList.setValue(title);
     }
