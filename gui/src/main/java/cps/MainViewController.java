@@ -6,6 +6,7 @@ import cps.conversion.Error;
 import cps.filter.ImpulseResponseController;
 import cps.filtering.Filters;
 import cps.model.*;
+import cps.util.Conversions;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static cps.util.Conversions.*;
 import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
 
@@ -107,15 +109,8 @@ public class MainViewController {
             filterHResponse = signals.get(0);
             filteredSignal = signals.get(1);
 
-            //TODO: Maybe it shoudl be a different function?
-            //TODO: Maybe more charts wil be plotted
-            // Checking if was previously generated
-//            if (chart.getData().size() == 2) {
-//                chart.getData().clear();
-//                plotSignal(signal, false);
-//            }
-
             plotSignal(filteredSignal, true);
+            drawHistogram(filteredSignal);
 
         } catch (IllegalArgumentException e ) {
             //TODO: Generalize this method, it handles all exception not only thrown during signal creation
@@ -352,7 +347,7 @@ public class MainViewController {
             SignalWriter.writeJSON(file, signal);
         } else {
             Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
-            SignalWriter.writeBinary(file, f, basicSignalChooser.getSamplingFrequencyInHz(), signal);
+            SignalWriter.writeBinary(file, f, (long)toFrequency(signal.getSamplingPeriod()), signal);
         }
     }
 
