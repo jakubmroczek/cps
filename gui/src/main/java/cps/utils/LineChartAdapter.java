@@ -3,10 +3,14 @@ package cps.utils;
 import cps.model.Signal;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import org.apache.commons.math3.complex.Complex;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.min;
+import static java.lang.Math.sin;
+import static java.util.stream.Collectors.toList;
 
 public class LineChartAdapter {
 
@@ -20,6 +24,31 @@ public class LineChartAdapter {
         double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep(signal);
         plot(signal.getSamples(), signalPointsIndexStep, singlePointDurationInSeconds);
+    }
+
+    public void plotRe(Signal<Complex> signal) {
+        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        List<Double> imParts = signal.getSamples().stream().map(x -> (double) x.getReal()).collect(toList());
+        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+    }
+
+    public void plotIm(Signal<Complex> signal) {
+        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        List<Double> imParts = signal.getSamples().stream().map(Complex::getImaginary).collect(toList());
+        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+    }
+
+    public void plotModule(Signal<Complex> signal) {
+        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        List<Double> imParts = signal.getSamples().stream().map(Complex::abs).collect(toList());
+        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+    }
+
+    public void plotArgument(Signal<Complex> signal) {
+//        throw new UnsupportedOperationException();
     }
 
     public void clear() {
@@ -56,6 +85,24 @@ public class LineChartAdapter {
     }
 
     private double getSignalPointsIndexStep(Signal<Double> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double step = 1.0;
+        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
+            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
+        }
+        return step;
+    }
+
+    private double getXDistanceBetweenSignalPoints1(Signal<Complex> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
+        if (signal.getSamples().size() != 1) {
+            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
+        }
+        return singlePointDurationInSeconds;
+    }
+
+    private double getSignalPointsIndexStep1(Signal<Complex> signal) {
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
         double step = 1.0;
         if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {

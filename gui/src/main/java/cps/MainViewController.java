@@ -32,6 +32,7 @@ import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
 
 import cps.filtering.*;
+import org.apache.commons.math3.complex.Complex;
 
 public class MainViewController {
 
@@ -71,7 +72,7 @@ public class MainViewController {
     @FXML
     private LineChart<Number, Number> chart,
             reLineChart,
-            imLinechart,
+            imLineChart,
             moduleLineChart,
             phaseLineChart;
 
@@ -102,6 +103,10 @@ public class MainViewController {
 
     private int histogramBins = 10;
     private Signal filteredSignal;
+    private LineChartAdapter reChartAdapter;
+    private LineChartAdapter imChartAdapter;
+    private LineChartAdapter moduleChartAdapter;
+    private LineChartAdapter argumentChartAdapter;
 
     @FXML
     public void filter() {
@@ -166,6 +171,20 @@ public class MainViewController {
     private int getFilterM() throws IllegalArgumentException{
         var m = mTextField.getText();
         return Integer.parseInt(m);
+    }
+
+    private void plot(Signal<Complex> signal) {
+        reChartAdapter.clear();
+        reChartAdapter.plotRe(signal);
+
+        imChartAdapter.clear();
+        imChartAdapter.plotIm(signal);
+
+        moduleChartAdapter.clear();
+        moduleChartAdapter.plotModule(signal);
+
+        argumentChartAdapter.clear();
+        argumentChartAdapter.plotArgument(signal);
     }
 
     @FXML
@@ -246,6 +265,12 @@ public class MainViewController {
     @FXML
     public void display() {
         try {
+            ///
+
+                var complex = Tmp.getTestSignal();
+                plot(complex);
+
+            ///
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             //Workaround na sygnal zaladowny z pliku
             if (function == null) {
@@ -272,6 +297,7 @@ public class MainViewController {
 
             chartAdapter.clear();
             chartAdapter.plot(signal);
+
             drawHistogram(signal);
             clearSignalMeasurements();
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
@@ -534,6 +560,10 @@ public class MainViewController {
 
         //Adapters
          chartAdapter = new LineChartAdapter(chart);
+         reChartAdapter = new LineChartAdapter(reLineChart);
+         imChartAdapter = new LineChartAdapter(imLineChart);
+         moduleChartAdapter = new LineChartAdapter(moduleLineChart);
+         argumentChartAdapter = new LineChartAdapter(phaseLineChart);
     }
 
     private void initializeAllComboBox() {
