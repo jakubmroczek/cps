@@ -7,6 +7,7 @@ import cps.filter.ImpulseResponseController;
 import cps.filtering.Filters;
 import cps.model.*;
 import cps.util.Conversions;
+import cps.utils.LineChartAdapter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -75,6 +76,9 @@ public class MainViewController {
             phaseLineChart;
 
 
+    //Adapter from the char object
+    LineChartAdapter chartAdapter;
+
     @FXML
     private ComboBox signalOperationList, filterTypeComboBox, windowTypeComboBox;
     @FXML
@@ -115,7 +119,9 @@ public class MainViewController {
             filterHResponse = signals.get(0);
             filteredSignal = signals.get(1);
 
-            plotSignal(filteredSignal, true);
+            chartAdapter.clear();
+            chartAdapter.plot(filteredSignal);
+
             drawHistogram(filteredSignal);
 
         } catch (IllegalArgumentException e ) {
@@ -174,7 +180,10 @@ public class MainViewController {
         interpolatedSignal = quantizedSignal = sampledSignal = Signal.createContinousSignal(function, durationInNs, samplingPeriodInNs);
 
         setCssSamplingSignal(bitsValue.getScene());
-        plotSignal(sampledSignal, true);
+
+        chartAdapter.clear();
+        chartAdapter.plot(sampledSignal);
+
         drawHistogram(sampledSignal);
 
         clearSignalMeasurements();
@@ -188,8 +197,8 @@ public class MainViewController {
 
         setCssSamplingSignal(bitsValue.getScene());
 
-        chart.getData().clear();
-        plotSignal(quantizedSignal, false);
+        chartAdapter.clear();
+        chartAdapter.plot(quantizedSignal);
 
         drawHistogram(quantizedSignal);
         clearSignalMeasurements();
@@ -208,8 +217,9 @@ public class MainViewController {
 
         interpolatedSignal = Reconstructor.firstHoldInterpolation(quantizedSignal, interpolationPeriodInNs);
 
-        chart.getData().clear();
-        plotSignal(interpolatedSignal, false);
+        chartAdapter.clear();
+        chartAdapter.plot(interpolatedSignal);
+
         clearSignalMeasurements();
         drawHistogram(interpolatedSignal);
     }
@@ -224,9 +234,11 @@ public class MainViewController {
 
         reconstructedSignal = Reconstructor.reconstruct(quantizedSignal, frequencyInNs, probes);
 
-        chart.getData().clear();
         setCssLineSignals(bitsValue.getScene());
-        plotSignal(reconstructedSignal, false);
+
+        chartAdapter.clear();
+        chartAdapter.plot(reconstructedSignal);
+
         drawHistogram(reconstructedSignal);
         clearSignalMeasurements();
     }
@@ -237,7 +249,8 @@ public class MainViewController {
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             //Workaround na sygnal zaladowny z pliku
             if (function == null) {
-                plotSignal(signal, true);
+                chartAdapter.clear();
+                chartAdapter.plot(signal);
                 drawHistogram(signal);
                 return;
             }
@@ -257,7 +270,8 @@ public class MainViewController {
                 setCssDiscrete(bitsValue.getScene());
             }
 
-            plotSignal(signal, true);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
             drawHistogram(signal);
             clearSignalMeasurements();
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
@@ -292,30 +306,6 @@ public class MainViewController {
         } else {
             return SignalMeasurement.measure(signal);
         }
-    }
-
-    private void plotSignal(Signal<Double> signal, boolean clearChart) {
-        XYChart.Series series = new XYChart.Series();
-
-        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-
-        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-        if (signal.getSamples().size() != 1) {
-            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-        }
-
-        double step = 1.0;
-        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART)
-            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-
-        double current = 0.0;
-        for (int j = 0; current < signal.getSamples().size(); current += step, j++) {
-            double y = signal.getSamples().get((int) current);
-            series.getData().add(new XYChart.Data(singlePointDurationInSeconds * j, y));
-        }
-
-        if (clearChart) chart.getData().clear();
-        chart.getData().add(series);
     }
 
     @FXML
@@ -353,7 +343,8 @@ public class MainViewController {
                 setCssDiscrete(bitsValue.getScene());
             }
 
-            plotSignal(signal, true);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
             drawHistogram(signal);
             //TODO: We do not have info about function so we must use for the discrete signal or maybe
             //TODO: Or functions can be merged together
@@ -427,7 +418,8 @@ public class MainViewController {
                 setCssDiscrete(bitsValue.getScene());
             }
 
-            plotSignal(signal, true);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
             drawHistogram(signal);
             //TODO: We do not have info about function so we must use for the discrete signal or maybe
             //TODO: Or functions can be merged together
@@ -501,7 +493,8 @@ public class MainViewController {
                 setCssDiscrete(bitsValue.getScene());
             }
 
-            plotSignal(signal, true);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
             drawHistogram(signal);
             //TODO: We do not have info about function so we must use for the discrete signal or maybe
             //TODO: Or functions can be merged together
@@ -538,6 +531,9 @@ public class MainViewController {
         WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(1), WindowFunctionFactory.HAMMING_WINDOW);
         WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(2), WindowFunctionFactory.HANNING_WINDOW);
         WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(3), WindowFunctionFactory.BLACKMAN_WINDOW);
+
+        //Adapters
+         chartAdapter = new LineChartAdapter(chart);
     }
 
     private void initializeAllComboBox() {
