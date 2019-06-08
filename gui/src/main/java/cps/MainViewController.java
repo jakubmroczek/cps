@@ -68,7 +68,13 @@ public class MainViewController {
     private Histogram histogram;
 
     @FXML
-    private LineChart<Number, Number> chart;
+    private LineChart<Number, Number> chart,
+            reLineChart,
+            imLinechart,
+            moduleLineChart,
+            phaseLineChart;
+
+
     @FXML
     private ComboBox signalOperationList, filterTypeComboBox, windowTypeComboBox;
     @FXML

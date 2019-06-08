@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--<?import cps.SignalChooser?>-->
+<?import cps.SignalChooser?>
 
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -10,6 +10,8 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -18,27 +20,94 @@
 
 <AnchorPane prefHeight="713.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
-        <VBox layoutX="206.0" onDragDropped="#onHistogramBinsChanged" prefHeight="683.0" prefWidth="477.0">
-            <children>
-                <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
-                    <xAxis>
-                        <NumberAxis label="t[s]" side="BOTTOM" fx:id="xAxis" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis fx:id="yAxis" label="A" prefWidth="30.0" side="LEFT" />
-                    </yAxis>
-                </LineChart>
-                <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="453.0">
-                    <xAxis>
-                        <CategoryAxis side="BOTTOM" />
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis side="LEFT" />
-                    </yAxis>
-                </BarChart>
-                <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" prefHeight="38.0" prefWidth="360.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
-            </children>
-        </VBox>
+      <TabPane layoutX="203.0" prefHeight="718.0" prefWidth="478.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Untitled Tab 1">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="683.0" prefWidth="477.0">
+                           <children>
+                              <LineChart fx:id="chart" prefHeight="422.0" prefWidth="300.0">
+                                 <xAxis>
+                                    <NumberAxis label="t[s]" side="BOTTOM" fx:id="xAxis" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis fx:id="yAxis" label="A" prefWidth="30.0" side="LEFT" />
+                                 </yAxis>
+                              </LineChart>
+                              <BarChart fx:id="histogramChart" prefHeight="398.0" prefWidth="453.0">
+                                 <xAxis>
+                                    <CategoryAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </BarChart>
+                              <Slider fx:id="histogramBinsSlider" blockIncrement="1.0" majorTickUnit="5.0" max="20.0" min="5.0" minorTickCount="4" onMouseReleased="#onHistogramBinsChanged" prefHeight="38.0" prefWidth="478.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="10.0" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Untitled Tab 2">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="683.0" prefWidth="477.0">
+                           <children>
+                              <LineChart fx:id="reLineChart" prefHeight="422.0" prefWidth="300.0">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis prefWidth="30.0" side="LEFT" />
+                                 </yAxis>
+                              </LineChart>
+                              <LineChart fx:id="imLineChart" prefHeight="422.0" prefWidth="300.0">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis prefWidth="30.0" side="LEFT" />
+                                 </yAxis>
+                              </LineChart>
+                           </children>
+                        </VBox>
+                     </children></AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Untitled Tab 2">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="683.0" prefWidth="477.0">
+                           <children>
+                              <LineChart fx:id="moduleLineChart" prefHeight="422.0" prefWidth="300.0">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis prefWidth="30.0" side="LEFT" />
+                                 </yAxis>
+                              </LineChart>
+                              <LineChart fx:id="phaseLineChart" prefHeight="422.0" prefWidth="300.0">
+                                 <xAxis>
+                                    <NumberAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis prefWidth="30.0" side="LEFT" />
+                                 </yAxis>
+                              </LineChart>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
         <VBox layoutX="690.0" layoutY="283.0" prefHeight="188.0" prefWidth="200.0">
             <children>
                 <HBox prefHeight="32.0" prefWidth="194.0">
@@ -74,16 +143,16 @@
             </children>
         </VBox>
         <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
-        <Button fx:id="displayButton" layoutX="685.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
-        <!--<SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />-->
-        <!--<SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />-->
+        <Button fx:id="displayButton" layoutX="693.0" layoutY="44.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
+        <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
+        <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
         <Button fx:id="executeButton" layoutX="787.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="30.0" prefWidth="80.0" text="Funkcja" />
-        <Button fx:id="saveButton" layoutX="684.0" layoutY="11.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
+        <Button fx:id="saveButton" layoutX="693.0" layoutY="11.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
         <Button fx:id="multiplyButton" layoutX="787.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#divide" prefHeight="30.0" prefWidth="80.0" text="/" />
         <Button fx:id="subtractButton" layoutX="787.0" layoutY="81.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#subtract" prefHeight="30.0" prefWidth="80.0" text="-" />
-        <Button fx:id="divideButton" layoutX="685.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
+        <Button fx:id="divideButton" layoutX="693.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
         <Button fx:id="loadButton" layoutX="787.0" layoutY="11.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
-        <Button fx:id="addButton" layoutX="685.0" layoutY="81.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
+        <Button fx:id="addButton" layoutX="693.0" layoutY="80.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
         <HBox layoutX="890.0" layoutY="13.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Button fx:id="sampleButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sample" prefHeight="26.0" prefWidth="107.0" text="Próbkuj [Hz]" />
@@ -179,7 +248,7 @@
             <Button layoutX="10.0" layoutY="128.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#showH" prefHeight="31.0" prefWidth="198.0" text="Odpowiedź impulsowa filtra" />
          </children>
       </VBox>
-      <Button layoutX="684.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
+      <Button layoutX="693.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
       <Button layoutX="787.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#correlate" prefHeight="30.0" prefWidth="80.0" text="Korelacja" />
     </children>
 </AnchorPane>
