@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static cps.transform.Transformations.dft;
 import static cps.util.Conversions.*;
 import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
@@ -265,12 +266,6 @@ public class MainViewController {
     @FXML
     public void display() {
         try {
-            ///
-
-                var complex = Tmp.getTestSignal();
-                plot(complex);
-
-            ///
             Function<Double, Double> function = basicSignalChooser.creatFunction();
             //Workaround na sygnal zaladowny z pliku
             if (function == null) {
@@ -303,6 +298,12 @@ public class MainViewController {
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
             displaySignalMeasurement(signalMeasurement);
 
+            ///
+
+            var complex = dft(signal);
+            plot(complex);
+
+            ///
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
         }

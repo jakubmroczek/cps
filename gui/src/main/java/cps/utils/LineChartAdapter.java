@@ -6,8 +6,11 @@ import javafx.scene.chart.XYChart;
 import org.apache.commons.math3.complex.Complex;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+import static java.lang.Math.atan;
 import static java.lang.Math.min;
 import static java.lang.Math.sin;
 import static java.util.stream.Collectors.toList;
@@ -27,28 +30,32 @@ public class LineChartAdapter {
     }
 
     public void plotRe(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
-        List<Double> imParts = signal.getSamples().stream().map(x -> (double) x.getReal()).collect(toList());
+        List<Double> imParts = signal.getSamples().stream().map(Complex::getReal).collect(toList());
         plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
     }
 
     public void plotIm(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
         List<Double> imParts = signal.getSamples().stream().map(Complex::getImaginary).collect(toList());
         plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
     }
 
     public void plotModule(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = signal.getSamplingPeriod().toMillis();
+        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
         List<Double> imParts = signal.getSamples().stream().map(Complex::abs).collect(toList());
         plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
     }
 
     public void plotArgument(Signal<Complex> signal) {
-//        throw new UnsupportedOperationException();
+        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        Function<Integer, Double> mapper = i -> atan(signal.getSamples().get(i).getImaginary() / signal.getSamples().get(i).getReal());
+        List<Double> argumentsList = IntStream.range(0, signal.getSamples().size()).mapToDouble(i -> mapper(i)).collect(toList());
+        plot(argumentsList, signalPointsIndexStep, singlePointDurationInSeconds);
     }
 
     public void clear() {
