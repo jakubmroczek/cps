@@ -32,7 +32,6 @@ public class Transformations {
             im /= N;
 
             transformedSamples.add(new Complex(re, im));
-            ;
         }
 
         return new Signal<>(signal.getType(),
@@ -42,7 +41,26 @@ public class Transformations {
     }
 
     public static Signal<Double> idft(Signal<Complex>  signal) {
-        return null;
+        List<Double> transformationResults = new ArrayList<>(signal.getSamples().size());
+        var N = signal.getSamples().size();
+
+        for (int m = 0; m < N; m++) {
+            var resultSample = 0.0;
+            for (int n = 0; n < N; n++) {
+                double angle = 2 * Math.PI * n * m / N;
+                resultSample +=
+                        signal.getSamples().get(n).getReal() * cos(angle)
+                                - signal.getSamples().get(n).getImaginary() * sin(angle);
+            }
+            transformationResults.add(resultSample);
+        }
+
+        var frequency = signal.getSamplingPeriod().dividedBy(N);
+
+        return new Signal<>(signal.getType(),
+                signal.getDurationInNs().multipliedBy(N),
+                frequency,
+                transformationResults);
     }
 
     public static Signal<Complex> fft(Signal<Double> signal) {

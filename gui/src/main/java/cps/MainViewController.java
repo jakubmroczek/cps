@@ -617,6 +617,7 @@ public class MainViewController {
             signal = idft(transformedSignal);
             chartAdapter.clear();
             chartAdapter.plot(signal);
+            drawHistogram(signal);
             wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
             System.out.println("idft");
         };
