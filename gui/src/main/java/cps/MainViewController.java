@@ -56,6 +56,14 @@ public class MainViewController {
             "Blackman"
     );
 
+    private static final ObservableList<String> TRANSFORM_TYPES = FXCollections.observableArrayList(
+        "DFT",
+        "IDFT",
+        "FFT Z DECYMACJĄ W CZASIE",
+        "IFFT Z DECYMACJĄ W CZASIE"
+    );
+    private static final Map<String, Runnable> RUNNABLE_ON_TRANSFORM = new HashMap<>();
+
     public static final Map<String, String> WINDOW_TYPES_TO_FACTORY_MAP = new HashMap<>();
 
     private Stage stage;
@@ -70,6 +78,8 @@ public class MainViewController {
 
     private Histogram histogram;
 
+    private Signal<Complex> transformedSignal;
+
     @FXML
     private LineChart<Number, Number> chart,
             reLineChart,
@@ -82,7 +92,10 @@ public class MainViewController {
     LineChartAdapter chartAdapter;
 
     @FXML
-    private ComboBox signalOperationList, filterTypeComboBox, windowTypeComboBox;
+    private ComboBox signalOperationList,
+            filterTypeComboBox,
+            windowTypeComboBox,
+            transformComboBox;
     @FXML
     private Label averageValueLabel, averageAbsoluteValueLabel, averagePowerValueLabel, varianceValueLabel, effectivePowerValueLabel;
     @FXML
@@ -108,6 +121,13 @@ public class MainViewController {
     private LineChartAdapter imChartAdapter;
     private LineChartAdapter moduleChartAdapter;
     private LineChartAdapter argumentChartAdapter;
+
+    @FXML
+    public void transform() {
+        var transformType = (String) transformComboBox.getSelectionModel().getSelectedItem();
+        var command = RUNNABLE_ON_TRANSFORM.get(transformType);
+        command.run();
+    }
 
     @FXML
     public void filter() {
@@ -568,12 +588,40 @@ public class MainViewController {
          imChartAdapter = new LineChartAdapter(imLineChart);
          moduleChartAdapter = new LineChartAdapter(moduleLineChart);
          argumentChartAdapter = new LineChartAdapter(phaseLineChart);
+
+        initializeTransforms();
+    }
+
+    private void initializeTransforms() {
+        Runnable command;
+
+        //DFT
+        command = () -> {
+            transformedSignal = dft(signal);
+            plot(transformedSignal);
+            //TODO: Add info about computation time
+            System.out.println("po transformacji");
+        };
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(0), command);
+
+        command = null;
+
+        //IDFT
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(1), command);
+
+        //FFT Z DECYMACJJA W CZASIE
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(2), command);
+
+        //IFFT Z DECYMACJA W CZASIE
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(3), command);
+
     }
 
     private void initializeAllComboBox() {
         initializeComboBox(signalOperationList, AVAILABLE_SIGNAL_OPERATIONS);
         initializeComboBox(filterTypeComboBox, FILTER_TYPES);
         initializeComboBox(windowTypeComboBox, WINDOW_TYPES);
+        initializeComboBox(transformComboBox, TRANSFORM_TYPES);
     }
 
     private void initializeComboBox(ComboBox comboBox, ObservableList<String> content) {

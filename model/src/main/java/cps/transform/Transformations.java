@@ -25,12 +25,14 @@ public class Transformations {
 
                 re += signal.getSamples().get(n) * cos(angle);
                 im += signal.getSamples().get(n) * sin(angle);
-            };
+            }
+            ;
 
             re /= N;
             im /= N;
 
-            transformedSamples.add(new Complex(re, im));;
+            transformedSamples.add(new Complex(re, im));
+            ;
         }
 
         return new Signal<>(signal.getType(),
@@ -38,4 +40,9 @@ public class Transformations {
                 signal.getSamplingPeriod().dividedBy(N),
                 transformedSamples);
     }
+
+    public static Signal<Complex> fft(Signal<Double> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
 }

@@ -250,5 +250,12 @@
       </VBox>
       <Button layoutX="693.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
       <Button layoutX="787.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#correlate" prefHeight="30.0" prefWidth="80.0" text="Korelacja" />
+      <VBox layoutX="904.0" layoutY="514.0" prefHeight="84.0" prefWidth="200.0">
+         <children>
+            <ComboBox fx:id="transformComboBox" prefHeight="26.0" prefWidth="203.0" />
+            <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#1f93ff00" height="5.0" layoutX="10.0" layoutY="123.0" stroke="TRANSPARENT" strokeType="INSIDE" width="203.0" />
+            <Button maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#transform" prefHeight="31.0" prefWidth="198.0" text="Transformata" />
+         </children>
+      </VBox>
     </children>
 </AnchorPane>
