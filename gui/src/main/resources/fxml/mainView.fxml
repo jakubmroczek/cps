@@ -20,7 +20,7 @@
 
 <AnchorPane prefHeight="713.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
-      <TabPane layoutX="203.0" prefHeight="718.0" prefWidth="478.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane layoutX="203.0" prefHeight="718.0" prefWidth="478.0" tabClosingPolicy="UNAVAILABLE" fx:id="wykresyTabPane">
         <tabs>
           <Tab text="Untitled Tab 1">
             <content>

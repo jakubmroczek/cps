@@ -28,6 +28,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static cps.transform.Transformations.dft;
+import static cps.transform.Transformations.idft;
 import static cps.util.Conversions.*;
 import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
@@ -115,12 +116,18 @@ public class MainViewController {
     @FXML
     private SignalChooser basicSignalChooser, extraSignalChooser;
 
+    @FXML
+    private TabPane wykresyTabPane;
+
     private int histogramBins = 10;
     private Signal filteredSignal;
     private LineChartAdapter reChartAdapter;
     private LineChartAdapter imChartAdapter;
     private LineChartAdapter moduleChartAdapter;
     private LineChartAdapter argumentChartAdapter;
+
+    private static final int RE_AND_IM_TAB_INDEX = 1;
+    private static final int REAL_SIGNAL_TAB_INDEX = 0;
 
     @FXML
     public void transform() {
@@ -593,21 +600,29 @@ public class MainViewController {
     }
 
     private void initializeTransforms() {
+        //TODO: Add info about computation time
+
         Runnable command;
 
         //DFT
         command = () -> {
             transformedSignal = dft(signal);
             plot(transformedSignal);
-            //TODO: Add info about computation time
-            System.out.println("po transformacji");
+            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(0), command);
 
-        command = null;
-
         //IDFT
+        command = () -> {
+            signal = idft(transformedSignal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
+            System.out.println("idft");
+        };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(1), command);
+
+        command = null;
 
         //FFT Z DECYMACJJA W CZASIE
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(2), command);

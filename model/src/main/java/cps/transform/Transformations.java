@@ -41,6 +41,10 @@ public class Transformations {
                 transformedSamples);
     }
 
+    public static Signal<Double> idft(Signal<Complex>  signal) {
+        return null;
+    }
+
     public static Signal<Complex> fft(Signal<Double> signal) {
         throw new UnsupportedOperationException("not implemented");
     }
