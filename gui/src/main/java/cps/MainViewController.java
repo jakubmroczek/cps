@@ -300,7 +300,10 @@ public class MainViewController {
 
             ///
 
-            var complex = dft(signal);
+
+//            var complex = dft(signal);
+
+            Signal<Complex> complex  = Tmp.getTestSignal();
             plot(complex);
 
             ///

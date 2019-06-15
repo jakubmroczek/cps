@@ -11,7 +11,7 @@ public class Tmp {
 
     public static Signal<Complex> getTestSignal() {
         var args = SignalArgs.builder().amplitude(1.0)
-                .periodInNs(1_000_000_000_00.0).build();
+                .periodInNs(1_000_000_000.0).build();
         var function = FunctionFactory.createFunction(FunctionFactory.SINUSOIDAL, args);
 
         List<Complex> samples = new ArrayList<>();
