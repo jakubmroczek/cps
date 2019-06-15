@@ -53,8 +53,13 @@ public class LineChartAdapter {
     public void plotArgument(Signal<Complex> signal) {
         double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
-        Function<Integer, Double> mapper = i -> atan(signal.getSamples().get(i).getImaginary() / signal.getSamples().get(i).getReal());
-        List<Double> argumentsList = IntStream.range(0, signal.getSamples().size()).mapToDouble(i -> mapper(i)).collect(toList());
+
+        //TODO: What is is equal to zero
+        var argumentsList = signal.getSamples()
+                .stream()
+                .map(c -> atan(c.getImaginary() / c.getReal()))
+                .collect(toList());
+
         plot(argumentsList, signalPointsIndexStep, singlePointDurationInSeconds);
     }
 
