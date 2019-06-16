@@ -111,4 +111,12 @@ public class Transformations {
     public static Signal<Double> idct(Signal<Complex> signal) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    public static Signal<Complex> fastDCT(Signal<Double> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    public static Signal<Double> fastIDCT(Signal<Complex> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
