@@ -385,30 +385,39 @@ public class MainViewController {
             SignalWriter.writeJSON(file, signal);
         } else {
             Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
-            SignalWriter.writeBinary(file, f, (long)toFrequency(signal.getSamplingPeriod()), signal);
+            if(wykresyTabPane.getSelectionModel().isSelected(REAL_SIGNAL_TAB_INDEX))
+            {
+                SignalWriter.writeBinary(file, f, (long)toFrequency(signal.getSamplingPeriod()), signal);
+            } else {
+                SignalWriter.writeBinaryComplex(file, f, (long)toFrequency(transformedSignal.getSamplingPeriod()), transformedSignal);
+            }
         }
     }
 
     @FXML
     public void loadSignal() {
         try {
-            signal = loadFromFile();
+            if(wykresyTabPane.getSelectionModel().isSelected(REAL_SIGNAL_TAB_INDEX))
+            {
+                signal = loadFromFile();
 
-            if (signal.getType() == Signal.Type.CONTINUOUS) {
-                setCssContinous(bitsValue.getScene());
+                if (signal.getType() == Signal.Type.CONTINUOUS) {
+                    setCssContinous(bitsValue.getScene());
+                } else {
+                    setCssDiscrete(bitsValue.getScene());
+                }
+                //TODO: We do not have info about function so we must use for the discrete signal or maybe
+                //TODO: Or functions can be merged together
+                SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
+                displaySignalMeasurement(signalMeasurement);
+
+                basicSignalChooser.displaySignal(signal, "Zaladowany z pliku");
             } else {
-                setCssDiscrete(bitsValue.getScene());
+                transformedSignal = loadFromFile();
+                plot(transformedSignal);
             }
 
-            chartAdapter.clear();
-            chartAdapter.plot(signal);
-            drawHistogram(signal);
-            //TODO: We do not have info about function so we must use for the discrete signal or maybe
-            //TODO: Or functions can be merged together
-            SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
-            displaySignalMeasurement(signalMeasurement);
 
-            basicSignalChooser.displaySignal(signal, "Zaladowany z pliku");
         } catch (IOException e) {
             onSignalCreationException(e);
         }
