@@ -596,6 +596,10 @@ public class MainViewController {
          moduleChartAdapter = new LineChartAdapter(moduleLineChart);
          argumentChartAdapter = new LineChartAdapter(phaseLineChart);
 
+        reLineChart.getStylesheets().add("/styles/discrete.css");
+        imLineChart.getStylesheets().add("/styles/discrete.css");
+
+
         initializeTransforms();
     }
 
@@ -609,10 +613,6 @@ public class MainViewController {
             transformedSignal = dft(signal);
             plot(transformedSignal);
             wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
-
-            //Style
-            //TODO: It should not colidate with the rest
-            setCssDiscrete(bitsValue.getScene());
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(0), command);
 
