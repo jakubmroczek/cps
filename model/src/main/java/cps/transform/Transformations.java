@@ -42,7 +42,7 @@ public class Transformations {
                 transformedSamples);
     }
 
-    public static Signal<Double> idft(Signal<Complex>  signal) {
+    public static Signal<Double> idft(Signal<Complex> signal) {
         List<Double> transformationResults = new ArrayList<>(signal.getSamples().size());
         var N = signal.getSamples().size();
 
@@ -63,6 +63,32 @@ public class Transformations {
                 signal.getDurationInNs().multipliedBy(N),
                 frequency,
                 transformationResults);
+    }
+
+    private static Complex[] fft(Complex[] values) {
+        int N = values.length;
+        if (N == 1) {
+            return values;
+        }
+        int M = N / 2;
+        Complex[] even = new Complex[M];
+        Complex[] odd = new Complex[M];
+        for (int i = 0; i < M; i++) {
+            even[i] = values[2 * i];
+            odd[i] = values[2 * i + 1];
+        }
+        Complex[] Feven = fft(even);
+        Complex[] Fodd = fft(odd);
+
+        Complex[] res = new Complex[N];
+        for (int k = 0; k < N / 2; k++) {
+            double angle = -Math.PI * k * 2.0 / (N * 1.0);
+            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd[k]);
+            res[k] = Feven[k].add(exp);
+            res[k + N / 2] = Feven[k].subtract(exp);
+        }
+
+        return res;
     }
 
     public static Signal<Complex> fft(Signal<Double> signal) {
@@ -97,7 +123,34 @@ public class Transformations {
 //        }
 //
 //        return res;
-        throw new UnsupportedOperationException("not implemented");
+
+        int length = signal.getSamples().size();
+        int bits = (int) Math.ceil((Math.log(length) / Math.log(2)));
+        length = (int) Math.pow(2, (bits));
+        Complex[] values = new Complex[length];
+        for (int i = 0; i < signal.getSamples().size(); i++) {
+            values[i] = new Complex(signal.getSamples().get(i), 0.0);
+        }
+        for (int i = signal.getSamples().size(); i < length; i++) {
+            values[i] = new Complex(0.0, 0.0);
+        }
+
+        values = fft(values);
+
+        double[] realValues = new double[length];
+        double[] imaginaryValues = new double[length];
+        for (int i = 0; i < length; i++) {
+            realValues[i] = values[i].getReal() / (length * 1.0);
+            imaginaryValues[i] = values[i].getImaginary() / (length * 1.0);
+        }
+
+
+        List<Complex> transformationResults = Arrays.asList(values);
+
+        return new Signal<>(signal.getType(),
+                signal.getSamplingPeriod(),
+                signal.getSamplingPeriod().multipliedBy(length),
+                transformationResults);
     }
 
     public static Signal<Double> ifft(Signal<Complex> signal) {
