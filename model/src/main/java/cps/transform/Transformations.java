@@ -26,7 +26,6 @@ public class Transformations {
                 re += signal.getSamples().get(n) * cos(angle);
                 im += signal.getSamples().get(n) * sin(angle);
             }
-            ;
 
             re /= N;
             im /= N;

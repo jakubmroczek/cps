@@ -3,6 +3,7 @@ package cps;
 import org.apache.commons.math3.complex.Complex;
 import cps.model.*;
 
+import javax.management.RuntimeErrorException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,36 +33,50 @@ public class Tmp {
 
     public static Signal<Double> getTestDoubleSignal() {
         List<Double> samples = Arrays.asList(
-                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0,
                 5.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0
+                6.0,
+                7.0,
+                8.0,
+                9.0,
+                10.0
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0,
+//                0.0
         );
-        assert samples.size() == 32;
+        if (samples.size() != 10) {
+            throw new RuntimeException("nie rowne 32");
+        }
         return new Signal<>(Signal.Type.CONTINUOUS, Duration.ofSeconds(1), Duration.ofMillis(1), samples);
     }
 }
