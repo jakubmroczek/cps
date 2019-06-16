@@ -20,9 +20,9 @@
 
 <AnchorPane prefHeight="713.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cps.MainViewController">
     <children>
-      <TabPane layoutX="203.0" prefHeight="718.0" prefWidth="478.0" tabClosingPolicy="UNAVAILABLE" fx:id="wykresyTabPane">
+      <TabPane fx:id="wykresyTabPane" layoutX="203.0" prefHeight="718.0" prefWidth="478.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Untitled Tab 1">
+          <Tab text="Sygnał rzeczywisty">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -51,7 +51,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Untitled Tab 2">
+          <Tab text="Re i Im">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -78,7 +78,7 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-            <Tab text="Untitled Tab 2">
+            <Tab text="Moduł i Argument">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
