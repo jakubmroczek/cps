@@ -587,8 +587,10 @@ public class MainViewController {
          moduleChartAdapter = new LineChartAdapter(moduleLineChart);
          argumentChartAdapter = new LineChartAdapter(phaseLineChart);
 
-        reLineChart.getStylesheets().add("/styles/discrete.css");
-        imLineChart.getStylesheets().add("/styles/discrete.css");
+        reLineChart.getStylesheets().add("/styles/continous.css");
+        imLineChart.getStylesheets().add("/styles/continous.css");
+        moduleLineChart.getStylesheets().add("/styles/continous.css");
+        phaseLineChart.getStylesheets().add("/styles/continous.css");
 
 
         initializeTransforms();
