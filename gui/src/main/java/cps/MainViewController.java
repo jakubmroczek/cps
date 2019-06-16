@@ -27,8 +27,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static cps.transform.Transformations.dft;
-import static cps.transform.Transformations.idft;
+import static cps.transform.Transformations.*;
 import static cps.util.Conversions.*;
 import static java.lang.Math.decrementExact;
 import static java.lang.Math.min;
@@ -58,10 +57,12 @@ public class MainViewController {
     );
 
     private static final ObservableList<String> TRANSFORM_TYPES = FXCollections.observableArrayList(
-        "DFT",
-        "IDFT",
-        "FFT Z DECYMACJĄ W CZASIE",
-        "IFFT Z DECYMACJĄ W CZASIE"
+            "DFT",
+            "IDFT",
+            "FFT Z DECYMACJĄ W CZASIE",
+            "IFFT Z DECYMACJĄ W CZASIE",
+            "DCT",
+            "IDCT"
     );
     private static final Map<String, Runnable> RUNNABLE_ON_TRANSFORM = new HashMap<>();
 
@@ -150,8 +151,8 @@ public class MainViewController {
             setCssFiltering(chart.getScene());
 
             final int filterM = getFilterM();
-            final double filterFrequency =  getFilterFrequency();
-            final  WindowFunction filterWindowFunction = getFilterWindowFunction();
+            final double filterFrequency = getFilterFrequency();
+            final WindowFunction filterWindowFunction = getFilterWindowFunction();
             final Signal<Double> signal = getFilteredSignal();
 
             FIRFilter filter = createFIRFilter();
@@ -165,7 +166,7 @@ public class MainViewController {
 
             drawHistogram(filteredSignal);
 
-        } catch (IllegalArgumentException e ) {
+        } catch (IllegalArgumentException e) {
             //TODO: Generalize this method, it handles all exception not only thrown during signal creation
             onSignalCreationException(e);
         }
@@ -204,7 +205,7 @@ public class MainViewController {
         return Double.parseDouble(frequency);
     }
 
-    private int getFilterM() throws IllegalArgumentException{
+    private int getFilterM() throws IllegalArgumentException {
         var m = mTextField.getText();
         return Integer.parseInt(m);
     }
@@ -384,7 +385,7 @@ public class MainViewController {
             SignalWriter.writeJSON(file, signal);
         } else {
             Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
-            SignalWriter.writeBinary(file, f, (long)toFrequency(signal.getSamplingPeriod()), signal);
+            SignalWriter.writeBinary(file, f, (long) toFrequency(signal.getSamplingPeriod()), signal);
         }
     }
 
@@ -457,10 +458,14 @@ public class MainViewController {
     }
 
     @FXML
-    void convolute() {loadSignalsAndApplyOperator(Filters::convolute);}
+    void convolute() {
+        loadSignalsAndApplyOperator(Filters::convolute);
+    }
 
     @FXML
-    void correlate() {loadSignalsAndApplyOperator(Filters::correlate);}
+    void correlate() {
+        loadSignalsAndApplyOperator(Filters::correlate);
+    }
 
     private void loadSignalsAndApplyOperator(BiFunction<Signal, Signal, Signal> operator) {
         try {
@@ -589,11 +594,11 @@ public class MainViewController {
         WINDOW_TYPES_TO_FACTORY_MAP.put(WINDOW_TYPES.get(3), WindowFunctionFactory.BLACKMAN_WINDOW);
 
         //Adapters
-         chartAdapter = new LineChartAdapter(chart);
-         reChartAdapter = new LineChartAdapter(reLineChart);
-         imChartAdapter = new LineChartAdapter(imLineChart);
-         moduleChartAdapter = new LineChartAdapter(moduleLineChart);
-         argumentChartAdapter = new LineChartAdapter(phaseLineChart);
+        chartAdapter = new LineChartAdapter(chart);
+        reChartAdapter = new LineChartAdapter(reLineChart);
+        imChartAdapter = new LineChartAdapter(imLineChart);
+        moduleChartAdapter = new LineChartAdapter(moduleLineChart);
+        argumentChartAdapter = new LineChartAdapter(phaseLineChart);
 
         reLineChart.getStylesheets().add("/styles/continous.css");
         imLineChart.getStylesheets().add("/styles/continous.css");
@@ -624,18 +629,44 @@ public class MainViewController {
             chartAdapter.plot(signal);
             drawHistogram(signal);
             wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
-            System.out.println("idft");
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(1), command);
 
-        command = null;
-
         //FFT Z DECYMACJJA W CZASIE
+        command = () -> {
+            transformedSignal = fft(signal);
+            plot(transformedSignal);
+            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+        };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(2), command);
 
         //IFFT Z DECYMACJA W CZASIE
+        command = () -> {
+            signal = ifft(transformedSignal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            drawHistogram(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
+        };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(3), command);
 
+        //DCT
+        command = () -> {
+            transformedSignal = dct(signal);
+            plot(transformedSignal);
+            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+        };
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(4), command);
+
+        //IDCT
+        command = () -> {
+            signal = idct(transformedSignal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            drawHistogram(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
+        };
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(5), command);
     }
 
     private void initializeAllComboBox() {
@@ -686,7 +717,7 @@ public class MainViewController {
             tStatge.setScene(nscene);
             tStatge.show();
 
-            var controller = (ImpulseResponseController)fxmlLoader.getController();
+            var controller = (ImpulseResponseController) fxmlLoader.getController();
             controller.plot(filterHResponse);
         }
     }
