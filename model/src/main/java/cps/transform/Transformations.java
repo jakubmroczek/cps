@@ -102,4 +102,12 @@ public class Transformations {
     public static Signal<Complex> ifft(Signal<Double> signal) {
         throw new UnsupportedOperationException("not implemented");
     }
+
+    public static Signal<Complex> dct(Signal<Double> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    public static Signal<Complex> idct(Signal<Double> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
