@@ -6,13 +6,9 @@ import javafx.scene.chart.XYChart;
 import org.apache.commons.math3.complex.Complex;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static java.lang.Math.atan;
+import static cps.util.Conversions.toFrequency;
 import static java.lang.Math.min;
-import static java.lang.Math.sin;
 import static java.util.stream.Collectors.toList;
 
 public class LineChartAdapter {
@@ -32,17 +28,17 @@ public class LineChartAdapter {
     }
 
     public void plotRe(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
+        double xStep = getXStepInFrequencyDomain(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
         List<Double> imParts = signal.getSamples().stream().map(Complex::getReal).collect(toList());
-        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+        plot(imParts, signalPointsIndexStep, xStep);
     }
 
     public void plotIm(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
+        double xStep = getXStepInFrequencyDomain(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
         List<Double> imParts = signal.getSamples().stream().map(Complex::getImaginary).collect(toList());
-        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+        plot(imParts, signalPointsIndexStep, xStep);
     }
 
     public void plotModule(Signal<Complex> signal) {
@@ -68,66 +64,72 @@ public class LineChartAdapter {
 //                .collect(toList());
 //
 //                    plot(argumentsList, signalPointsIndexStep, singlePointDurationInSeconds);
-                }
-
-        public void clear () {
-            chart.getData().clear();
-        }
-
-        public void setStyle (String filepath){
-            chart.getStyleClass().clear();
-            chart.getStyleClass().add(filepath);
-        }
-
-        /**
-         * @param points
-         * @param pointStep indicates the index of next point that should be plotted
-         * @param xStep     the distance between point on x axis
-         */
-        private void plot (List < Double > points,double pointStep, double xStep){
-            XYChart.Series series = new XYChart.Series();
-            double current = 0.0;
-            for (int j = 0; current < points.size(); current += pointStep, j++) {
-                double y = points.get((int) current);
-                series.getData().add(new XYChart.Data(xStep * j, y));
-            }
-            chart.getData().add(series);
-        }
-
-        private double getXDistanceBetweenSignalPoints (Signal < Double > signal) {
-            final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-            double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-            if (signal.getSamples().size() != 1) {
-                singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-            }
-            return singlePointDurationInSeconds;
-        }
-
-        private double getSignalPointsIndexStep (Signal < Double > signal) {
-            final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-            double step = 1.0;
-            if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
-                step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-            }
-            return step;
-        }
-
-        private double getXDistanceBetweenSignalPoints1 (Signal < Complex > signal) {
-            final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-            double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-            if (signal.getSamples().size() != 1) {
-                singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-            }
-            return singlePointDurationInSeconds;
-        }
-
-        private double getSignalPointsIndexStep1 (Signal < Complex > signal) {
-            final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-            double step = 1.0;
-            if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
-                step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-            }
-            return step;
-        }
-
     }
+
+    public void clear() {
+        chart.getData().clear();
+    }
+
+    public void setStyle(String filepath) {
+        chart.getStyleClass().clear();
+        chart.getStyleClass().add(filepath);
+    }
+
+    /**
+     * @param points
+     * @param pointStep indicates the index of next point that should be plotted
+     * @param xStep     the distance between point on x axis
+     */
+    private void plot(List<Double> points, double pointStep, double xStep) {
+        XYChart.Series series = new XYChart.Series();
+        double current = 0.0;
+        for (int j = 0; current < points.size(); current += pointStep, j++) {
+            double y = points.get((int) current);
+            series.getData().add(new XYChart.Data(xStep * j, y));
+        }
+        chart.getData().add(series);
+    }
+
+    private double getXDistanceBetweenSignalPoints(Signal<Double> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
+        if (signal.getSamples().size() != 1) {
+            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
+        }
+        return singlePointDurationInSeconds;
+    }
+
+    private double getSignalPointsIndexStep(Signal<Double> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double step = 1.0;
+        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
+            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
+        }
+        return step;
+    }
+
+    private double getXStepInFrequencyDomain(Signal<Complex> signal) {
+        //Chamski workaround ale ponizsza linijka wypluwa zla wartosc
+        //toFrequency(signal.getSamplingPeriod())
+        return toFrequency(signal.getSamplingPeriod());
+    }
+
+    private double getXDistanceBetweenSignalPoints1(Signal<Complex> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
+        if (signal.getSamples().size() != 1) {
+            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
+        }
+        return singlePointDurationInSeconds;
+    }
+
+    private double getSignalPointsIndexStep1(Signal<Complex> signal) {
+        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
+        double step = 1.0;
+        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
+            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
+        }
+        return step;
+    }
+
+}

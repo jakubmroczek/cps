@@ -35,7 +35,7 @@ public class Transformations {
 
         return new Signal<>(signal.getType(),
                 signal.getSamplingPeriod(),
-                signal.getSamplingPeriod().dividedBy(N),
+                signal.getSamplingPeriod().multipliedBy(N),
                 transformedSamples);
     }
 

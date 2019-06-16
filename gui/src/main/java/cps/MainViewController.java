@@ -322,7 +322,8 @@ public class MainViewController {
 
             drawHistogram(signal);
             clearSignalMeasurements();
-            SignalMeasurement signalMeasurement = measure(signal, function, durationIn
+            SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
+            displaySignalMeasurement(signalMeasurement);
 
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
