@@ -322,18 +322,8 @@ public class MainViewController {
 
             drawHistogram(signal);
             clearSignalMeasurements();
-            SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
-            displaySignalMeasurement(signalMeasurement);
+            SignalMeasurement signalMeasurement = measure(signal, function, durationIn
 
-            ///
-
-
-//            var complex = dft(signal);
-
-            Signal<Complex> complex  = Tmp.getTestSignal();
-            plot(complex);
-
-            ///
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
         }
