@@ -8,6 +8,7 @@ import org.apache.commons.math3.complex.Complex;
 import java.util.List;
 
 import static cps.util.Conversions.toFrequency;
+import static java.lang.Math.atan;
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 
@@ -30,8 +31,8 @@ public class LineChartAdapter {
     public void plotRe(Signal<Complex> signal) {
         double xStep = getXStepInFrequencyDomain(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
-        List<Double> imParts = signal.getSamples().stream().map(Complex::getReal).collect(toList());
-        plot(imParts, signalPointsIndexStep, xStep);
+        List<Double> reParts = signal.getSamples().stream().map(Complex::getReal).collect(toList());
+        plot(reParts, signalPointsIndexStep, xStep);
     }
 
     public void plotIm(Signal<Complex> signal) {
@@ -42,28 +43,23 @@ public class LineChartAdapter {
     }
 
     public void plotModule(Signal<Complex> signal) {
-        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
+        double xStep = getXStepInFrequencyDomain(signal);
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
-        List<Double> imParts = signal.getSamples().stream().map(Complex::abs).collect(toList());
-        plot(imParts, signalPointsIndexStep, singlePointDurationInSeconds);
+        List<Double> modules = signal.getSamples().stream().map(Complex::abs).collect(toList());
+        plot(modules, signalPointsIndexStep, xStep);
     }
 
     public void plotArgument(Signal<Complex> signal) {
-//        double singlePointDurationInSeconds = getXDistanceBetweenSignalPoints1(signal);
-//        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
-//
-//        //TODO: What is is equal to zero
-//        var argumentsList = signal.getSamples()
-//                .stream()
-//                .map(c -> {
-//                    if (c.getReal() > 0.001) {
-//                        return atan(c.getImaginary() / c.getReal());
-//                    } else {
-//                        return 0.001;
-//                    }})
-//                .collect(toList());
-//
-//                    plot(argumentsList, signalPointsIndexStep, singlePointDurationInSeconds);
+        //TODO: Test with zero cases
+        //TODO: Wprowadzc threshold
+        //TODO: Zobaczyc uzycie PI
+        double xStep = getXStepInFrequencyDomain(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        List<Double> arguments = signal.getSamples()
+                .stream()
+                .map(c -> atan(c.getImaginary() / c.getReal()))
+                .collect(toList());
+        plot(arguments, signalPointsIndexStep, xStep);
     }
 
     public void clear() {
@@ -109,8 +105,6 @@ public class LineChartAdapter {
     }
 
     private double getXStepInFrequencyDomain(Signal<Complex> signal) {
-        //Chamski workaround ale ponizsza linijka wypluwa zla wartosc
-        //toFrequency(signal.getSamplingPeriod())
         return toFrequency(signal.getSamplingPeriod());
     }
 
