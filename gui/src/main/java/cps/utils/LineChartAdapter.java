@@ -60,9 +60,14 @@ public class LineChartAdapter {
         List<Double> arguments = signal.getSamples()
                 .stream()
                 .map(c -> {
-                    if (c.getReal() > THRESHOLD) {
-                        return atan(c.getImaginary() / c.getReal());
-                    } else {
+                    try {
+                        var argument = atan(c.getImaginary() / c.getReal());
+                        if (Double.isNaN(argument)) {
+                            return 0.0;
+                        }
+                        return argument;
+                    } catch (Exception e) {
+                        System.err.println("Blad przi obliczaniu fazy");
                         return 0.0;
                     }
                 })
