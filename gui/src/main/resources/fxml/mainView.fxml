@@ -59,7 +59,7 @@
                            <children>
                               <LineChart fx:id="reLineChart" prefHeight="422.0" prefWidth="300.0">
                                  <xAxis>
-                                    <NumberAxis side="BOTTOM" />
+                                    <NumberAxis label="Częstotliowść [Hz]" side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis prefWidth="30.0" side="LEFT" />
@@ -67,7 +67,7 @@
                               </LineChart>
                               <LineChart fx:id="imLineChart" prefHeight="422.0" prefWidth="300.0">
                                  <xAxis>
-                                    <NumberAxis side="BOTTOM" />
+                                    <NumberAxis label="Częstotliowść [Hz]" side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis prefWidth="30.0" side="LEFT" />
@@ -86,7 +86,7 @@
                            <children>
                               <LineChart fx:id="moduleLineChart" prefHeight="422.0" prefWidth="300.0">
                                  <xAxis>
-                                    <NumberAxis side="BOTTOM" />
+                                    <NumberAxis label="Częstotliowść [Hz]" side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis prefWidth="30.0" side="LEFT" />
@@ -94,7 +94,7 @@
                               </LineChart>
                               <LineChart fx:id="phaseLineChart" prefHeight="422.0" prefWidth="300.0">
                                  <xAxis>
-                                    <NumberAxis side="BOTTOM" />
+                                    <NumberAxis label="Częstotliowść [Hz]" side="BOTTOM" />
                                  </xAxis>
                                  <yAxis>
                                     <NumberAxis prefWidth="30.0" side="LEFT" />

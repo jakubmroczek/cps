@@ -14,6 +14,8 @@ import static java.util.stream.Collectors.toList;
 
 public class LineChartAdapter {
 
+    private final static double THRESHOLD = 0.000001;
+
     private final LineChart<Number, Number> chart;
 
     public LineChartAdapter(LineChart<Number, Number> chart) {
@@ -57,7 +59,13 @@ public class LineChartAdapter {
         double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
         List<Double> arguments = signal.getSamples()
                 .stream()
-                .map(c -> atan(c.getImaginary() / c.getReal()))
+                .map(c -> {
+                    if (c.getReal() > THRESHOLD) {
+                        return atan(c.getImaginary() / c.getReal());
+                    } else {
+                        return 0.0;
+                    }
+                })
                 .collect(toList());
         plot(arguments, signalPointsIndexStep, xStep);
     }
