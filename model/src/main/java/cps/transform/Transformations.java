@@ -2,9 +2,12 @@ package cps.transform;
 
 import org.apache.commons.math3.complex.Complex;
 import cps.model.Signal;
+import org.jfree.xml.factory.objects.DateObjectDescription;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -62,8 +65,41 @@ public class Transformations {
                 transformationResults);
     }
 
-    public static Signal<Complex> fft(Signal<Double> signal) {
-        throw new UnsupportedOperationException("not implemented");
+    private static List<Complex> fft(List<Double> samples) {
+        assert samples.size() % 2 == 0;
+
+        int N = samples.size();
+        if (N == 1) {
+            return Arrays.asList(
+                    new Complex(samples.get(0), 0.0)
+            );
+        }
+        int M = N / 2;
+
+        List<Double> even = new ArrayList<>();
+        List<Double> odd = new ArrayList<>();
+        for (int i = 0; i < M; i++) {
+            even.add(samples.get(2 * i));
+            odd.add(samples.get(2 * i + 1));
+        }
+        var Feven = fft(even);
+        var Fodd = fft(odd);
+
+        List<Complex> res = new ArrayList<>();
+        for (int i = 0; i < N; i++) {
+            res.add(new Complex(0.0, 0.0));
+        }
+        for (int k = 0; k < N / 2; k++) {
+            double angle = -Math.PI * k * 2.0 / (N * 1.0);
+            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd.get(k));
+            res.set(k, Feven.get(k).add(exp));
+            res.set(k + N / 2, Feven.get(k).subtract(exp));
+        }
+
+        return res;
     }
 
+    public static Signal<Complex> ifft(Signal<Double> signal) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }
