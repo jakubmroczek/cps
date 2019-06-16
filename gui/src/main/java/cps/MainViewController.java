@@ -106,7 +106,8 @@ public class MainViewController {
             probesValue,
             sincFq,
             mTextField,
-            foTextField;
+            foTextField,
+            transformationTimeTextField;
     @FXML
     private Label mseLabel, snrLabel, psnrLabel, mdLabel, enobLabel;
     @FXML
@@ -133,7 +134,14 @@ public class MainViewController {
     public void transform() {
         var transformType = (String) transformComboBox.getSelectionModel().getSelectedItem();
         var command = RUNNABLE_ON_TRANSFORM.get(transformType);
+
+        var startTime = System.currentTimeMillis();
         command.run();
+        var endTime = System.currentTimeMillis();
+        //TODO: Magick variable!!
+        var executionTime = (endTime - startTime) / 1_000.0;
+
+        transformationTimeTextField.setText(String.format("%f", executionTime));
     }
 
     @FXML
