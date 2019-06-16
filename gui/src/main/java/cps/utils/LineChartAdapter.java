@@ -32,21 +32,21 @@ public class LineChartAdapter {
 
     public void plotRe(Signal<Complex> signal) {
         double xStep = getXStepInFrequencyDomain(signal);
-        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep(signal);
         List<Double> reParts = signal.getSamples().stream().map(Complex::getReal).collect(toList());
         plot(reParts, signalPointsIndexStep, xStep);
     }
 
     public void plotIm(Signal<Complex> signal) {
         double xStep = getXStepInFrequencyDomain(signal);
-        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep(signal);
         List<Double> imParts = signal.getSamples().stream().map(Complex::getImaginary).collect(toList());
         plot(imParts, signalPointsIndexStep, xStep);
     }
 
     public void plotModule(Signal<Complex> signal) {
         double xStep = getXStepInFrequencyDomain(signal);
-        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep(signal);
         List<Double> modules = signal.getSamples().stream().map(Complex::abs).collect(toList());
         plot(modules, signalPointsIndexStep, xStep);
     }
@@ -56,7 +56,7 @@ public class LineChartAdapter {
         //TODO: Wprowadzc threshold
         //TODO: Zobaczyc uzycie PI
         double xStep = getXStepInFrequencyDomain(signal);
-        double signalPointsIndexStep = getSignalPointsIndexStep1(signal);
+        double signalPointsIndexStep = getSignalPointsIndexStep(signal);
         List<Double> arguments = signal.getSamples()
                 .stream()
                 .map(c -> {
@@ -108,7 +108,7 @@ public class LineChartAdapter {
         return singlePointDurationInSeconds;
     }
 
-    private double getSignalPointsIndexStep(Signal<Double> signal) {
+    private <T> double getSignalPointsIndexStep(Signal<T> signal) {
         final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
         double step = 1.0;
         if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
@@ -119,24 +119,6 @@ public class LineChartAdapter {
 
     private double getXStepInFrequencyDomain(Signal<Complex> signal) {
         return toFrequency(signal.getSamplingPeriod());
-    }
-
-    private double getXDistanceBetweenSignalPoints1(Signal<Complex> signal) {
-        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-        double singlePointDurationInSeconds = signal.getDurationInNs().toNanos() / 1_000_000_000D;
-        if (signal.getSamples().size() != 1) {
-            singlePointDurationInSeconds /= min(NUMBER_OF_PIXELS_IN_CHART, signal.getSamples().size() - 1);
-        }
-        return singlePointDurationInSeconds;
-    }
-
-    private double getSignalPointsIndexStep1(Signal<Complex> signal) {
-        final double NUMBER_OF_PIXELS_IN_CHART = chart.getXAxis().getWidth();
-        double step = 1.0;
-        if (signal.getSamples().size() > NUMBER_OF_PIXELS_IN_CHART) {
-            step = signal.getSamples().size() / NUMBER_OF_PIXELS_IN_CHART;
-        }
-        return step;
     }
 
 }
