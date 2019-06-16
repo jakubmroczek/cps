@@ -609,6 +609,9 @@ public class MainViewController {
             transformedSignal = dft(signal);
             plot(transformedSignal);
             wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+
+            //Style
+            setCssDiscrete(bitsValue.getScene());
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(0), command);
 
