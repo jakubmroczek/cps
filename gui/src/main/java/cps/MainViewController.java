@@ -59,10 +59,12 @@ public class MainViewController {
     private static final ObservableList<String> TRANSFORM_TYPES = FXCollections.observableArrayList(
             "DFT",
             "IDFT",
-            "FFT Z DECYMACJĄ W CZASIE",
-            "IFFT Z DECYMACJĄ W CZASIE",
+            "FFT z decymacją w czasie",
+            "IFFT z decymacją w czasie",
             "DCT",
-            "IDCT"
+            "IDCT",
+            "Szybka dct",
+            "Szybka idct"
     );
     private static final Map<String, Runnable> RUNNABLE_ON_TRANSFORM = new HashMap<>();
 
@@ -667,6 +669,24 @@ public class MainViewController {
             wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(5), command);
+
+        //FAST DCT
+        command = () -> {
+            transformedSignal = fastDCT(signal);
+            plot(transformedSignal);
+            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+        };
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(6), command);
+
+        //FAST IDCT
+        command = () -> {
+            signal = fastIDCT(transformedSignal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            drawHistogram(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
+        };
+        RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(7), command);
     }
 
     private void initializeAllComboBox() {
