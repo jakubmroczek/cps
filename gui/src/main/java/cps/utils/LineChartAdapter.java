@@ -21,6 +21,8 @@ public class LineChartAdapter {
 
     public LineChartAdapter(LineChart<Number, Number> chart) {
         this.chart = chart;
+        this.chart.setAnimated(false);
+        this.chart.setLegendVisible(false);
     }
 
     public void plot(Signal<Double> signal) {
