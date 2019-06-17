@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
+import static java.lang.Math.sqrt;
 
 public class Transformations {
 
@@ -157,29 +158,31 @@ public class Transformations {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public static Signal<Complex> dct(Signal<Double> signal)
+    public static Signal<Double> dct(Signal<Double> signal)
     {
-        List<Complex> transformedSamples = new ArrayList<>();
+        List<Double> transformedSamples = new ArrayList<>();
         var N = signal.getSamples().size();
-
-        double c = Math.PI / (2.0 * N);
-        double scale = Math.sqrt(2.0 / N);
 
         for (int m = 0; m < N; m++)
         {
-            double re = 0;
-            double im = 0;
+            double c;
+            if (m != 0) {
+                c = sqrt(2.0 / N);
+            } else {
+                c = sqrt(1.0 / N);
+            }
+
+            double result = 0.0;
 
             for (int n = 0; n < N; n++){
-                re += signal.getSamples().get(n) * Math.cos((2.0 * n + 1.0) * m * c);
-                im += signal.getSamples().get(n) * Math.sin((2.0 * n + 1.0) * m * c); // ?? to zle raczej jest, nie wiem jak powinno byc
+                result += signal.getSamples().get(n) * cos((Math.PI * (2.0 * n + 1.0) * m) / (2.0 * N) );
             }
-            transformedSamples.add(new Complex(scale * re, scale * im));
+            transformedSamples.add(c * result);
         }
 
         return new Signal<>(signal.getType(),
+                signal.getDurationInNs(),
                 signal.getSamplingPeriod(),
-                signal.getSamplingPeriod().multipliedBy(N),
                 transformedSamples);
     }
 
@@ -189,11 +192,11 @@ public class Transformations {
         var N = signal.getSamples().size();
 
         double c = Math.PI / (2.0 * N);
-        double scale = Math.sqrt(2.0 / N);
+        double scale = sqrt(2.0 / N);
 
         for (int k = 0; k < N; k++)
         {
-            double sum = signal.getSamples().get(0).getReal() / Math.sqrt(2.0);
+            double sum = signal.getSamples().get(0).getReal() / sqrt(2.0);
             for (int n = 1; n < N; n++)
                 sum += signal.getSamples().get(n).getReal() * Math.cos((2 * k + 1) * n * c);
                         //- signal.getSamples().get(n).getImaginary() * Math.sin((2 * k + 1) * n * c); // ?? Im psuje inversje
