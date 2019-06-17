@@ -158,13 +158,11 @@ public class Transformations {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public static Signal<Double> dct(Signal<Double> signal)
-    {
+    public static Signal<Double> dct(Signal<Double> signal) {
         List<Double> transformedSamples = new ArrayList<>();
         var N = signal.getSamples().size();
 
-        for (int m = 0; m < N; m++)
-        {
+        for (int m = 0; m < N; m++) {
             double c;
             if (m != 0) {
                 c = sqrt(2.0 / N);
@@ -174,8 +172,8 @@ public class Transformations {
 
             double result = 0.0;
 
-            for (int n = 0; n < N; n++){
-                result += signal.getSamples().get(n) * cos((Math.PI * (2.0 * n + 1.0) * m) / (2.0 * N) );
+            for (int n = 0; n < N; n++) {
+                result += signal.getSamples().get(n) * cos((Math.PI * (2.0 * n + 1.0) * m) / (2.0 * N));
             }
             transformedSamples.add(c * result);
         }
@@ -186,30 +184,28 @@ public class Transformations {
                 transformedSamples);
     }
 
-    public static Signal<Double> idct(Signal<Complex> signal)
-    {
-        List<Double> transformationResults = new ArrayList<>(signal.getSamples().size());
+    public static Signal<Double> idct(Signal<Double> signal) {
+        List<Double> transformedSamples = new ArrayList<>(signal.getSamples().size());
         var N = signal.getSamples().size();
 
-        double c = Math.PI / (2.0 * N);
-        double scale = sqrt(2.0 / N);
-
-        for (int k = 0; k < N; k++)
-        {
-            double sum = signal.getSamples().get(0).getReal() / sqrt(2.0);
-            for (int n = 1; n < N; n++)
-                sum += signal.getSamples().get(n).getReal() * Math.cos((2 * k + 1) * n * c);
-                        //- signal.getSamples().get(n).getImaginary() * Math.sin((2 * k + 1) * n * c); // ?? Im psuje inversje
-
-            transformationResults.add(scale * sum);
+        for (int n = 0; n < N; n++) {
+            double result = 0.0;
+            for (int m = 0; m < N; m++) {
+                double c;
+                if (m != 0) {
+                    c = sqrt(2.0 / N);
+                } else {
+                    c = sqrt(1.0 / N);
+                }
+                result += c * signal.getSamples().get(m) * cos((Math.PI * (2.0 * n + 1.0) * m) / (2.0 * N));
+            }
+            transformedSamples.add(result);
         }
 
-        var frequency = signal.getSamplingPeriod().dividedBy(N);
-
         return new Signal<>(signal.getType(),
-                signal.getDurationInNs().multipliedBy(N),
-                frequency,
-                transformationResults);
+                signal.getDurationInNs(),
+                signal.getSamplingPeriod(),
+                transformedSamples);
     }
 
     public static Signal<Complex> fastDCT(Signal<Double> signal) {

@@ -664,7 +664,7 @@ public class MainViewController {
 
         //IDCT
         command = () -> {
-            signal = idct(transformedSignal);
+            signal = idct(signal);
             chartAdapter.clear();
             chartAdapter.plot(signal);
             drawHistogram(signal);
