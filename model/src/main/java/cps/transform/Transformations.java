@@ -113,9 +113,61 @@ public class Transformations {
                 signal.getSamplingPeriod().multipliedBy(length),
                 transformationResults);
     }
+    private static Complex[] ifft(Complex[] values) {
+        int N = values.length;
+        if (N == 1) {
+            return values;
+        }
+        int M = N / 2;
+        Complex[] even = new Complex[M];
+        Complex[] odd = new Complex[M];
+        for (int i = 0; i < M; i++) {
+            even[i] = values[2 * i];
+            odd[i] = values[2 * i + 1];
+        }
+        Complex[] Feven = ifft(even);
+        Complex[] Fodd = ifft(odd);
+
+        Complex[] res = new Complex[N];
+        for (int k = 0; k < N / 2; k++) {
+            double angle = Math.PI * k * 2.0 / (N * 1.0);
+            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd[k]);
+            res[k] = Feven[k].add(exp);
+            res[k + N / 2] = Feven[k].subtract(exp);
+        }
+
+        return res;
+    }
 
     public static Signal<Double> ifft(Signal<Complex> signal) {
-        throw new UnsupportedOperationException("not implemented");
+        int length = signal.getSamples().size();
+        int bits = (int) Math.ceil((Math.log(length) / Math.log(2)));
+        length = (int) Math.pow(2, (bits));
+        Complex[] values = new Complex[length];
+        for (int i = 0; i < signal.getSamples().size(); i++) {
+            values[i] = new Complex(signal.getSamples().get(i).getReal(), signal.getSamples().get(i).getImaginary());
+        }
+        for (int i = signal.getSamples().size(); i < length; i++) {
+            values[i] = new Complex(0.0, 0.0);
+        }
+
+        values = ifft(values);
+
+        double[] realValues = new double[length];
+        for (int i = 0; i < length; i++) {
+            realValues[i] = values[i].getReal();
+        }
+
+        var frequency = signal.getSamplingPeriod().dividedBy(length);
+        List<Double> transformationResults = new ArrayList<>(length);
+        for (var c : values) {
+            transformationResults.add(c.getReal());
+        }
+
+        return new Signal<Double>(signal.getType(),
+                signal.getDurationInNs().multipliedBy(length),
+                frequency,
+                transformationResults);
     }
 
     public static Signal<Double> dct(Signal<Double> signal) {
