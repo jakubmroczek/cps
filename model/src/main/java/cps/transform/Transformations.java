@@ -220,11 +220,112 @@ public class Transformations {
                 transformedSamples);
     }
 
-    public static Signal<Complex> fastDCT(Signal<Double> signal) {
-        throw new UnsupportedOperationException("not implemented");
+    public static void transform(double[] vector) {
+        final int len = vector.length;
+        int halfLen = len / 2;
+        double[] real = new double[len];
+        for (int i = 0; i < halfLen; i++) {
+            real[i] = vector[i * 2];
+            real[len - 1 - i] = vector[i * 2 + 1];
+        }
+        if (len % 2 == 1)
+            real[halfLen] = vector[len - 1];
+        Arrays.fill(vector, 0.0);
+
+        Complex[] complexes = new Complex[len];
+        for (int i =0 ; i < len; i++) {
+            complexes[i] = new Complex(real[i], 0.0);
+        }
+
+        Complex[] result = fft(complexes);
+
+        for (int i = 0; i < len; i++) {
+            double c;
+            if (i != 0) {
+                c = sqrt(2.0 / len);
+            } else {
+                c = sqrt(1.0 / len);
+            }
+
+            double temp = i * Math.PI / (len * 2);
+            vector[i] = c * (result[i].getReal() * Math.cos(temp) + vector[i] * Math.sin(temp));
+        }
     }
 
-    public static Signal<Double> fastIDCT(Signal<Complex> signal) {
-        throw new UnsupportedOperationException("not implemented");
+    public static Signal<Double> fastDCT(Signal<Double> signal) {
+        int length = signal.getSamples().size();
+        int bits = (int) Math.ceil((log(length) / log(2)));
+        length = (int) Math.pow(2, (bits));
+        double[] values = new double[length];
+        for (int i = 0; i < signal.getSamples().size(); i++) {
+            values[i] = signal.getSamples().get(i);
+        }
+        for (int i = signal.getSamples().size(); i < length; i++) {
+            values[i] = 0.0;
+        }
+
+        transform(values);
+
+        List<Double> transformResult = new ArrayList<>();
+        for (var v : values) {
+            transformResult.add(v);
+        }
+
+        return new Signal<>(signal.getType(),
+                signal.getDurationInNs(),
+                signal.getSamplingPeriod(),
+                transformResult);
+    }
+
+    public static void inverseTransform(double[] vector) {
+        int len = vector.length;
+        if (len > 0)
+            vector[0] /= 2;
+        double[] real = new double[len];
+        for (int i = 0; i < len; i++) {
+            double temp = i * Math.PI / (len * 2);
+            real[i] = vector[i] * Math.cos(temp);
+            vector[i] *= -Math.sin(temp);
+        }
+
+        Complex[] complexes = new Complex[len];
+        for (int i =0 ; i < len; i++) {
+            complexes[i] = new Complex(real[i], 0.0);
+        }
+
+        Complex[] result = fft(complexes);
+
+        int halfLen = len / 2;
+        for (int i = 0; i < halfLen; i++) {
+            vector[i * 2 + 0] = result[i].getReal();
+            vector[i * 2 + 1] = result[len - 1 - i].getReal();
+        }
+        if (len % 2 == 1)
+            vector[len - 1] = result[halfLen].getReal();
+    }
+
+    public static Signal<Double> fastIDCT(Signal<Double> signal) {
+        int length = signal.getSamples().size();
+        int bits = (int) Math.ceil((log(length) / log(2)));
+        length = (int) Math.pow(2, (bits));
+        double[] values = new double[length];
+        for (int i = 0; i < signal.getSamples().size(); i++) {
+            values[i] = signal.getSamples().get(i);
+        }
+        for (int i = signal.getSamples().size(); i < length; i++) {
+            values[i] = 0.0;
+        }
+
+        inverseTransform(values);
+
+        List<Double> transformResult = new ArrayList<>();
+        for (var v : values) {
+            transformResult.add(v);
+        }
+
+        return new Signal<>(signal.getType(),
+                signal.getDurationInNs(),
+                signal.getSamplingPeriod(),
+                transformResult);
     }
 }

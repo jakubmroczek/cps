@@ -674,15 +674,17 @@ public class MainViewController {
 
         //FAST DCT
         command = () -> {
-            transformedSignal = fastDCT(signal);
-            plot(transformedSignal);
-            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+            signal = fastDCT(signal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            drawHistogram(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(6), command);
 
         //FAST IDCT
         command = () -> {
-            signal = fastIDCT(transformedSignal);
+            signal = fastIDCT(signal);
             chartAdapter.clear();
             chartAdapter.plot(signal);
             drawHistogram(signal);
