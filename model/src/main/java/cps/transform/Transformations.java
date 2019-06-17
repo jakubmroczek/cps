@@ -1,17 +1,13 @@
 package cps.transform;
 
-import org.apache.commons.math3.complex.Complex;
 import cps.model.Signal;
-import org.jfree.xml.factory.objects.DateObjectDescription;
+import org.apache.commons.math3.complex.Complex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.IntStream;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 
 public class Transformations {
 
@@ -66,67 +62,79 @@ public class Transformations {
                 transformationResults);
     }
 
-    private static Complex[] fft(Complex[] values) {
-        int N = values.length;
-        if (N == 1) {
-            return values;
-        }
-        int M = N / 2;
-        Complex[] even = new Complex[M];
-        Complex[] odd = new Complex[M];
-        for (int i = 0; i < M; i++) {
-            even[i] = values[2 * i];
-            odd[i] = values[2 * i + 1];
-        }
-        Complex[] Feven = fft(even);
-        Complex[] Fodd = fft(odd);
-
-        Complex[] res = new Complex[N];
-        for (int k = 0; k < N / 2; k++) {
-            double angle = -Math.PI * k * 2.0 / (N * 1.0);
-            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd[k]);
-            res[k] = Feven[k].add(exp);
-            res[k + N / 2] = Feven[k].subtract(exp);
-        }
-
-        return res;
-    }
-
-    public static Signal<Complex> fft(Signal<Double> signal) {
-//        assert samples.size() % 2 == 0;
-//
-//        int N = samples.size();
+//    private static Complex[] FFT(Complex[] values) {
+//        int N = values.length;
 //        if (N == 1) {
-//            return Arrays.asList(
-//                    new Complex(samples.get(0), 0.0)
-//            );
+//            return values;
 //        }
 //        int M = N / 2;
-//
-//        List<Double> even = new ArrayList<>();
-//        List<Double> odd = new ArrayList<>();
+//        Complex[] even = new Complex[M];
+//        Complex[] odd = new Complex[M];
 //        for (int i = 0; i < M; i++) {
-//            even.add(samples.get(2 * i));
-//            odd.add(samples.get(2 * i + 1));
+//            even[i] = values[2 * i];
+//            odd[i] = values[2 * i + 1];
 //        }
-//        var Feven = fft(even);
-//        var Fodd = fft(odd);
+//        Complex[] Feven = FFT(even);
+//        Complex[] Fodd = FFT(odd);
 //
-//        List<Complex> res = new ArrayList<>();
-//        for (int i = 0; i < N; i++) {
-//            res.add(new Complex(0.0, 0.0));
-//        }
+//        Complex[] res = new Complex[N];
 //        for (int k = 0; k < N / 2; k++) {
 //            double angle = -Math.PI * k * 2.0 / (N * 1.0);
-//            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd.get(k));
-//            res.set(k, Feven.get(k).add(exp));
-//            res.set(k + N / 2, Feven.get(k).subtract(exp));
+//            Complex exp = new Complex(Math.cos(angle), Math.sin(angle)).multiply(Fodd[k]);
+//            res[k] = Feven[k].add(exp);
+//            res[k + N / 2] = Feven[k].subtract(exp);
 //        }
 //
 //        return res;
+//    }
 
+    public static int bitReverse(int n, int bits) {
+        int reversedN = n;
+        int count = bits - 1;
+
+        n >>= 1;
+        while (n > 0) {
+            reversedN = (reversedN << 1) | (n & 1);
+            count--;
+            n >>= 1;
+        }
+
+        return ((reversedN << count) & ((1 << bits) - 1));
+    }
+
+    static void fft(Complex[] buffer) {
+
+        int bits = (int) (log(buffer.length) / log(2));
+        for (int j = 1; j < buffer.length / 2; j++) {
+
+            int swapPos = bitReverse(j, bits);
+            Complex temp = buffer[j];
+            buffer[j] = buffer[swapPos];
+            buffer[swapPos] = temp;
+        }
+
+        for (int N = 2; N <= buffer.length; N <<= 1) {
+            for (int i = 0; i < buffer.length; i += N) {
+                for (int k = 0; k < N / 2; k++) {
+
+                    int evenIndex = i + k;
+                    int oddIndex = i + k + (N / 2);
+                    Complex even = buffer[evenIndex];
+                    Complex odd = buffer[oddIndex];
+
+                    double term = (-2 * PI * k) / (double) N;
+                    Complex exp = (new Complex(cos(term), sin(term)).multiply(odd));
+
+                    buffer[evenIndex] = even.add(exp);
+                    buffer[oddIndex] = even.subtract(exp);
+                }
+            }
+        }
+    }
+
+    public static Signal<Complex> fft(Signal<Double> signal) {
         int length = signal.getSamples().size();
-        int bits = (int) Math.ceil((Math.log(length) / Math.log(2)));
+        int bits = (int) Math.ceil((log(length) / log(2)));
         length = (int) Math.pow(2, (bits));
         Complex[] values = new Complex[length];
         for (int i = 0; i < signal.getSamples().size(); i++) {
@@ -136,15 +144,11 @@ public class Transformations {
             values[i] = new Complex(0.0, 0.0);
         }
 
-        values = fft(values);
+        fft(values);
 
-        double[] realValues = new double[length];
-        double[] imaginaryValues = new double[length];
-        for (int i = 0; i < length; i++) {
-            realValues[i] = values[i].getReal() / (length * 1.0);
-            imaginaryValues[i] = values[i].getImaginary() / (length * 1.0);
-        }
-
+//        for (int i = 0; i < length; i++) {
+//            values[i] = values[i].divide(length * 1.0);
+//        }
 
         List<Complex> transformationResults = Arrays.asList(values);
 
