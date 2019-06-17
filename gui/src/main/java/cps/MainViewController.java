@@ -654,9 +654,11 @@ public class MainViewController {
 
         //DCT
         command = () -> {
-            transformedSignal = dct(signal);
-            plot(transformedSignal);
-            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+            signal = dct(signal);
+            chartAdapter.clear();
+            chartAdapter.plot(signal);
+            drawHistogram(signal);
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         };
         RUNNABLE_ON_TRANSFORM.put(TRANSFORM_TYPES.get(4), command);
 
