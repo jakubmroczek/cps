@@ -157,12 +157,56 @@ public class Transformations {
         throw new UnsupportedOperationException("not implemented");
     }
 
-    public static Signal<Complex> dct(Signal<Double> signal) {
-        throw new UnsupportedOperationException("not implemented");
+    public static Signal<Complex> dct(Signal<Double> signal)
+    {
+        List<Complex> transformedSamples = new ArrayList<>();
+        var N = signal.getSamples().size();
+
+        double c = Math.PI / (2.0 * N);
+        double scale = Math.sqrt(2.0 / N);
+
+        for (int m = 0; m < N; m++)
+        {
+            double re = 0;
+            double im = 0;
+
+            for (int n = 0; n < N; n++){
+                re += signal.getSamples().get(n) * Math.cos((2.0 * n + 1.0) * m * c);
+                im += signal.getSamples().get(n) * Math.sin((2.0 * n + 1.0) * m * c); // ?? to zle raczej jest, nie wiem jak powinno byc
+            }
+            transformedSamples.add(new Complex(scale * re, scale * im));
+        }
+
+        return new Signal<>(signal.getType(),
+                signal.getSamplingPeriod(),
+                signal.getSamplingPeriod().multipliedBy(N),
+                transformedSamples);
     }
 
-    public static Signal<Double> idct(Signal<Complex> signal) {
-        throw new UnsupportedOperationException("not implemented");
+    public static Signal<Double> idct(Signal<Complex> signal)
+    {
+        List<Double> transformationResults = new ArrayList<>(signal.getSamples().size());
+        var N = signal.getSamples().size();
+
+        double c = Math.PI / (2.0 * N);
+        double scale = Math.sqrt(2.0 / N);
+
+        for (int k = 0; k < N; k++)
+        {
+            double sum = signal.getSamples().get(0).getReal() / Math.sqrt(2.0);
+            for (int n = 1; n < N; n++)
+                sum += signal.getSamples().get(n).getReal() * Math.cos((2 * k + 1) * n * c);
+                        //- signal.getSamples().get(n).getImaginary() * Math.sin((2 * k + 1) * n * c); // ?? Im psuje inversje
+
+            transformationResults.add(scale * sum);
+        }
+
+        var frequency = signal.getSamplingPeriod().dividedBy(N);
+
+        return new Signal<>(signal.getType(),
+                signal.getDurationInNs().multipliedBy(N),
+                frequency,
+                transformationResults);
     }
 
     public static Signal<Complex> fastDCT(Signal<Double> signal) {
