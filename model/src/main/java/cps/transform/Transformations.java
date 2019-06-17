@@ -88,49 +88,67 @@ public class Transformations {
 //        return res;
 //    }
 
-    public static int bitReverse(int n, int bits) {
-        int reversedN = n;
-        int count = bits - 1;
+    static Complex[] fft(Complex[] samples)
+    {
+        if (samples.length == 1)
+            return samples;
 
-        n >>= 1;
-        while (n > 0) {
-            reversedN = (reversedN << 1) | (n & 1);
-            count--;
-            n >>= 1;
+        int sign = -1;
+
+        Complex[] odd = new Complex[samples.length / 2];
+        Complex[] even = new Complex[samples.length / 2];
+
+        for (int i = 0; i < samples.length / 2; i++)
+        {
+            even[i] = samples[2 * i];
+            odd[i] = samples[2 * i + 1];
         }
 
-        return ((reversedN << count) & ((1 << bits) - 1));
+        odd = fft(odd);
+        even = fft(even);
+
+        Complex[] result = new Complex[samples.length];
+
+        for (int i = 0; i < samples.length / 2; i++)
+        {
+            Complex temp = new Complex(cos(2*i*PI/samples.length),sign*sin(2*i*PI / samples.length));
+            temp = temp.multiply(odd[i]);
+            result[i] = even[i].add(temp);
+            result[i + samples.length / 2] = even[i].subtract(temp);
+        }
+
+        return result;
     }
 
-    static void fft(Complex[] buffer) {
-
-        int bits = (int) (log(buffer.length) / log(2));
-        for (int j = 1; j < buffer.length / 2; j++) {
-
-            int swapPos = bitReverse(j, bits);
-            Complex temp = buffer[j];
-            buffer[j] = buffer[swapPos];
-            buffer[swapPos] = temp;
-        }
-
-        for (int N = 2; N <= buffer.length; N <<= 1) {
-            for (int i = 0; i < buffer.length; i += N) {
-                for (int k = 0; k < N / 2; k++) {
-
-                    int evenIndex = i + k;
-                    int oddIndex = i + k + (N / 2);
-                    Complex even = buffer[evenIndex];
-                    Complex odd = buffer[oddIndex];
-
-                    double term = (-2 * PI * k) / (double) N;
-                    Complex exp = (new Complex(cos(term), sin(term)).multiply(odd));
-
-                    buffer[evenIndex] = even.add(exp);
-                    buffer[oddIndex] = even.subtract(exp);
-                }
-            }
-        }
-    }
+//    static void fft(Complex[] buffer) {
+//
+//        int bits = (int) (log(buffer.length) / log(2));
+//        for (int j = 1; j < buffer.length / 2; j++) {
+//
+//            int swapPos = bitReverse(j, bits);
+//            Complex temp = buffer[j];
+//            buffer[j] = buffer[swapPos];
+//            buffer[swapPos] = temp;
+//        }
+//
+//        for (int N = 2; N <= buffer.length; N <<= 1) {
+//            for (int i = 0; i < buffer.length; i += N) {
+//                for (int k = 0; k < N / 2; k++) {
+//
+//                    int evenIndex = i + k;
+//                    int oddIndex = i + k + (N / 2);
+//                    Complex even = buffer[evenIndex];
+//                    Complex odd = buffer[oddIndex];
+//
+//                    double term = (-2 * PI * k) / (double) N;
+//                    Complex exp = (new Complex(cos(term), sin(term)).multiply(odd));
+//
+//                    buffer[evenIndex] = even.add(exp);
+//                    buffer[oddIndex] = even.subtract(exp);
+//                }
+//            }
+//        }
+//    }
 
     public static Signal<Complex> fft(Signal<Double> signal) {
         int length = signal.getSamples().size();
@@ -144,7 +162,7 @@ public class Transformations {
             values[i] = new Complex(0.0, 0.0);
         }
 
-        fft(values);
+        values = fft(values);
 
 //        for (int i = 0; i < length; i++) {
 //            values[i] = values[i].divide(length * 1.0);
