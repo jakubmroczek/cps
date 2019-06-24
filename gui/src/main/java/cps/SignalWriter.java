@@ -207,7 +207,8 @@ public class SignalWriter {
         //TODO: Na sile wcisniety kod Piotrka, wczyscis
         if(sampleType == 'C'){
             duration = Duration.ofNanos(probingPeriod.toNanos() * complexProbes.size());
-            return new Signal<>(resultType, duration, probingPeriod, complexProbes);
+            //TUTAJ JAWNIE ZMIENIAMY KOLEJNOSC TRWANIA I PROBKOWANIA
+            return new Signal<>(resultType, probingPeriod, duration, complexProbes);
         } else {
             //TODO: Nienajlepszy pomysl
            throw new IllegalArgumentException("Załadowany sygnał nie jest zespolony");
