@@ -168,6 +168,7 @@ public class MainViewController {
 
             drawHistogram(filteredSignal);
 
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         } catch (IllegalArgumentException e) {
             //TODO: Generalize this method, it handles all exception not only thrown during signal creation
             onSignalCreationException(e);
@@ -245,6 +246,8 @@ public class MainViewController {
         drawHistogram(sampledSignal);
 
         clearSignalMeasurements();
+
+        wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
     }
 
     @FXML
@@ -261,6 +264,8 @@ public class MainViewController {
         drawHistogram(quantizedSignal);
         clearSignalMeasurements();
         displaySignalsError(quantizedSignal, sampledSignal);
+
+        wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
     }
 
     @FXML
@@ -280,6 +285,8 @@ public class MainViewController {
 
         clearSignalMeasurements();
         drawHistogram(interpolatedSignal);
+
+        wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
     }
 
     @FXML
@@ -299,6 +306,8 @@ public class MainViewController {
 
         drawHistogram(reconstructedSignal);
         clearSignalMeasurements();
+
+        wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
     }
 
     @FXML
@@ -322,6 +331,7 @@ public class MainViewController {
             //TODO: Sprawdz sampling frequency
             signal = Signal.create(basicSignalChooser.getSignalType(), function, durationInNs, args.getSamplingFrequency());
 
+
             if (signal.getType() == Signal.Type.CONTINUOUS) {
                 setCssContinous(bitsValue.getScene());
             } else {
@@ -336,6 +346,7 @@ public class MainViewController {
             SignalMeasurement signalMeasurement = measure(signal, function, durationInNs);
             displaySignalMeasurement(signalMeasurement);
 
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         } catch (IllegalArgumentException exception) {
             onSignalCreationException(exception);
         }
@@ -411,6 +422,8 @@ public class MainViewController {
             displaySignalMeasurement(signalMeasurement);
 
             basicSignalChooser.displaySignal(signal, "Zaladowany z pliku");
+
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         } catch (IOException e) {
             onSignalCreationException(e);
         }
@@ -502,6 +515,7 @@ public class MainViewController {
     @FXML
     void add() {
         loadSignalsAndApplyOperator(SignalOperations::add);
+        wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
     }
 
     @FXML
@@ -550,6 +564,8 @@ public class MainViewController {
             displaySignalMeasurement(signalMeasurement);
 
             basicSignalChooser.displaySignal(signal, "Zaladowane z pliku");
+
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
         } catch (IOException e) {
             onSignalCreationException(e);
         }
@@ -623,6 +639,8 @@ public class MainViewController {
             //TODO: Or functions can be merged together
             SignalMeasurement signalMeasurement = SignalMeasurement.measure(signal);
             displaySignalMeasurement(signalMeasurement);
+
+            wykresyTabPane.getSelectionModel().select(REAL_SIGNAL_TAB_INDEX);
 
         } catch (NumberFormatException exception) {
             onSignalCreationException(exception);
