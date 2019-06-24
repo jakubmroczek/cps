@@ -264,7 +264,7 @@
             </HBox>
          </children>
       </VBox>
-      <Button layoutX="690.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Zapisz zesp." wrapText="true" />
-      <Button layoutX="790.0" layoutY="9.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Ładuj zesp." />
+      <Button layoutX="690.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0"  onAction="#saveComplexSignal" text="Zapisz zesp." wrapText="true" />
+      <Button layoutX="790.0" layoutY="9.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0"  onAction="#loadComplexSignal" text="Ładuj zesp." />
     </children>
 </AnchorPane>

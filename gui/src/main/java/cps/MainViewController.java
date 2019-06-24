@@ -416,6 +416,43 @@ public class MainViewController {
         }
     }
 
+    @FXML
+    public void loadComplexSignal() {
+        try {
+            transformedSignal = loadComplexFromFile();
+
+            plot(transformedSignal);
+            wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
+
+        } catch (IOException e) {
+            onSignalCreationException(e);
+        }
+    }
+
+    @FXML
+    public void saveComplexSignal() {
+        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON File", "*.json");
+        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Zapisz sygnał");
+        fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
+        File file = fileChooser.showSaveDialog(this.stage);
+
+        if (file == null || transformedSignal == null) {
+            return;
+        }
+
+        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
+
+        if (resultExtension.equals(jsonExtension)) {
+            SignalWriter.writeComplexJSON(file, transformedSignal);
+        } else {
+            Float f = Float.parseFloat(basicSignalChooser.map(SignalChooser.Field.T1).getParameterValue().getText());
+            SignalWriter.writeComplexBinary(file, f, (long) toFrequency(signal.getSamplingPeriod()), transformedSignal);
+        }
+    }
+
     private Signal loadFromFile() throws IOException {
         FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
         FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
@@ -436,6 +473,29 @@ public class MainViewController {
             return SignalWriter.readJSON(file);
         } else {
             return SignalWriter.readBinary(file);
+        }
+    }
+
+    private Signal<Complex> loadComplexFromFile() throws IOException {
+        FileChooser.ExtensionFilter jsonExtension = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+        FileChooser.ExtensionFilter binaryExtension = new FileChooser.ExtensionFilter("Binary file", "*.bin");
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Wczytaj sygnał");
+        fileChooser.getExtensionFilters().addAll(binaryExtension, jsonExtension);
+
+        File file = fileChooser.showOpenDialog(this.stage);
+
+        if (file == null) {
+            throw new IOException("Unable to open provided file");
+        }
+
+        FileChooser.ExtensionFilter resultExtension = fileChooser.getSelectedExtensionFilter();
+
+        if (resultExtension.equals(jsonExtension)) {
+            return SignalWriter.readComplexJSON(file);
+        } else {
+            return SignalWriter.readComplexBinary(file);
         }
     }
 

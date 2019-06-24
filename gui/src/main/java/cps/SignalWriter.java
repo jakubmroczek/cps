@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import cps.model.Signal;
+import org.apache.commons.math3.complex.Complex;
 
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -116,5 +117,19 @@ public class SignalWriter {
             rounded = round(rounded, 2);
             signal.getSamples().set(i, rounded);
         }
+    }
+
+    public static void writeComplexJSON(File file, Signal<Complex> signal) {
+    }
+
+    public static void writeComplexBinary(File file, Float f, long toFrequency, Signal<Complex> signal) {
+    }
+
+    public static Signal<Complex> readComplexJSON(File file) {
+        return null;
+    }
+
+    public static Signal<Complex> readComplexBinary(File file) {
+        return null;
     }
 }
