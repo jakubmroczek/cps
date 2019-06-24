@@ -2,11 +2,13 @@ package cps;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import cps.model.Signal;
 import org.apache.commons.math3.complex.Complex;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -119,7 +121,26 @@ public class SignalWriter {
         }
     }
 
+    private static void prepareToSaveComplex(Signal<Complex> signal) {
+        //TODO: Do we really need this?
+        for (int i = 0; i < signal.getSamples().size(); i++) {
+            double roundedRe = signal.getSamples().get(i).getReal();
+            double roundedIm = signal.getSamples().get(i).getImaginary();
+            roundedRe = round(roundedRe, 2);
+            roundedIm = round(roundedIm, 2);
+            signal.getSamples().set(i, new Complex(roundedRe, roundedIm));
+        }
+    }
+
     public static void writeComplexJSON(File file, Signal<Complex> signal) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try {
+//            prepareToSaveComplex(signal);
+            String signalJson = gson.toJson(signal);
+            Files.write(file.toPath(), signalJson.getBytes());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public static void writeComplexBinary(File file, float t1, long fq, Signal<Complex> signal) {
@@ -140,8 +161,12 @@ public class SignalWriter {
         }
     }
 
-    public static Signal<Complex> readComplexJSON(File file) {
-        return null;
+    public static Signal<Complex> readComplexJSON(File file) throws IOException {
+        Gson gson = new Gson();
+        JsonReader reader = new JsonReader(new FileReader(file));
+
+        Type type = new TypeToken<Signal<Complex>>(){}.getType();
+        return gson.fromJson(reader, type);
     }
 
     public static Signal<Complex> readComplexBinary(File file) {
