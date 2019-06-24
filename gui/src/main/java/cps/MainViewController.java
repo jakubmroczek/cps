@@ -424,7 +424,7 @@ public class MainViewController {
             plot(transformedSignal);
             wykresyTabPane.getSelectionModel().select(RE_AND_IM_TAB_INDEX);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             onSignalCreationException(e);
         }
     }
