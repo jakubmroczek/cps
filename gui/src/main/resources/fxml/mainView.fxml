@@ -143,16 +143,16 @@
             </children>
         </VBox>
         <ComboBox fx:id="signalOperationList" layoutY="346.0" prefHeight="31.0" prefWidth="200.0" />
-        <Button fx:id="displayButton" layoutX="693.0" layoutY="44.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
+        <Button fx:id="displayButton" layoutX="690.0" layoutY="81.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#display" prefHeight="30.0" prefWidth="80.0" text="Wykres" />
         <SignalChooser fx:id="basicSignalChooser" layoutX="2.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
         <SignalChooser fx:id="extraSignalChooser" layoutX="2.0" layoutY="377.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="336.0" prefWidth="200.0" />
-        <Button fx:id="executeButton" layoutX="787.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="30.0" prefWidth="80.0" text="Funkcja" />
-        <Button fx:id="saveButton" layoutX="693.0" layoutY="11.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
-        <Button fx:id="multiplyButton" layoutX="787.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#divide" prefHeight="30.0" prefWidth="80.0" text="/" />
-        <Button fx:id="subtractButton" layoutX="787.0" layoutY="81.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#subtract" prefHeight="30.0" prefWidth="80.0" text="-" />
-        <Button fx:id="divideButton" layoutX="693.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
-        <Button fx:id="loadButton" layoutX="787.0" layoutY="11.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
-        <Button fx:id="addButton" layoutX="693.0" layoutY="80.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
+        <Button fx:id="executeButton" layoutX="790.0" layoutY="82.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onExecuteButton" prefHeight="30.0" prefWidth="80.0" text="Funkcja" />
+        <Button fx:id="saveButton" layoutX="690.0" layoutY="47.0" mnemonicParsing="false" onAction="#saveToFile" prefHeight="30.0" prefWidth="80.0" text="Zapisz" />
+        <Button fx:id="multiplyButton" layoutX="790.0" layoutY="153.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#divide" prefHeight="30.0" prefWidth="80.0" text="/" />
+        <Button fx:id="subtractButton" layoutX="790.0" layoutY="118.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#subtract" prefHeight="30.0" prefWidth="80.0" text="-" />
+        <Button fx:id="divideButton" layoutX="690.0" layoutY="152.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#multiply" prefHeight="30.0" prefWidth="80.0" text="*" />
+        <Button fx:id="loadButton" layoutX="790.0" layoutY="48.0" mnemonicParsing="false" onAction="#loadSignal" prefHeight="30.0" prefWidth="80.0" text="Ładuj" />
+        <Button fx:id="addButton" layoutX="690.0" layoutY="116.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#add" prefHeight="30.0" prefWidth="80.0" text="+" />
         <HBox layoutX="890.0" layoutY="13.0" prefHeight="25.0" prefWidth="200.0">
             <children>
                 <Button fx:id="sampleButton" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sample" prefHeight="26.0" prefWidth="107.0" text="Próbkuj [Hz]" />
@@ -248,8 +248,8 @@
             <Button layoutX="10.0" layoutY="128.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#showH" prefHeight="31.0" prefWidth="198.0" text="Odpowiedź impulsowa filtra" />
          </children>
       </VBox>
-      <Button layoutX="693.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
-      <Button layoutX="787.0" layoutY="156.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#correlate" prefHeight="30.0" prefWidth="80.0" text="Korelacja" />
+      <Button layoutX="690.0" layoutY="192.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#convolute" prefHeight="30.0" prefWidth="80.0" text="Splot" />
+      <Button layoutX="790.0" layoutY="193.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#correlate" prefHeight="30.0" prefWidth="80.0" text="Korelacja" />
       <VBox layoutX="904.0" layoutY="514.0" prefHeight="84.0" prefWidth="200.0">
          <children>
             <ComboBox fx:id="transformComboBox" prefHeight="26.0" prefWidth="203.0" />
@@ -264,5 +264,7 @@
             </HBox>
          </children>
       </VBox>
+      <Button layoutX="690.0" layoutY="10.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Zapisz zesp." wrapText="true" />
+      <Button layoutX="790.0" layoutY="9.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="Ładuj zesp." />
     </children>
 </AnchorPane>
